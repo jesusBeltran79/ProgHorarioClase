@@ -1,0 +1,50 @@
+@startuml secuencia
+!include estilo.iuml
+skinparam sequenceParticipantBackgroundColor #DCE6F2
+skinparam sequenceParticipantBorderColor #1F4E79
+skinparam sequenceLifeLineBorderColor #7F7F7F
+skinparam sequenceGroupBorderColor #7F7F7F
+skinparam sequenceBoxBorderColor #BFBFBF
+autonumber
+actor "Coordinador\nacadémico" as C
+participant ":VistaCoordinador" as V
+participant ":ControladorHorarios" as K
+participant ":ValidadorEntrada" as VA
+participant ":MotorAsignacion" as M
+participant ":RestriccionDisponibilidad\nDocenteRD04" as R4
+participant ":RestriccionChoque\nDocenteRD01" as R1
+participant ":EstadoHorario" as E
+
+C -> V : solicitarGeneracion()
+V -> K : procesarSolicitud(rutas, cfg)
+K -> VA : validarGrupos(grupos, cfg)
+VA --> K : List<ReporteValidacion> (RV-01, RV-02)
+K -> M : generarHorario(sesiones, docentes, aulas, franjas, MAS_RESTRINGIDA_PRIMERO)
+activate M
+note over M : Sesión CAL2-G2-S2 (35 matriculados)\ncandidata: Martes 09:00-11:00, A204, Dr. Gómez
+M -> R4 : esValida(candidata, estado, cfg)
+R4 --> M : true
+note right of R4 : RD-05 y RD-06 también\nresponden true (se omiten)
+M -> R1 : esValida(candidata, estado, cfg)
+R1 -> E : docenteOcupado("D1", franja 7)
+E --> R1 : true (Cálculo I ya ocupa esa franja)
+R1 --> M : false
+M -> E : registrarRechazo(sesión, "RD-01")
+alt existe otra tupla válida para la sesión
+  M -> E : agregarAsignacion(siguiente tupla válida)
+  M -> M : backtrack(idx + 1)
+else se agotan franjas, aulas y docentes
+  M -> E : removerUltimaAsignacion()
+  M -> M : retroceder a la sesión anterior
+  opt se agota el árbol completo o el tiempo límite
+    M -> M : diagnosticar(sesión, estado)
+    note over M : Evalúa todas las restricciones sin cortar\ny cuenta tuplas bloqueadas por código\n(RD-04, RD-06, RD-01, RD-02)
+  end
+end
+M --> K : ResultadoAsignacion(completo = false, conflictos)
+deactivate M
+K --> V : ResultadoAsignacion
+V --> C : Grilla con 7 de 8 sesiones, panel de causas\npor código y selector de alternativas (RF-07, RNF-04)
+C -> V : confirmarReubicacion(idSesion, alternativa)
+V -> K : procesarSolicitud con la reubicación fijada
+@enduml

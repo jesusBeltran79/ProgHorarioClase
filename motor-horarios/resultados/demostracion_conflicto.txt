@@ -1,0 +1,19 @@
+== Validación previa (RF-05) ==
+[RV-02] TAL1-G1: El grupo tiene menos de 10 matriculados y se marca para cierre
+== Resultado del motor ==
+Horario completo: false | sesiones ubicadas: 7/8 | nodos: 15168
+  CAL1-G1-S1 -> MARTES 07:00-09:00 | A204 | Dr. Gómez
+  CAL1-G1-S2 -> MARTES 09:00-11:00 | A204 | Dr. Gómez
+  CAL2-G2-S1 -> MIERCOLES 09:00-11:00 | A204 | Dr. Gómez
+  PRO2-G1-S1 -> LUNES 07:00-09:00 | A301 | Dra. Ruiz
+  PRO2-G1-S2 -> LUNES 09:00-11:00 | A301 | Dra. Ruiz
+  TAL1-G1-S1 -> LUNES 13:00-15:00 | A204 | Dra. Ruiz
+  TAL1-G1-S2 -> LUNES 15:00-17:00 | A204 | Dra. Ruiz
+== Conflicto (RF-07) en CAL2-G2-S2 ==
+  [RD-04] bloquea 183 tuplas
+  [RD-06] bloquea 64 tuplas
+  [RD-01] bloquea 9 tuplas
+  [RD-02] bloquea 6 tuplas
+  Alternativa por liberación: MARTES 07:00-09:00 | A204 | Dr. Gómez (liberar [RD-01, RD-02])
+  Alternativa por liberación: MARTES 07:00-09:00 | A301 | Dr. Gómez (liberar [RD-01])
+  Alternativa por liberación: MARTES 09:00-11:00 | A204 | Dr. Gómez (liberar [RD-01, RD-02])

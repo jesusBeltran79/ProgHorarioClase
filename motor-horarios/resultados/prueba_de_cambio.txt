@@ -1,0 +1,3 @@
+Cambio 1 | umbral RV-01 = 38 | grupos sobre el tope antes = 0 | después = 3
+Cambio 2 | franjas válidas con cierre 22:00 = 32 | con cierre 20:00 = 27
+Cambio 3 | completo = true | sesiones = 40 | grupos con dos sesiones el mismo día = 0 | rechazos RD-09 = 360

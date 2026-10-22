@@ -1,0 +1,23 @@
+<html><head><link rel="stylesheet" href="base.css"></head><body><div class="app">
+<div class="side"><h1>Motor de Horarios</h1><div class="sub">Programa de Ingeniería de Sistemas · 2027-1</div>
+<div class="nav"><div class="on"><span class="n">1</span>Cargar y validar</div><div><span class="n">2</span>Parámetros</div><div><span class="n">3</span>Generar y resolver</div><div><span class="n">4</span>Exportar</div></div>
+<div class="user">Perfil ADMIN · coordinación</div></div>
+<div class="main">
+<div class="top"><div><h2>1. Cargar inventarios y validar datos</h2><div class="meta">Los cuatro archivos se leen una sola vez y se revisan antes de asignar (RF-01 a RF-05)</div></div><span class="btn">Continuar a parámetros →</span></div>
+<div class="card"><h3>Archivos de entrada</h3>
+<table><tr><th>Inventario</th><th>Archivo</th><th>Registros</th><th>Estado</th><th></th></tr>
+<tr><td>Docentes y disponibilidad (RF-01)</td><td>docentes_2027-1.csv</td><td>10</td><td><span class="tag ok">Cargado</span></td><td><span class="btn sec">Reemplazar</span></td></tr>
+<tr><td>Aulas y características (RF-02)</td><td>aulas_2027-1.csv</td><td>5</td><td><span class="tag ok">Cargado</span></td><td><span class="btn sec">Reemplazar</span></td></tr>
+<tr><td>Cursos y requisitos (RF-03)</td><td>cursos_2027-1.csv</td><td>20</td><td><span class="tag ok">Cargado</span></td><td><span class="btn sec">Reemplazar</span></td></tr>
+<tr><td>Grupos y matriculados (RF-04)</td><td>grupos_2027-1.csv</td><td>21</td><td><span class="tag warn">2 hallazgos</span></td><td><span class="btn sec">Reemplazar</span></td></tr>
+<tr><td colspan="5" style="color:#b3261e;font-size:12px">Fila 14 de docentes_2027-1.csv rechazada. La franja «Sábado 13:00–15:00» no pertenece a las 32 franjas válidas (RD-03).</td></tr>
+</table></div>
+<div class="card"><h3>Resultado de la validación previa (RF-05)</h3>
+<table><tr><th>Código</th><th>Grupo</th><th>Hallazgo</th><th>Acción del coordinador</th></tr>
+<tr><td class="code" style="color:#b3261e">RV-01</td><td>BD1-G2</td><td>Tiene 47 matriculados y supera el tope de 44 (40 + 10 %)</td><td><span class="btn sec">Dividir grupo</span> <span class="btn sec">Editar matriculados</span></td></tr>
+<tr><td class="code" style="color:#8a5a00">RV-02</td><td>TAL1-G1</td><td>Tiene 8 matriculados y queda marcado para cierre (mínimo 10)</td><td><span class="btn sec">Confirmar cierre</span> <span class="btn sec">Mantener abierto</span></td></tr>
+</table>
+<div style="margin-top:10px;font-size:12px;color:#5b6678">Los hallazgos no detienen el proceso. El motor solo recibe los grupos que el coordinador deja activos.</div></div>
+</div></div>
+<div class="callout" style="left:250px;top:625px;max-width:420px"><b>Interacción.</b> Los errores aparecen por fila y con el código de la regla, así el coordinador corrige el archivo sin adivinar (RNF-04).</div>
+</body></html>

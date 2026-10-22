@@ -1,0 +1,164 @@
+@startuml clases_nucleo
+!include estilo.iuml
+left to right direction
+skinparam nodesep 18
+skinparam ranksep 45
+
+package "Presentación" as P1 {
+  class VistaCoordinador {
+    - controlador : ControladorHorarios
+    + cargarArchivos(rutas : RutasArchivos) : void
+    + guardarParametros(cfg : ConfiguracionParametros) : void
+    + solicitarGeneracion() : void
+    + mostrarHorario(r : ResultadoAsignacion) : void
+    + confirmarReubicacion(idSesion : String, alt : Asignacion) : void
+  }
+}
+
+package "Aplicación" as P2 {
+  class ControladorHorarios {
+    - cargador : CargadorInventariosCSV
+    - validador : ValidadorEntrada
+    - motor : MotorAsignacion
+    - exportador : ExportadorHorarioCSV
+    + procesarSolicitud(rutas : RutasArchivos, cfg : ConfiguracionParametros) : ResultadoAsignacion
+    + exportar(r : ResultadoAsignacion, destino : String) : void
+  }
+  class ConfiguracionParametros {
+    - capMax : int = 40
+    - tol : double = 0.10
+    - minCierre : int = 10
+    - maxSesiones : int = 4
+    - durSesionHoras : int = 2
+    - aperturaSemana : LocalTime
+    - cierreSemana : LocalTime
+    - cierreSabado : LocalTime
+    - inicioBloqueo : LocalTime
+    - finBloqueo : LocalTime
+    + calcularUmbralMaximoGrupo() : int
+    + generarFranjasValidas() : List<FranjaHoraria>
+  }
+}
+
+package "Persistencia" as P6 {
+  class CargadorInventariosCSV {
+    + cargarDocentes(ruta : String) : List<Docente>
+    + cargarAulas(ruta : String) : List<Aula>
+    + cargarCursosYGrupos(rc : String, rg : String) : List<Grupo>
+  }
+  class ExportadorHorarioCSV {
+    + exportarHorario(r : ResultadoAsignacion, destino : String) : void
+  }
+}
+
+package "Dominio · validación previa" as P5 {
+  class ValidadorEntrada {
+    - reglas : List<ReglaValidacionEntrada>
+    + validarGrupos(g : List<Grupo>, cfg) : List<ReporteValidacion>
+  }
+  interface ReglaValidacionEntrada <<interface>> {
+    + getCodigo() : String
+    + validar(g : Grupo, cfg) : Optional<ReporteValidacion>
+  }
+  class ReglaTopeMatriculadosRV01
+  class ReglaCierreMinimoRV02
+  class ReporteValidacion {
+    - codigoRegla : String
+    - idGrupo : String
+    - mensaje : String
+  }
+}
+
+package "Dominio · motor" as P3 {
+  class MotorAsignacion {
+    - restricciones : List<RestriccionDura>
+    - config : ConfiguracionParametros
+    - limiteMs : long
+    + generarHorario(s, d, a, f, orden) : ResultadoAsignacion
+    - ordenarPorMasRestringida(s : List<Sesion>) : List<Sesion>
+    - backtrack(idx : int, e : EstadoHorario) : boolean
+    - cumpleTodas(c : Asignacion, e : EstadoHorario) : boolean
+    - diagnosticar(s : Sesion, e : EstadoHorario) : ReporteConflicto
+  }
+  enum OrdenExploracion {
+    INGENUO
+    MAS_RESTRINGIDA_PRIMERO
+  }
+  class EstadoHorario {
+    - confirmadas : List<Asignacion>
+    - docentesPorFranja : List<Set<String>>
+    - aulasPorFranja : List<Set<String>>
+    - rechazosPorCodigo : Map<String, Integer>
+    + agregarAsignacion(a : Asignacion) : void
+    + removerUltimaAsignacion() : void
+    + docenteOcupado(id : String, franja : int) : boolean
+    + aulaOcupada(id : String, franja : int) : boolean
+    + registrarRechazo(s : Sesion, codigo : String) : void
+  }
+  class ResultadoAsignacion {
+    - completo : boolean
+    - agotoTiempo : boolean
+    - nodosExplorados : long
+    - msTotal : long
+    + getConflictos() : List<ReporteConflicto>
+  }
+  class ReporteConflicto {
+    - idCurso : String
+    - idGrupo : String
+    - idSesion : String
+    - tuplasBloqueadasPorCodigo : Map<String, Integer>
+    - alternativasPorLiberacion : List<String>
+    + codigosRestriccionesVioladas() : List<String>
+  }
+}
+
+package "Dominio · restricciones duras (Strategy)" as P4 {
+  interface RestriccionDura <<interface>> {
+    + getCodigo() : String
+    + esLocal() : boolean
+    + esValida(c : Asignacion, e : EstadoHorario, cfg) : boolean
+  }
+  class RestriccionChoqueDocenteRD01
+  class RestriccionChoqueAulaRD02
+  class RestriccionDisponibilidadDocenteRD04
+  class RestriccionIdoneidadAulaRD05
+  class RestriccionCapacidadAulaRD06
+}
+
+package "Entidades (detalle en la Figura A2)" as P7 {
+  class Asignacion
+  class Grupo
+  class Docente
+  class Aula
+}
+
+VistaCoordinador --> ControladorHorarios : usa
+ControladorHorarios o-- CargadorInventariosCSV
+ControladorHorarios o-- ExportadorHorarioCSV
+ControladorHorarios o-- ValidadorEntrada
+ControladorHorarios o-- MotorAsignacion
+ControladorHorarios ..> ConfiguracionParametros
+MotorAsignacion o-- "1..*" RestriccionDura : evalúa
+MotorAsignacion --> ConfiguracionParametros : lee
+MotorAsignacion ..> EstadoHorario : crea
+MotorAsignacion ..> ResultadoAsignacion : retorna
+MotorAsignacion ..> OrdenExploracion
+ResultadoAsignacion *-- "1" EstadoHorario
+ResultadoAsignacion *-- "0..*" ReporteConflicto
+EstadoHorario o-- "0..*" Asignacion
+RestriccionDura <|.. RestriccionChoqueDocenteRD01
+RestriccionDura <|.. RestriccionChoqueAulaRD02
+RestriccionDura <|.. RestriccionDisponibilidadDocenteRD04
+RestriccionDura <|.. RestriccionIdoneidadAulaRD05
+RestriccionDura <|.. RestriccionCapacidadAulaRD06
+RestriccionDura ..> Asignacion : evalúa
+ValidadorEntrada o-- "1..*" ReglaValidacionEntrada
+ReglaValidacionEntrada <|.. ReglaTopeMatriculadosRV01
+ReglaValidacionEntrada <|.. ReglaCierreMinimoRV02
+ReglaValidacionEntrada ..> ReporteValidacion : produce
+ReglaValidacionEntrada ..> Grupo
+CargadorInventariosCSV ..> Docente : crea
+CargadorInventariosCSV ..> Aula : crea
+CargadorInventariosCSV ..> Grupo : crea
+ExportadorHorarioCSV ..> ResultadoAsignacion
+@enduml

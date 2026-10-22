@@ -1,0 +1,14 @@
+skinparam dpi 200
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundCorner 6
+skinparam ArrowColor #333333
+skinparam classBackgroundColor #FFFFFF
+skinparam classBorderColor #1F4E79
+skinparam classHeaderBackgroundColor #DCE6F2
+skinparam packageBorderColor #7F7F7F
+skinparam packageBackgroundColor #FAFAFA
+skinparam noteBackgroundColor #FFF8DC
+skinparam noteBorderColor #B8A100
+hide circle

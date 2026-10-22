@@ -1,0 +1,28 @@
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,sans-serif;background:#eef1f5;color:#1d2433;width:1280px;height:800px;font-size:13px}
+.app{display:grid;grid-template-columns:210px 1fr;height:800px}
+.side{background:#1f2d3d;color:#c9d3df;padding:18px 14px}
+.side h1{font-size:14px;color:#fff;margin-bottom:4px;font-weight:700}
+.side .sub{font-size:11px;color:#8ea0b5;margin-bottom:22px}
+.nav div{padding:9px 10px;border-radius:6px;margin-bottom:4px;font-size:13px;display:flex;gap:8px;align-items:center}
+.nav .on{background:#2f4a68;color:#fff;font-weight:600}
+.nav .n{width:20px;height:20px;border-radius:50%;background:#3a4c61;display:inline-flex;align-items:center;justify-content:center;font-size:11px}
+.nav .on .n{background:#4f8fd6}
+.user{position:absolute;bottom:18px;font-size:11px;color:#8ea0b5}
+.main{padding:20px 24px;overflow:hidden;position:relative}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.top h2{font-size:19px;font-weight:700}
+.top .meta{font-size:12px;color:#5b6678}
+.card{background:#fff;border:1px solid #d6dce5;border-radius:8px;padding:14px 16px;margin-bottom:12px}
+.card h3{font-size:13px;font-weight:700;margin-bottom:10px;color:#24324a}
+.btn{display:inline-block;padding:8px 14px;border-radius:6px;font-weight:600;font-size:12.5px;border:1px solid #2f6db3;background:#2f6db3;color:#fff}
+.btn.sec{background:#fff;color:#2f6db3}
+.btn.dis{background:#e6e9ee;border-color:#d0d6de;color:#9aa4b2}
+.tag{display:inline-block;padding:2px 7px;border-radius:10px;font-size:11px;font-weight:600}
+.ok{background:#e3f4e8;color:#1f7a3a}.warn{background:#fff3d6;color:#8a5a00}.err{background:#fde4e2;color:#b3261e}.info{background:#e3edf9;color:#2f6db3}
+table{width:100%;border-collapse:collapse}
+th{font-size:11.5px;text-align:left;color:#5b6678;font-weight:600;padding:7px 8px;border-bottom:1px solid #d6dce5;background:#f6f8fb}
+td{padding:7px 8px;border-bottom:1px solid #edf0f4;font-size:12.5px}
+.code{font-family:"DejaVu Sans Mono",monospace;font-size:11.5px;font-weight:700}
+.callout{position:absolute;background:#fffbe6;border:1.5px dashed #b38f00;color:#5c4a00;font-size:11px;padding:6px 8px;border-radius:6px;max-width:220px}
+.callout b{color:#3d3100}

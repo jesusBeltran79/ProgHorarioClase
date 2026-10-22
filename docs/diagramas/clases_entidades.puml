@@ -1,0 +1,69 @@
+@startuml clases_entidades
+!include estilo.iuml
+skinparam nodesep 40
+skinparam ranksep 50
+package "Dominio · entidades" {
+  class Curso {
+    - id : String
+    - nombre : String
+    - numSesionesSemanales : int
+    - requisitosAula : Set<CaracteristicaAula>
+    - docentesHabilitados : Set<String>
+    + habilitaA(idDocente : String) : boolean
+  }
+  class Grupo {
+    - id : String
+    - matriculados : int
+    + getMatriculados() : int
+  }
+  class Sesion {
+    - id : String
+    - numeroSesion : int
+  }
+  class Docente {
+    - id : String
+    - nombre : String
+    - franjasDisponibles : BitSet
+    + estaDisponibleEn(franja : int) : boolean
+  }
+  class Aula {
+    - id : String
+    - capacidad : int
+    - caracteristicas : Set<CaracteristicaAula>
+    + cumpleRequisitos(req : Set<CaracteristicaAula>) : boolean
+  }
+  class FranjaHoraria {
+    - indice : int
+    - dia : DiaSemana
+    - horaInicio : LocalTime
+    - horaFin : LocalTime
+  }
+  class Asignacion {
+    - sesion : Sesion
+    - docente : Docente
+    - aula : Aula
+    - franja : FranjaHoraria
+  }
+  enum DiaSemana {
+    LUNES
+    MARTES
+    MIERCOLES
+    JUEVES
+    VIERNES
+    SABADO
+  }
+  enum CaracteristicaAula {
+    COMPUTADORES
+    SILLAS_MOVILES
+  }
+}
+Curso "1" *-- "1..*" Grupo
+Grupo "1" *-- "1..4" Sesion
+Asignacion "0..1" --> "1" Sesion
+Asignacion "*" --> "1" Docente
+Asignacion "*" --> "1" Aula
+Asignacion "*" --> "1" FranjaHoraria
+Curso ..> CaracteristicaAula
+Aula ..> CaracteristicaAula
+FranjaHoraria ..> DiaSemana
+@enduml

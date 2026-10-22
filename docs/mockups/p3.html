@@ -1,0 +1,55 @@
+<html><head><link rel="stylesheet" href="base.css"><style>
+.wrap{display:grid;grid-template-columns:1fr 330px;gap:12px}
+.banner{background:#fff3d6;border:1px solid #f0d48a;border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:12.5px;color:#6b4a00;display:flex;justify-content:space-between;align-items:center}
+.g{display:grid;grid-template-columns:62px repeat(6,1fr);gap:3px}
+.g .hd{font-size:11px;font-weight:700;color:#5b6678;text-align:center;padding:4px}
+.g .t{font-size:10.5px;color:#5b6678;padding:4px 2px;text-align:right}
+.g .c{background:#f6f8fb;border:1px solid #e3e8ef;border-radius:4px;min-height:62px;padding:3px;display:flex;flex-direction:column;gap:3px}
+.g .blk{background:#f0f0f0;border-color:#e6e6e6;background-image:repeating-linear-gradient(45deg,#eee 0 6px,#f7f7f7 6px 12px)}
+.s{font-size:10px;line-height:1.25;padding:3px 5px;border-radius:3px;background:#dbe9f8;border-left:3px solid #2f6db3}
+.s.gz{background:#e8e2f6;border-left-color:#6a4fb3}
+.s.alt{background:#e3f4e8;border:1.5px dashed #1f7a3a;border-left-width:3px;color:#1f5a2e}
+.s.sel{outline:2px solid #b3261e}
+.cause{border-left:3px solid #b3261e;padding:6px 8px;background:#fdf3f2;border-radius:4px;margin-bottom:6px;font-size:12px}
+.opt{border:1px solid #d6dce5;border-radius:6px;padding:7px 9px;margin-bottom:6px;font-size:12px;display:flex;gap:8px}
+.opt.on{border-color:#2f6db3;background:#f1f6fd}
+.rad{width:14px;height:14px;border-radius:50%;border:2px solid #9aa4b2;flex:none;margin-top:1px}
+.on .rad{border-color:#2f6db3;background:radial-gradient(#2f6db3 40%,#fff 45%)}
+</style></head><body><div class="app">
+<div class="side"><h1>Motor de Horarios</h1><div class="sub">Programa de Ingeniería de Sistemas · 2027-1</div>
+<div class="nav"><div><span class="n">1</span>Cargar y validar</div><div><span class="n">2</span>Parámetros</div><div class="on"><span class="n">3</span>Generar y resolver</div><div><span class="n">4</span>Exportar</div></div>
+<div class="user">Perfil ADMIN · coordinación</div></div>
+<div class="main">
+<div class="top"><div><h2>3. Horario generado</h2><div class="meta">Vista por docente · <b>Dr. Gómez</b> ▾ &nbsp;|&nbsp; Cambiar a vista por aula o por grupo</div></div><div><span class="btn sec">Regenerar</span> <span class="btn dis">Exportar CSV (RF-09)</span></div></div>
+<div class="banner"><span><b>Horario pendiente de resolución.</b> Se ubicaron 39 de 40 sesiones. Falta 1 sesión y la exportación queda bloqueada hasta resolverla (RD-08).</span><span class="tag warn">PARCIAL</span></div>
+<div class="wrap">
+<div class="card" style="padding:10px">
+<div class="g">
+<div></div><div class="hd">Lun</div><div class="hd">Mar</div><div class="hd">Mié</div><div class="hd">Jue</div><div class="hd">Vie</div><div class="hd">Sáb</div>
+<div class="t">07–09</div><div class="c"></div><div class="c"><div class="s gz">Cálculo I · G1 · S1<br>A204 · 30 est.</div><div class="s alt">Opción C · A301</div></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div>
+<div class="t">09–11</div><div class="c"></div><div class="c"><div class="s gz">Cálculo I · G1 · S2<br>A204 · 30 est.</div></div><div class="c"><div class="s gz">Cálculo II · G2 · S1<br>A204 · 35 est.</div></div><div class="c"></div><div class="c"></div><div class="c"></div>
+<div class="t">11–13</div><div class="c blk"></div><div class="c blk"></div><div class="c blk"></div><div class="c blk"></div><div class="c blk"></div><div class="c blk"></div>
+<div class="t">13–15</div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c blk"></div>
+<div class="t">15–17</div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c blk"></div>
+<div class="t">17–19</div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c blk"></div>
+<div class="t">19–21</div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c blk"></div>
+</div>
+<div style="font-size:11px;color:#5b6678;margin-top:8px">Las celdas grises no son franjas válidas. Al seleccionar una sesión ubicada se abre el mismo panel con sus franjas alternativas para moverla.</div>
+</div>
+<div>
+<div class="card"><h3>Sesión pendiente</h3>
+<div style="font-size:13px;font-weight:700">Cálculo II · Grupo 2 · Sesión 2 de 2</div>
+<div style="font-size:12px;color:#5b6678;margin:3px 0 10px">35 matriculados · solo el Dr. Gómez está habilitado</div>
+<div style="font-size:11.5px;font-weight:700;color:#5b6678;margin-bottom:6px">CAUSAS DETECTADAS (RNF-04)</div>
+<div class="cause"><span class="code">RD-04</span> El docente solo declara tres franjas libres y ya las usa todas</div>
+<div class="cause"><span class="code">RD-01</span> En esas tres franjas el Dr. Gómez ya dicta Cálculo I y Cálculo II</div>
+<div class="cause"><span class="code">RD-06</span> El aula A302 tiene 25 puestos y el grupo tiene 35</div>
+</div>
+<div class="card"><h3>Elegir una acción</h3>
+<div class="opt on"><span class="rad"></span><div><b>A.</b> Habilitar otro docente para Cálculo II<br><span style="color:#5b6678">Abre la lista de docentes con franjas libres</span></div></div>
+<div class="opt"><span class="rad"></span><div><b>B.</b> Ampliar la disponibilidad del Dr. Gómez<br><span style="color:#5b6678">Requiere confirmación del docente</span></div></div>
+<div class="opt"><span class="rad"></span><div><b>C.</b> Usar Mar 07–09 en A301<br><span style="color:#5b6678">Desplaza Cálculo I · S1, que quedaría pendiente</span></div></div>
+<span class="btn" style="width:100%;text-align:center">Aplicar y regenerar</span>
+</div></div></div></div></div>
+<div class="callout" style="left:250px;top:705px"><b>Interacción.</b> Selección asistida en lugar de arrastrar y soltar. El sistema solo ofrece acciones que no rompen otra restricción dura sin avisarlo.</div>
+</body></html>

@@ -1,0 +1,56 @@
+@startuml actividades
+!include estilo.iuml
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #1F4E79
+skinparam ActivityDiamondBackgroundColor #DCE6F2
+skinparam ActivityDiamondBorderColor #1F4E79
+skinparam PartitionBorderColor #7F7F7F
+skinparam ActivityFontSize 11
+start
+:Recibir sesiones, docentes, aulas,
+franjas válidas y parámetros (RF-06);
+:Calcular para cada sesión el tamaño de su dominio
+con las restricciones locales RD-04, RD-05 y RD-06;
+:Ordenar las sesiones de menor a mayor dominio
+(más restringida primero);
+:idx = 0 y EstadoHorario vacío;
+repeat :Tomar la sesión idx;
+  :Tomar la siguiente tupla (franja, aula, docente)
+  que aún no se haya probado para esta sesión;
+  if (¿Quedan tuplas sin probar para la sesión idx?) then (sí)
+    :Evaluar cada RestriccionDura en orden
+    (primero locales y luego RD-01 y RD-02);
+    if (¿Alguna restricción rechaza la tupla?) then (sí)
+      :registrarRechazo(sesión, código RD-xx);
+    else (no)
+      :agregarAsignacion(tupla)
+      idx = idx + 1;
+      if (¿idx igual al número de sesiones?) then (sí)
+        :Horario completo (RD-08 cumplida);
+        :Entregar ResultadoAsignacion completo
+        y habilitar la exportación (RF-09);
+        stop
+      else (no)
+      endif
+    endif
+  else (no, se agotaron aulas, docentes y franjas)
+    if (¿idx es 0 o se superó el tiempo límite?) then (sí)
+      :Recuperar la asignación parcial más profunda;
+      :Intentar ubicar las sesiones restantes
+      sobre esa asignación parcial;
+      :Para cada sesión que sigue sin lugar evaluar todas
+      las restricciones sin cortar en la primera
+      y contar las tuplas bloqueadas por código;
+      :Construir ReporteConflicto con los códigos
+      y las alternativas que solo fallan por RD-01 o RD-02;
+      :Marcar el horario como pendiente de resolución
+      y mostrar el selector de alternativas (RF-07);
+      stop
+    else (no)
+      :Retroceder (backtracking)
+      removerUltimaAsignacion() e idx = idx - 1;
+      note right: La sesión anterior\ncontinúa con su\nsiguiente tupla
+    endif
+  endif
+repeat while (continuar la búsqueda)
+@enduml

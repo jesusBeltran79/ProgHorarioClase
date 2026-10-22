@@ -1,0 +1,55 @@
+@startuml componentes
+!include estilo.iuml
+skinparam componentStyle uml2
+skinparam componentBackgroundColor #FFFFFF
+skinparam componentBorderColor #1F4E79
+skinparam nodeBackgroundColor #F7F9FC
+skinparam nodeBorderColor #7F7F7F
+skinparam databaseBackgroundColor #FFFFFF
+left to right direction
+
+actor "Coordinador académico\n(perfil ADMIN, RNF-06)" as coord
+
+node "Navegador web del coordinador" {
+  [Interfaz web\nAngular + TypeScript\n(VistaCoordinador)] as ui
+}
+
+node "Servidor de aplicación (JVM, Java 21)" {
+  package "Capa de aplicación · Spring Boot" {
+    [API REST\nControladorHorarios] as api
+    [Seguridad\nautenticación ADMIN] as sec
+    [ConfiguracionParametros\n(RF-08)] as cfg
+  }
+  package "Capa de dominio · núcleo en memoria" {
+    [ValidadorEntrada\nRV-01, RV-02 (RF-05)] as val
+    [MotorAsignacion\nbacktracking + más restringida primero\n(RF-06, RF-07)] as motor
+    [Restricciones duras\nStrategy RD-01 a RD-06\n(RNF-03, RNF-04)] as rest
+    [EstadoHorario\nmapas de ocupación por franja] as estado
+  }
+  package "Capa de persistencia" {
+    [CargadorInventariosCSV\n(RF-01 a RF-04)] as carg
+    [ExportadorHorarioCSV\n(RF-09)] as exp
+    [RepositorioEjecuciones\n(historial de corridas)] as repo
+  }
+}
+
+folder "Archivos de entrada\nCSV / JSON" as fin
+folder "Horario exportado\nCSV / JSON" as fout
+database "Base de datos relacional\n(modelo del DER, Anexo D)" as db
+
+coord --> ui
+ui --> api : HTTPS / JSON
+api ..> sec
+api --> val
+api --> motor
+api ..> cfg
+motor --> rest
+motor --> estado
+rest ..> estado
+api --> carg
+api --> exp
+api --> repo
+carg --> fin : lee una vez
+exp --> fout : escribe al final
+repo --> db
+@enduml

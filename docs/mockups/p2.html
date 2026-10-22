@@ -1,0 +1,37 @@
+<html><head><link rel="stylesheet" href="base.css"><style>
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.f{margin-bottom:10px}.f label{display:block;font-size:11.5px;color:#5b6678;margin-bottom:4px;font-weight:600}
+.f .in{border:1px solid #c5ccd6;border-radius:6px;padding:7px 10px;background:#fff;font-size:13px;display:flex;justify-content:space-between}
+.f .in i{font-style:normal;color:#9aa4b2;font-size:11px}
+.week{display:grid;grid-template-columns:70px repeat(6,1fr);gap:3px;font-size:11px}
+.week div{padding:4px;text-align:center;border-radius:3px}
+.v{background:#dbe9f8;color:#24324a}.x{background:#f0f0f0;color:#b0b6bf;text-decoration:line-through}.h{font-weight:700;color:#5b6678}
+</style></head><body><div class="app">
+<div class="side"><h1>Motor de Horarios</h1><div class="sub">Programa de Ingeniería de Sistemas · 2027-1</div>
+<div class="nav"><div><span class="n">1</span>Cargar y validar</div><div class="on"><span class="n">2</span>Parámetros</div><div><span class="n">3</span>Generar y resolver</div><div><span class="n">4</span>Exportar</div></div>
+<div class="user">Perfil ADMIN · coordinación</div></div>
+<div class="main">
+<div class="top"><div><h2>2. Parámetros del semestre</h2><div class="meta">Los cambios se aplican en la siguiente generación sin tocar código (RF-08)</div></div><span class="btn">Guardar y generar →</span></div>
+<div class="grid2">
+<div class="card"><h3>Reglas de grupos y sesiones</h3>
+<div class="f"><label>Tope de estudiantes por grupo (CAP_MAX)</label><div class="in">40 <i>por defecto 40</i></div></div>
+<div class="f"><label>Tolerancia sobre el tope (TOL)</label><div class="in">10 % <i>umbral efectivo 44</i></div></div>
+<div class="f"><label>Mínimo para no cerrar un grupo (MIN_CIERRE)</label><div class="in">10 <i>por defecto 10</i></div></div>
+<div class="f"><label>Máximo de sesiones semanales (MAX_SESIONES)</label><div class="in">4 <i>rango 1 a 4</i></div></div>
+<div class="f"><label>Duración de cada sesión (DUR_SESION)</label><div class="in">2 horas <i>fija en el caso</i></div></div>
+</div>
+<div class="card"><h3>Ventana de oferta</h3>
+<div class="grid2"><div class="f"><label>Lunes a viernes</label><div class="in">07:00 – 22:00</div></div><div class="f"><label>Sábado</label><div class="in">07:00 – 13:00</div></div></div>
+<div class="f"><label>Bloqueo intermedio (sin clases)</label><div class="in">12:00 – 13:00</div></div>
+<h3 style="margin-top:6px">Vista previa del dominio <span class="tag info">32 franjas válidas</span></h3>
+<div class="week"><div class="h"></div><div class="h">Lun</div><div class="h">Mar</div><div class="h">Mié</div><div class="h">Jue</div><div class="h">Vie</div><div class="h">Sáb</div>
+<div class="h">07–09</div><div class="v">✓</div><div class="v">✓</div><div class="v">✓</div><div class="v">✓</div><div class="v">✓</div><div class="v">✓</div>
+<div class="h">09–11</div><div class="v">✓</div><div class="v">✓</div><div class="v">✓</div><div class="v">✓</div><div class="v">✓</div><div class="v">✓</div>
+<div class="h">11–13</div><div class="x">bloq.</div><div class="x">bloq.</div><div class="x">bloq.</div><div class="x">bloq.</div><div class="x">bloq.</div><div class="x">bloq.</div>
+<div class="h">13–15</div><div class="v">✓</div><div class="v">✓</div><div class="v">✓</div><div class="v">✓</div><div class="v">✓</div><div class="x">cierre</div>
+<div class="h">15–17</div><div class="v">✓</div><div class="v">✓</div><div class="v">✓</div><div class="v">✓</div><div class="v">✓</div><div class="x"></div>
+<div class="h">17–19</div><div class="v">✓</div><div class="v">✓</div><div class="v">✓</div><div class="v">✓</div><div class="v">✓</div><div class="x"></div>
+<div class="h">19–21</div><div class="v">✓</div><div class="v">✓</div><div class="v">✓</div><div class="v">✓</div><div class="v">✓</div><div class="x"></div>
+</div></div></div></div></div>
+<div class="callout" style="left:250px;top:500px;max-width:420px"><b>Interacción.</b> La vista previa recalcula las franjas al cambiar la ventana. El bloque de 11 a 13 se excluye y no se recorta (S-02).</div>
+</body></html>
