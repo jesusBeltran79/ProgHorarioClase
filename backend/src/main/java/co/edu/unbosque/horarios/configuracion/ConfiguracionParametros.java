@@ -23,8 +23,13 @@ public final class ConfiguracionParametros {
     private LocalTime inicioBloqueo = LocalTime.of(12, 0);
     private LocalTime finBloqueo = LocalTime.of(13, 0);
 
+    /**
+     * Umbral de RV-01 con el techo de CAP_MAX x (1 + TOL) como lo especifica el Módulo 1.
+     * Da 44 con tope 40 y 39 con tope 35. Se resta un épsilon para que 40 x 1,10 no
+     * termine en 45 por el error de punto flotante.
+     */
     public int calcularUmbralMaximoGrupo() {
-        return (int) Math.floor(capMax * (1.0 + tol) + 1e-9); // 44 por defecto (RV-01)
+        return (int) Math.ceil(capMax * (1.0 + tol) - 1e-9);
     }
 
     /**
@@ -55,9 +60,20 @@ public final class ConfiguracionParametros {
     public int getMinCierre() { return minCierre; }
     public int getMaxSesiones() { return maxSesiones; }
     public int getDurSesionHoras() { return durSesionHoras; }
+    public LocalTime getAperturaSemana() { return aperturaSemana; }
+    public LocalTime getCierreSemana() { return cierreSemana; }
+    public LocalTime getCierreSabado() { return cierreSabado; }
+    public LocalTime getInicioBloqueo() { return inicioBloqueo; }
+    public LocalTime getFinBloqueo() { return finBloqueo; }
+
     public void setCapMax(int capMax) { this.capMax = capMax; }
     public void setTol(double tol) { this.tol = tol; }
     public void setMinCierre(int minCierre) { this.minCierre = minCierre; }
     public void setMaxSesiones(int maxSesiones) { this.maxSesiones = maxSesiones; }
+    public void setDurSesionHoras(int durSesionHoras) { this.durSesionHoras = durSesionHoras; }
+    public void setAperturaSemana(LocalTime aperturaSemana) { this.aperturaSemana = aperturaSemana; }
     public void setCierreSemana(LocalTime cierreSemana) { this.cierreSemana = cierreSemana; }
+    public void setCierreSabado(LocalTime cierreSabado) { this.cierreSabado = cierreSabado; }
+    public void setInicioBloqueo(LocalTime inicioBloqueo) { this.inicioBloqueo = inicioBloqueo; }
+    public void setFinBloqueo(LocalTime finBloqueo) { this.finBloqueo = finBloqueo; }
 }
