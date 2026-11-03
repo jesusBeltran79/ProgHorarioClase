@@ -52,5 +52,9 @@ public final class Dto {
 
     public record Token(String token, long expiraEn, String usuario) { }
 
+    public record ItemCatalogo(String id, String nombre, String detalle) { }
+
+    public record Catalogo(List<ItemCatalogo> docentes, List<ItemCatalogo> aulas) { }
+
     public record Error(String codigo, String mensaje, List<String> detalles) { }
 }

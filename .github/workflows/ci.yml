@@ -5,6 +5,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   backend:
     name: Backend (compilación, pruebas y estrés)
@@ -62,3 +65,21 @@ jobs:
           name: dependencias-maven
           path: /tmp/m2.tgz
           retention-days: 3
+
+      - name: Copiar evidencias a la rama ci-evidencias
+        if: always() && github.event_name == 'push'
+        run: |
+          set -e
+          DESTINO=$(mktemp -d)
+          mkdir -p "$DESTINO/backend"
+          cp -r target/evidencias "$DESTINO/backend/" || true
+          mkdir -p "$DESTINO/backend/surefire" && cp target/surefire-reports/*.txt "$DESTINO/backend/surefire/" 2>/dev/null || true
+          if [ "${{ github.ref_name }}" = "construccion-m3" ]; then split -b 45m /tmp/m2.tgz "$DESTINO/m2.tgz.parte-"; fi
+          echo "${{ github.sha }}" > "$DESTINO/COMMIT"
+          cd "$DESTINO"
+          git init -q -b ci-evidencias
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Evidencias de CI ${{ github.sha }}"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" ci-evidencias

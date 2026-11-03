@@ -28,6 +28,11 @@ public class ControladorInventarios {
         return servicio.cargar(docentes, aulas, cursos, grupos);
     }
 
+    @GetMapping("/catalogo")
+    public Dto.Catalogo catalogo() {
+        return servicio.catalogo();
+    }
+
     @GetMapping("/resumen")
     public Dto.ResumenCarga resumen() {
         return servicio.resumen();

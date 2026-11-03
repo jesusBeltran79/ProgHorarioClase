@@ -64,6 +64,18 @@ public class ServicioInventarios {
         return resumen(inv, cfg);
     }
 
+    /** Docentes y aulas cargados, para la asignación manual desde la pantalla del horario. */
+    public Dto.Catalogo catalogo() {
+        InventarioCargado inv = inventarios.cargar();
+        List<Dto.ItemCatalogo> docentes = inv.docentes().stream()
+                .map(d -> new Dto.ItemCatalogo(d.id(), d.nombre(), d.disponibilidad().size() + " franjas disponibles")).toList();
+        List<Dto.ItemCatalogo> aulas = inv.aulas().stream()
+                .map(a -> new Dto.ItemCatalogo(a.id(), a.id(), a.capacidad() + " puestos"
+                        + (a.caracteristicas().isEmpty() ? "" : " · " + a.caracteristicas().stream().map(Enum::name)
+                        .reduce((x, y) -> x + ", " + y).orElse("")))).toList();
+        return new Dto.Catalogo(docentes, aulas);
+    }
+
     public Dto.ResumenCarga resumen() {
         return resumen(inventarios.cargar(), parametros.cargar());
     }
