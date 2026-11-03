@@ -11,6 +11,7 @@ import co.edu.unbosque.horarios.restricciones.RestriccionCapacidadAulaRD06;
 import co.edu.unbosque.horarios.restricciones.RestriccionChoqueAulaRD02;
 import co.edu.unbosque.horarios.restricciones.RestriccionChoqueDocenteRD01;
 import co.edu.unbosque.horarios.restricciones.RestriccionDisponibilidadDocenteRD04;
+import co.edu.unbosque.horarios.restricciones.RestriccionDocenteUnicoGrupoRD10;
 import co.edu.unbosque.horarios.restricciones.RestriccionDura;
 import co.edu.unbosque.horarios.restricciones.RestriccionIdoneidadAulaRD05;
 
@@ -25,7 +26,7 @@ public final class MedicionEscalabilidad {
     public static List<RestriccionDura> restriccionesMvp() {
         return List.of(new RestriccionDisponibilidadDocenteRD04(), new RestriccionIdoneidadAulaRD05(),
                 new RestriccionCapacidadAulaRD06(), new RestriccionChoqueDocenteRD01(),
-                new RestriccionChoqueAulaRD02());
+                new RestriccionChoqueAulaRD02(), new RestriccionDocenteUnicoGrupoRD10());
     }
 
     public static void main(String[] args) throws IOException {
