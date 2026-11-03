@@ -1,0 +1,64 @@
+name: Integración continua
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  backend:
+    name: Backend (compilación, pruebas y estrés)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Compilar y ejecutar las pruebas JUnit
+        run: mvn -B -ntp verify
+
+      - name: Prueba de estrés 1x 3x 5x 10x
+        run: java -Xss64m -cp target/classes co.edu.unbosque.horarios.app.PruebaEstres target/evidencias/estres 60000
+
+      - name: Resumen de pruebas y entorno
+        if: always()
+        run: |
+          mkdir -p target/evidencias/qa
+          python3 ../.github/scripts/resumen_pruebas.py target/surefire-reports > target/evidencias/qa/pruebas_unitarias.txt || true
+          cat target/evidencias/qa/pruebas_unitarias.txt || true
+          {
+            echo "Entorno de medición (GitHub Actions ubuntu-latest)"
+            java -version 2>&1
+            mvn -v 2>&1 | head -1
+            echo "CPU $(nproc) núcleos $(grep -m1 'model name' /proc/cpuinfo | cut -d: -f2)"
+            echo "Memoria $(free -h | awk '/Mem/{print $2}')"
+          } > target/evidencias/entorno.txt
+
+      - name: Publicar evidencias
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidencias-backend
+          path: |
+            backend/target/evidencias
+            backend/target/surefire-reports
+          retention-days: 14
+
+      - name: Empaquetar dependencias Maven
+        if: always()
+        run: tar -czf /tmp/m2.tgz -C ~/.m2 repository
+
+      - name: Publicar dependencias Maven
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependencias-maven
+          path: /tmp/m2.tgz
+          retention-days: 3
