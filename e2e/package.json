@@ -1,0 +1,8 @@
+{
+  "name": "e2e-motor-horarios",
+  "private": true,
+  "type": "module",
+  "description": "Recorrido de punta a punta con Playwright que toma las capturas de pantalla de las evidencias",
+  "scripts": { "capturas": "node capturas.mjs" },
+  "dependencies": { "playwright": "1.56.0" }
+}
