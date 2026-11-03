@@ -1,0 +1,5 @@
+id_curso,nombre,num_sesiones,requisitos,docentes_habilitados
+CAL1,Cálculo I,2,,D1
+CAL2,Cálculo II,2,,D1
+PRO2,Programación II,2,COMPUTADORES,D2
+TAL1,Taller de lectura,2,,D2

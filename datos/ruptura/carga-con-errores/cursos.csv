@@ -1,0 +1,5 @@
+id_curso,nombre,num_sesiones,requisitos,docentes_habilitados
+MAT1,Cálculo Diferencial,2,,D01
+PRO1,Programación 1,5,COMPUTADORES,D04
+BD1,Bases de Datos 1,2,COMPUTADORES,D99
+IS1,Ingeniería de Software 1,2,,D01;D04
