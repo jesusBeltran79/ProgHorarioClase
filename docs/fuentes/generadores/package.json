@@ -1,0 +1,6 @@
+{
+  "name": "generadores-documentos-pn2",
+  "private": true,
+  "description": "Scripts que generan los documentos Word del proyecto con formato APA 7. Luego se convierten a PDF con LibreOffice.",
+  "dependencies": { "docx": "^9.0.0" }
+}
