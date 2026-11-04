@@ -7,7 +7,7 @@ skinparam entityBackgroundColor #FFFFFF
 skinparam entityBorderColor #1F4E79
 hide empty members
 
-entity "franja_horaria" as franja {
+entity "franja_horaria" as franja_horaria {
   * id_franja : SMALLINT <<PK>>
   --
   * dia : VARCHAR(10) <<CHECK>>
@@ -19,46 +19,51 @@ entity "docente" as docente {
   * id_docente : VARCHAR(10) <<PK>>
   --
   * nombre : VARCHAR(80)
-  dedicacion : VARCHAR(20)
-  escalafon : VARCHAR(30)
+    dedicacion : VARCHAR(20)
+    escalafon : VARCHAR(30)
 }
-entity "disponibilidad_docente" as disp {
+entity "disponibilidad_docente" as disponibilidad_docente {
   * id_docente : VARCHAR(10) <<PK, FK>>
-  * id_franja : SMALLINT <<PK, FK>>
+  * dia : VARCHAR(10) <<PK>>
+  * hora_inicio : TIME <<PK>>
+  --
 }
 entity "aula" as aula {
   * id_aula : VARCHAR(10) <<PK>>
   --
-  * capacidad : SMALLINT <<CHECK mayor que 0>>
+  * capacidad : SMALLINT <<CHECK>>
 }
-entity "caracteristica" as carac {
+entity "caracteristica" as caracteristica {
   * id_caracteristica : VARCHAR(20) <<PK>>
   --
   * descripcion : VARCHAR(60)
 }
-entity "aula_caracteristica" as aulac {
+entity "aula_caracteristica" as aula_caracteristica {
   * id_aula : VARCHAR(10) <<PK, FK>>
   * id_caracteristica : VARCHAR(20) <<PK, FK>>
+  --
 }
 entity "curso" as curso {
   * id_curso : VARCHAR(10) <<PK>>
   --
   * nombre : VARCHAR(80)
-  * num_sesiones_semanales : SMALLINT <<CHECK 1..4>>
+  * num_sesiones_semanales : SMALLINT <<CHECK>>
 }
-entity "curso_requisito_aula" as cursoreq {
+entity "curso_requisito_aula" as curso_requisito_aula {
   * id_curso : VARCHAR(10) <<PK, FK>>
   * id_caracteristica : VARCHAR(20) <<PK, FK>>
+  --
 }
-entity "habilitacion_docente" as habil {
+entity "habilitacion_docente" as habilitacion_docente {
   * id_curso : VARCHAR(10) <<PK, FK>>
   * id_docente : VARCHAR(10) <<PK, FK>>
+  --
 }
 entity "grupo" as grupo {
   * id_grupo : VARCHAR(15) <<PK>>
   --
   * id_curso : VARCHAR(10) <<FK>>
-  * matriculados : SMALLINT <<CHECK mayor o igual a 0>>
+  * matriculados : SMALLINT <<CHECK>>
 }
 entity "sesion" as sesion {
   * id_sesion : VARCHAR(20) <<PK>>
@@ -68,85 +73,86 @@ entity "sesion" as sesion {
   <<UNIQUE(id_grupo, numero_sesion)>>
 }
 entity "usuario" as usuario {
-  * id_usuario : INTEGER <<PK>>
+  * id_usuario : INTEGER <<PK, IDENTITY>>
   --
-  * nombre_usuario : VARCHAR(40) <<UNIQUE>>
-  * hash_contrasena : CHAR(60)
-  * rol : VARCHAR(15) <<CHECK = 'ADMIN'>>
+  * nombre_usuario : VARCHAR(40)
+  * hash_contrasena : VARCHAR(100)
+  * rol : VARCHAR(15) <<CHECK>>
+  <<UNIQUE(nombre_usuario)>>
 }
-entity "ejecucion_horario" as ejec {
-  * id_ejecucion : INTEGER <<PK>>
+entity "ejecucion_horario" as ejecucion_horario {
+  * id_ejecucion : INTEGER <<PK, IDENTITY>>
   --
   * id_usuario : INTEGER <<FK>>
   * fecha_hora : TIMESTAMP
-  * estado : VARCHAR(10) <<CHECK COMPLETO o PARCIAL>>
+  * estado : VARCHAR(10) <<CHECK>>
   * nodos_explorados : BIGINT
   * duracion_ms : INTEGER
 }
-entity "asignacion" as asig {
+entity "asignacion" as asignacion {
   * id_ejecucion : INTEGER <<PK, FK>>
   * id_sesion : VARCHAR(20) <<PK, FK>>
   --
   * id_docente : VARCHAR(10) <<FK>>
   * id_aula : VARCHAR(10) <<FK>>
-  * id_franja : SMALLINT <<FK>>
-  <<UNIQUE(id_ejecucion, id_docente, id_franja)>>
-  <<UNIQUE(id_ejecucion, id_aula, id_franja)>>
+  * dia : VARCHAR(10)
+  * hora_inicio : TIME
+  * hora_fin : TIME
+  <<UNIQUE(id_ejecucion, id_docente, dia, hora_inicio)>>
+  <<UNIQUE(id_ejecucion, id_aula, dia, hora_inicio)>>
 }
-entity "restriccion" as restr {
+entity "restriccion" as restriccion {
   * codigo : VARCHAR(6) <<PK>>
   --
-  * tipo : VARCHAR(10) <<CHECK DURA o VALIDACION>>
-  * descripcion : VARCHAR(120)
+  * tipo : VARCHAR(10) <<CHECK>>
+  * descripcion : VARCHAR(160)
 }
-entity "conflicto" as confl {
-  * id_conflicto : INTEGER <<PK>>
+entity "conflicto" as conflicto {
+  * id_conflicto : INTEGER <<PK, IDENTITY>>
   --
   * id_ejecucion : INTEGER <<FK>>
   * id_sesion : VARCHAR(20) <<FK>>
   <<UNIQUE(id_ejecucion, id_sesion)>>
 }
-entity "conflicto_restriccion" as conflr {
+entity "conflicto_restriccion" as conflicto_restriccion {
   * id_conflicto : INTEGER <<PK, FK>>
   * codigo : VARCHAR(6) <<PK, FK>>
   --
-  * tuplas_bloqueadas : INTEGER <<CHECK mayor que 0>>
+  * tuplas_bloqueadas : INTEGER <<CHECK>>
 }
-entity "hallazgo_validacion" as hall {
+entity "hallazgo_validacion" as hallazgo_validacion {
   * id_ejecucion : INTEGER <<PK, FK>>
   * id_grupo : VARCHAR(15) <<PK, FK>>
   * codigo : VARCHAR(6) <<PK, FK>>
   --
   * mensaje : VARCHAR(200)
 }
-entity "parametro_configuracion" as param {
+entity "parametro_configuracion" as parametro_configuracion {
   * clave : VARCHAR(30) <<PK>>
   --
   * valor : VARCHAR(30)
   * tipo_dato : VARCHAR(10) <<CHECK>>
 }
 
-docente ||--o{ disp
-franja ||--o{ disp
-aula ||--o{ aulac
-carac ||--o{ aulac
-curso ||--o{ cursoreq
-carac ||--o{ cursoreq
-curso ||--o{ habil
-docente ||--o{ habil
-curso ||--|{ grupo
-grupo ||--|{ sesion
-usuario ||--o{ ejec
-ejec ||--o{ asig
-sesion ||--o{ asig
-docente ||--o{ asig
-aula ||--o{ asig
-franja ||--o{ asig
-ejec ||--o{ confl
-sesion ||--o{ confl
-confl ||--|{ conflr
-restr ||--o{ conflr
-ejec ||--o{ hall
-grupo ||--o{ hall
-restr ||--o{ hall
+docente ||--o{ disponibilidad_docente
+aula ||--o{ aula_caracteristica
+caracteristica ||--o{ aula_caracteristica
+curso ||--o{ curso_requisito_aula
+caracteristica ||--o{ curso_requisito_aula
+curso ||--o{ habilitacion_docente
+docente ||--o{ habilitacion_docente
+curso ||--o{ grupo
+grupo ||--o{ sesion
+usuario ||--o{ ejecucion_horario
+ejecucion_horario ||--o{ asignacion
+sesion ||--o{ asignacion
+docente ||--o{ asignacion
+aula ||--o{ asignacion
+ejecucion_horario ||--o{ conflicto
+sesion ||--o{ conflicto
+conflicto ||--o{ conflicto_restriccion
+restriccion ||--o{ conflicto_restriccion
+ejecucion_horario ||--o{ hallazgo_validacion
+grupo ||--o{ hallazgo_validacion
+restriccion ||--o{ hallazgo_validacion
 @enduml

@@ -1,0 +1,37 @@
+@startuml despliegue
+!include estilo.iuml
+skinparam nodeBackgroundColor #F7F9FC
+skinparam nodeBorderColor #1F4E79
+skinparam artifactBackgroundColor #FFFFFF
+skinparam databaseBackgroundColor #FFFFFF
+
+node "Equipo del coordinador" {
+  node "Navegador web" as nav
+}
+
+node "Anfitrión con Docker Compose v2" as host {
+  node "Contenedor frontend\nnginx:1.27-alpine\npuerto 4200 → 80" as fe {
+    artifact "Angular compilado\n(dist/frontend/browser)" as ng
+    artifact "nginx.conf\n/api y /actuator → backend:8080" as conf
+  }
+  node "Contenedor backend\neclipse-temurin:21-jre\npuerto 8080" as be {
+    artifact "motor-horarios.jar\nSpring Boot 3.3.5\njava -Xss64m" as jar
+  }
+  node "Contenedor db\npostgres:16-alpine\npuerto 5432" as dbn {
+    database "base horarios" as db
+  }
+  storage "volumen\ndatos-postgres" as vol
+}
+
+nav --> fe : HTTP :4200
+fe --> be : HTTP /api (red interna)
+be --> dbn : JDBC :5432
+db --> vol
+note right of be
+  Arranca cuando db está sano (pg_isready).
+  Flyway crea el esquema al iniciar.
+end note
+note right of fe
+  Arranca cuando el backend está sano.
+end note
+@enduml

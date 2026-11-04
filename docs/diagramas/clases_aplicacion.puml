@@ -1,0 +1,150 @@
+@startuml clases_aplicacion
+!include estilo.iuml
+skinparam nodesep 22
+skinparam ranksep 45
+left to right direction
+
+title Capas de aplicación, seguridad y persistencia (Spring Boot)
+
+package "aplicacion" {
+  class ControladorInventarios <<RestController>> {
+    + cargar(docentes, aulas, cursos, grupos : MultipartFile) : Dto.ResumenCarga
+    + catalogo() : Dto.Catalogo
+    + resumen() : Dto.ResumenCarga
+  }
+  class ControladorParametros <<RestController>> {
+    + obtener() : Dto.Parametros
+    + actualizar(p : Dto.Parametros) : Dto.Parametros
+  }
+  class ControladorHorarios <<RestController>> {
+    + generar(a : Authentication) : Dto.Resultado
+    + listar() : List<Dto.Ejecucion>
+    + obtener(id : int) : Dto.Resultado
+    + alternativas(id : int, idSesion : String) : List<Dto.Alternativa>
+    + reubicar(id : int, r : Dto.Reubicacion) : Dto.Resultado
+    + exportar(id : int) : ResponseEntity<byte[]>
+  }
+  class ServicioInventarios <<Service>> {
+    + cargar(docentes, aulas, cursos, grupos : MultipartFile) : Dto.ResumenCarga
+    + catalogo() : Dto.Catalogo
+    + resumen() : Dto.ResumenCarga
+  }
+  class ServicioParametros <<Service>> {
+    + vigentes() : ConfiguracionParametros
+    + obtener() : Dto.Parametros
+    + actualizar(p : Dto.Parametros) : Dto.Parametros
+  }
+  class ServicioHorarios <<Service>> {
+    - restricciones : List<RestriccionDura>
+    - validador : ValidadorEntrada
+    - limiteMs : long
+    + generar(nombreUsuario : String) : Dto.Resultado
+    + listar() : List<Dto.Ejecucion>
+    + obtener(id : int) : Dto.Resultado
+    + alternativas(id : int, idSesion : String) : List<Dto.Alternativa>
+    + reubicar(id : int, r : Dto.Reubicacion) : Dto.Resultado
+    + exportar(id : int) : String
+    - violaciones(c : Asignacion, e : EstadoHorario, cfg) : List<String>
+  }
+  class ConfiguracionMotor <<Configuration>> {
+    + catalogoRestricciones() : CatalogoRestricciones
+    + validadorEntrada() : ValidadorEntrada
+  }
+  class ManejadorErrores <<RestControllerAdvice>>
+  class ExcepcionNegocio {
+    - estado : HttpStatus
+    - codigo : String
+    - detalles : List<String>
+  }
+}
+
+package "seguridad" {
+  class ControladorAutenticacion <<RestController>> {
+    + login(l : Dto.Login) : Dto.Token
+  }
+  class ServicioJwt <<Service>> {
+    + emitir(usuario : String, rol : String) : String
+    + validar(token : String) : Optional<Claims>
+    + segundosDeVigencia() : long
+  }
+  class FiltroJwt {
+    # doFilterInternal(req, res, cadena) : void
+  }
+  class ConfiguracionSeguridad <<Configuration>> {
+    + codificador() : PasswordEncoder
+    + cadena(http, jwt, json) : SecurityFilterChain
+  }
+  class InicializadorDatos <<ApplicationRunner>> {
+    + run(args : ApplicationArguments) : void
+  }
+}
+
+package "persistencia" {
+  class CargadorInventariosCSV {
+    + cargar(docentes, aulas, cursos, grupos : InputStream) : InventarioCargado
+  }
+  class ExportadorHorarioCSV {
+    + exportar(a : List<Asignacion>) : String
+  }
+  class ConstructorDominio <<utilidad>> {
+    + {static} construir(inv : InventarioCargado, f : List<FranjaHoraria>) : ConjuntoDatos
+  }
+  class InventarioCargado <<record>>
+  class RepositorioInventarios <<Repository>> {
+    + reemplazar(inv : InventarioCargado) : void
+    + cargar() : InventarioCargado
+    + contar() : Conteos
+  }
+  class RepositorioParametros <<Repository>> {
+    + cargar() : ConfiguracionParametros
+    + guardar(c : ConfiguracionParametros) : void
+    + sincronizarFranjas(f : List<FranjaHoraria>) : void
+  }
+  class RepositorioEjecuciones <<Repository>> {
+    + guardar(idUsuario, completo, nodos, ms, ...) : int
+    + buscar(id : int) : Optional<Ejecucion>
+    + asignaciones(id : int) : List<FilaAsignacion>
+    + conflictos(id : int) : List<FilaConflicto>
+    + reubicar(id, idSesion, idDocente, idAula, ...) : void
+    + actualizarEstado(id : int, completo : boolean) : void
+  }
+  class RepositorioUsuarios <<Repository>> {
+    + buscar(nombre : String) : Optional<Usuario>
+    + crear(nombre, hash, rol : String) : void
+  }
+}
+
+package "núcleo (Figura A1)" as N {
+  class MotorAsignacion
+  class ValidadorEntrada
+  interface RestriccionDura
+}
+
+ControladorInventarios --> ServicioInventarios
+ControladorParametros --> ServicioParametros
+ControladorHorarios --> ServicioHorarios
+ServicioInventarios ..> CargadorInventariosCSV
+ServicioInventarios --> RepositorioInventarios
+ServicioParametros --> RepositorioParametros
+ServicioHorarios --> RepositorioInventarios
+ServicioHorarios --> RepositorioParametros
+ServicioHorarios --> RepositorioEjecuciones
+ServicioHorarios --> RepositorioUsuarios
+ServicioHorarios ..> ConstructorDominio
+ServicioHorarios ..> ExportadorHorarioCSV
+ServicioHorarios ..> MotorAsignacion : crea en cada generación
+ServicioHorarios o-- ValidadorEntrada
+ServicioHorarios o-- "1..*" RestriccionDura
+ConfiguracionMotor ..> RestriccionDura : registra
+ConfiguracionMotor ..> ValidadorEntrada : crea
+ManejadorErrores ..> ExcepcionNegocio
+ControladorAutenticacion --> RepositorioUsuarios
+ControladorAutenticacion --> ServicioJwt
+FiltroJwt --> ServicioJwt
+ConfiguracionSeguridad ..> FiltroJwt : registra
+InicializadorDatos --> RepositorioUsuarios
+CargadorInventariosCSV ..> InventarioCargado : produce
+ControladorInventarios -[hidden]down- ControladorParametros
+ControladorParametros -[hidden]down- ControladorHorarios
+ControladorAutenticacion -[hidden]down- ServicioJwt
+@enduml
