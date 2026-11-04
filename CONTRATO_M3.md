@@ -33,7 +33,7 @@ git config user.email "jesusdavid05beltran@hotmail.com"
 | Capa | Tecnología | Versión |
 |---|---|---|
 | Lenguaje backend | Java (Eclipse Temurin) | 21 |
-| Framework backend | Spring Boot (web, data-jpa, security, validation, actuator) | 3.3.5 |
+| Framework backend | Spring Boot (web, jdbc con JdbcTemplate, security, validation, actuator) | 3.3.5 |
 | Migraciones | Flyway | la que gestiona Spring Boot 3.3.5 |
 | Tokens | JJWT (`io.jsonwebtoken`) | 0.12.6 |
 | Base de datos | PostgreSQL | 16 |
@@ -50,7 +50,18 @@ Cambios frente al diseño del M2 que la sesión de documentos debe declarar en e
 2. El intercambio de archivos queda **solo en CSV**. JSON se declara fuera del alcance logrado.
 3. Se agrega un componente `ServicioHorarios` entre `ControladorHorarios` y el dominio para que el controlador REST no tenga lógica.
 4. RV-01 usa el **techo** de `CAP_MAX × (1 + TOL)` como especifica el Módulo 1 (44 con tope 40 y 39 con tope 35).
-5. Las restricciones locales (RD-04, RD-05, RD-06) se precalculan por franja para el conteo inicial (decisión pendiente del M2).
+5. **RD-10 nueva.** Todas las sesiones de un grupo las dicta el mismo docente. La construcción mostró que el motor
+   asignaba docentes distintos a las sesiones de un grupo. Se agregó como clase nueva sin tocar el motor.
+6. **Orden de valores.** Las franjas se prueban intercalando los días (`OrdenFranjas`) para que las sesiones
+   de un grupo caigan en días distintos. No cambia qué horarios son válidos, solo cuál se encuentra primero.
+7. **Persistencia con JdbcTemplate** y no con entidades JPA. El SQL queda explícito y coincide con el DER.
+8. **Cambios del DER.** `disponibilidad_docente` guarda día y hora de inicio en lugar del índice de franja y
+   `asignacion` guarda día, hora de inicio y hora de fin. Así un cambio de grilla no rompe los datos.
+   Las restricciones UNIQUE de `asignacion` quedan sobre (ejecución, docente, día, hora) y (ejecución, aula, día, hora).
+   El esquema definitivo está en `backend/src/main/resources/db/migration/V1__esquema.sql` (19 tablas).
+9. **Limitaciones declaradas.** Una carga nueva reemplaza los inventarios y borra el historial de ejecuciones.
+   Los rechazos de la última carga se guardan en memoria y no en la base de datos. El conteo inicial del motor
+   no se factorizó (sigue siendo el paso más costoso). Las reglas RV informan pero no excluyen grupos.
 
 ## 4. Estructura del repositorio
 
@@ -63,10 +74,12 @@ ProgHorarioClase/
 │       ├── restricciones/   RestriccionDura y RD-01, RD-02, RD-04, RD-05, RD-06 (Strategy, sin Spring)
 │       ├── validacion/      ValidadorEntrada, RV-01, RV-02 (sin Spring)
 │       ├── motor/           MotorAsignacion, EstadoHorario, ReporteConflicto, ResultadoAsignacion (sin Spring)
-│       ├── persistencia/    CargadorInventariosCSV, ExportadorHorarioCSV, RepositorioEjecuciones, entidades JPA
-│       ├── aplicacion/      ControladorHorarios, ControladorInventarios, ControladorParametros, ServicioHorarios, DTO
-│       ├── seguridad/       ConfiguracionSeguridad, ServicioJwt, FiltroJwt, ControladorAutenticacion
-│       └── app/             programas de medición del M2 (MedicionEscalabilidad, PruebaDeCambio, DemostracionConflicto)
+│       ├── persistencia/    CargadorInventariosCSV, ExportadorHorarioCSV, ConstructorDominio, InventarioCargado,
+│       │                    RepositorioInventarios, RepositorioParametros, RepositorioEjecuciones, RepositorioUsuarios
+│       ├── aplicacion/      ControladorHorarios, ControladorInventarios, ControladorParametros, ServicioHorarios,
+│       │                    ServicioInventarios, ServicioParametros, ConfiguracionMotor, ManejadorErrores, dto/Dto
+│       ├── seguridad/       ConfiguracionSeguridad, ServicioJwt, FiltroJwt, ControladorAutenticacion, InicializadorDatos
+│       └── app/             PruebaEstres, EjecutarConjuntoCSV y los programas de medición del M2
 ├── frontend/                proyecto Angular
 ├── datos/
 │   ├── demo/                10 docentes, 5 aulas, 20 asignaturas (sustentación)
@@ -75,6 +88,7 @@ ProgHorarioClase/
 ├── docs/                    territorio de la sesión de documentos
 │   ├── evidencias/          territorio de la sesión de código
 │   ├── diagramas/  mockups/  entregables/  fuentes/
+├── e2e/                     recorrido de punta a punta con Playwright (capturas.mjs)
 ├── docker-compose.yml
 ├── .github/workflows/ci.yml
 └── README.md
@@ -106,6 +120,7 @@ Todas las rutas `/api/**` exigen `Authorization: Bearer <token>` con rol `ADMIN`
 | `POST /api/auth/login` | `{usuario, contrasena}` | `{token, expiraEn, usuario}` | RNF-06 |
 | `POST /api/inventarios` | multipart `docentes`, `aulas`, `cursos`, `grupos` | `ResumenCarga` | RF-01 a RF-05 |
 | `GET /api/inventarios/resumen` | — | `ResumenCarga` de la última carga | RF-05 |
+| `GET /api/inventarios/catalogo` | — | `Catalogo` con docentes y aulas | RF-07 |
 | `GET /api/parametros` | — | `Parametros` con `franjasValidas` | RF-08 |
 | `PUT /api/parametros` | `Parametros` | `Parametros` recalculados | RF-08 |
 | `POST /api/horarios/generar` | — | `Resultado` | RF-06, RF-07 |
@@ -129,7 +144,11 @@ Resultado    = { idEjecucion, estado:"COMPLETO"|"PARCIAL", fechaHora, usuario,
                               causas:[{codigo,tuplasBloqueadas,descripcion}],
                               alternativas:[Alternativa]}] }
 Alternativa  = { idFranja,dia,horaInicio,horaFin,idAula,idDocente,docente,liberar:[codigos] }
+Catalogo     = { docentes:[{id,nombre,detalle}], aulas:[{id,nombre,detalle}] }
 Error        = { codigo, mensaje, detalles:[texto] }
+
+Resultado también trae hallazgos:[{codigo,idGrupo,mensaje}] y Conflicto trae matriculados.
+Parametros también trae umbralMaximoGrupo y franjasValidas:[{idFranja,dia,horaInicio,horaFin}].
 ```
 
 ## 7. Formatos CSV (Tabla D2 de los Anexos del M2)
@@ -149,21 +168,26 @@ Días válidos `LUN MAR MIE JUE VIE SAB`. `disponibilidad` acepta la palabra `TO
 
 ## 8. Evidencias que produce la sesión de código
 
-Rutas fijas. La sesión de documentos puede citarlas desde ya.
+Rutas fijas. Todo sale de ejecuciones reales en GitHub Actions o en el recorrido automatizado.
 
 | Ruta | Contenido | Uso en documentos |
 |---|---|---|
-| `docs/evidencias/qa/pruebas_unitarias.txt` | resumen de JUnit por clase de prueba | Doc1 QA |
-| `docs/evidencias/qa/ruptura.log` | salida de las pruebas de ruptura (choque de docente, aula, capacidad, base de datos UNIQUE, exportación parcial) | Doc1 QA y video |
-| `docs/evidencias/estres/estres.csv` | escala, semilla, sesiones, ms, nodos, completo | Doc1 escenario de escalabilidad |
-| `docs/evidencias/estres/resumen.txt` | promedio, mediana y peor caso por escala | Doc1 |
-| `docs/evidencias/modificabilidad/rd09.diff` | diff de agregar RD-09 | Doc1 escenario de modificabilidad |
+| `docs/evidencias/qa/pruebas_unitarias.txt` | 37 pruebas JUnit por clase con su resultado | Doc1 QA |
+| `docs/evidencias/qa/restricciones.log` | bloqueo de cada restricción dura en pruebas unitarias | Doc1 QA |
+| `docs/evidencias/qa/ruptura.log` | rupturas forzadas en JUnit (carga, motor, API, seguridad y UNIQUE en H2) | Doc1 QA |
+| `docs/evidencias/qa/ruptura_api_postgresql.log` | rupturas contra el sistema desplegado con Docker y PostgreSQL, incluido el rechazo de UNIQUE | Doc1 QA y video |
+| `docs/evidencias/qa/motor.log` y `flujo_api.log` | demostración completa por núcleo y por API | Doc1 |
+| `docs/evidencias/estres/estres.csv` | perfil, escala, semilla, docentes, aulas, sesiones, completo, ms, nodos | Doc1 escalabilidad |
+| `docs/evidencias/estres/resumen.txt` | promedio, mediana y peor caso por escala 1x 3x 5x 10x | Doc1 |
+| `docs/evidencias/modificabilidad/rd09.txt` y `rd09.diff` | RD-09 agregada sin tocar el motor y el diff que lo muestra | Doc1 modificabilidad |
 | `docs/evidencias/modificabilidad/rv01_tope35.txt` | umbral 39 con tope 35 | Doc1 |
-| `docs/evidencias/capturas/01_login.png` … `08_exportar.png` | pantallas reales | Doc1 y Doc4 |
-| `docs/evidencias/entorno.txt` | versiones exactas usadas en la medición | Doc3 |
+| `docs/evidencias/sistema/contenedores.txt` y `docker_compose.log` | arranque del sistema con Docker Compose | Doc3 |
+| `docs/evidencias/capturas/*.png` | pantallas reales del recorrido | Doc1 y Doc4 |
+| `docs/evidencias/entorno.txt` | versiones y máquina de la medición | Doc3 |
 
-Capturas previstas: `01_login`, `02_carga_validacion`, `03_parametros`, `04_horario_completo`,
-`05_vista_por_aula`, `06_conflicto_pendiente`, `07_reubicar`, `08_exportar`.
+Capturas `01_login`, `02_carga_validacion`, `03_parametros`, `04_horario_completo`, `05_vista_por_aula`,
+`06_conflicto_pendiente`, `07_reubicar`, `08_exportar`, `09_ruptura_capacidad`, `10_exportar_bloqueado`,
+`11_carga_con_errores` y el archivo `horario_exportado.csv`.
 
 ## 9. Escenarios de atributos de calidad (formato de la guía)
 
