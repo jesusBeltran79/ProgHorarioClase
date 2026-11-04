@@ -2,6 +2,9 @@
 const L = require('./lib');
 const K = require('./comun');
 const { P, H1, H2, H3, C, PB, table, code, refs } = L;
+const path = require('path');
+const EV = path.join(__dirname, '../../evidencias/');
+const CAPF = (n, t, a, nota) => K.figuraAjustada(n, t, EV + 'capturas/' + a, 6.5, 6.8, nota);
 const { PEND, DOCS, VIDEO } = K;
 
 const portada = K.portada('Informe de Ingeniería del Motor de Asignación Automática de Horarios de Clases',
@@ -36,11 +39,9 @@ const cambios = [
     ['Acceso a datos', 'Entidades JPA', 'Repositorios con JdbcTemplate y esquema definido en scripts de Flyway', 'El esquema queda en un solo lugar y el núcleo no carga anotaciones de persistencia'],
     ['Restricción RD-10', 'No existía', 'RestriccionDocenteUnicoGrupoRD10 exige el mismo docente en todas las sesiones de un grupo', 'La construcción mostró que el caso la daba por supuesta. Se agregó sin tocar el motor'],
     ['Orden de las franjas', 'Orden de la grilla', 'OrdenFranjas.intercalarDias prueba primero la misma hora en días distintos', 'Reparte las sesiones de un grupo en la semana sin agregar una regla nueva'],
-    ['Modelo de datos', '19 tablas', '18 tablas en V1__esquema.sql', 'Ver la Figura D1 del Documento 2'],
+    ['Modelo de datos', '19 tablas con la disponibilidad y la asignación guardadas por índice de franja', '19 tablas. disponibilidad_docente y asignacion guardan día y hora de inicio', 'Un cambio de la grilla ya no deja datos que apunten a franjas inexistentes'],
     ['Conteo inicial', 'Precálculo por franja como decisión pendiente', 'Conteo completo de tuplas por sesión', 'No se implementó en esta versión. Se declara en el Acta de Cierre'],
   ], { note: 'Los nombres de clases y archivos son los del código del repositorio. RD = restricción dura. RV = regla de validación.' }),
-  PEND('confirmar con la rama de código la fila de 19 a 18 tablas contra el DER del M2 y explicar qué tabla se fusionó o se quitó'),
-  PEND('confirmar si el precálculo por franja (cambio 5 del contrato) entra antes del cierre; si entra, mover la última fila de la Tabla 1 a cambio logrado'),
 
   H2('Seguridad con JWT'),
   P('El Módulo 2 nombraba un componente de seguridad de Spring Boot pero no lo diseñaba. El autodiagnóstico reconoció que el equipo no sabía defenderlo. En la construcción se eligió un esquema sin sesión de servidor. El administrador envía usuario y contraseña a POST /api/auth/login. ControladorAutenticacion compara la contraseña con el hash bcrypt de la tabla usuario y ServicioJwt entrega un token firmado. FiltroJwt revisa ese token en cada petición y ConfiguracionSeguridad exige el rol ADMIN en todas las rutas /api salvo el inicio de sesión. Un token tiene vigencia de 480 minutos por defecto. Las pruebas de SeguridadTest verifican que generar sin token responde 401, que una contraseña errada no entrega token y que un token alterado no da acceso.'),
@@ -56,7 +57,6 @@ const cambios = [
 
   H2('Hallazgos del Autodiagnóstico'),
   P('El autodiagnóstico del Módulo 2 dejó tres ajustes con fecha límite del 5 de noviembre. El Ajuste 1 pedía corregir el umbral de RV-01 y quedó resuelto como se explicó arriba. El Ajuste 2 pedía que CargadorInventariosCSV, ExportadorHorarioCSV y ControladorHorarios existieran en el código y que se decidiera el formato JSON. Las tres clases existen y las prueban CargadorInventariosCSVTest, MotorAsignacionTest y FlujoHorarioTest. JSON queda fuera del alcance y solo se intercambia CSV. El Ajuste 3 pedía diseñar la seguridad del administrador con JWT y bcrypt y quedó resuelto con las clases del paquete seguridad. El autodiagnóstico también señaló que la comparación de versiones de RD-09 no aparecía en los anexos. Esa comparación es la medida del escenario de modificabilidad de este informe.'),
-  PEND('registro de las sesiones internas de explicación entre integrantes acordadas en el autodiagnóstico (Ajuste 3 y riesgo de conocimiento desigual)'),
 ];
 
 // ---------------------------------------------------------------------------------------------
@@ -74,7 +74,7 @@ const calidad = [
   P('El Módulo 2 eligió la arquitectura por dos atributos que se oponen. El desempeño del motor (RNF-01 y RNF-02) pide pocas capas dentro del ciclo de búsqueda. La facilidad para cambiar reglas (RNF-03) pide separar cada regla en su clase. Con el sistema construido el equipo puede decir cómo quedó cada uno.'),
   H2('Desempeño y Escalabilidad'),
   P('RNF-01 pide generar el horario del conjunto de sustentación en 60 segundos o menos. RNF-02 pide procesar el triple de datos sin cambiar la estructura. Las mediciones del Módulo 2 ya mostraban mucho margen en 1x, 2x y 3x. En el Módulo 3 se repitieron sobre el código final y se extendieron a 5x y 10x con la prueba de estrés. El escenario de escalabilidad de la sección siguiente presenta los resultados.'),
-  PEND('lectura de los resultados de docs/evidencias/estres/resumen.txt: margen frente a RNF-01, cumplimiento de RNF-02 y hasta qué escala se mantiene'),
+  P('Con el código final RNF-01 se cumple con un margen de cuatro órdenes de magnitud. El conjunto de sustentación de 1x se generó en 6 ms en el peor caso frente a un límite de 60.000 ms. RNF-02 también se cumple porque las escalas 3x, 5x y 10x corrieron con las mismas clases y la misma estructura de datos y todas terminaron con el horario completo. El tiempo crece más rápido que los datos. Pasar de 1x a 10x multiplica las sesiones por 10 y el tiempo promedio por unos 280 en el perfil holgado. Aun así la peor corrida de 10x tardó 1,24 s. La Sección de escenarios presenta las cifras completas.'),
   P('El primer cuello de botella identificado en el Módulo 2 fue el conteo inicial, que crece con N × |D| × |A| × F. Ese conteo sigue completo en el código final. Si el tiempo en 10x lo muestra como problema, la mejora identificada es precalcular por franja y su costo pasa a N × F × (|D| + |A|).'),
   H2('Modificabilidad'),
   P('RNF-03 pide agregar una regla sin modificar el motor. La construcción lo probó dos veces. La primera fue RD-09, la regla de demostración que prohíbe dos sesiones del mismo grupo el mismo día. La segunda fue RD-10, que entró al sistema de verdad. En ambos casos el cambio fue una clase nueva y una línea de registro. Los parámetros del semestre también se cambian sin recompilar desde la pantalla de parámetros o con PUT /api/parametros.'),
@@ -82,7 +82,8 @@ const calidad = [
   P('RNF-04 pide que cada conflicto diga qué regla lo causó. Cada RestriccionDura trae su código y el motor cuenta cuántas tuplas bloquea cada uno. La API devuelve esas causas en el campo conflictos del Resultado y la reubicación rechazada devuelve los códigos RD que violaría. RNF-06 pide acceso restringido y trazabilidad de quién generó cada horario. Lo cubren el JWT del perfil administrador y la columna id_usuario de ejecucion_horario.'),
   H2('Usabilidad'),
   P('RNF-05 pide que una persona no técnica complete el ciclo en 10 minutos o menos con el manual. La interfaz sigue las tres pantallas del Módulo 2 con la técnica de selección asistida.'),
-  PEND('prueba con usuarios de la interfaz construida (pendiente de la Tabla 5 del M2, responsable Martín Daniel Porto Gutiérrez) o declararla no realizada en el Acta de Cierre'),
+  P('La interfaz construida se recorrió de punta a punta con un guion automático en Playwright (e2e/capturas.mjs). El guion inicia sesión, carga los datos, revisa los parámetros, genera, reubica una sesión, exporta y fuerza las rupturas, y terminó sin errores (docs/evidencias/capturas/recorrido.log). Ese recorrido demuestra que el ciclo funciona pero no mide el tiempo de una persona no técnica.'),
+  PEND('Martín Daniel Porto Gutiérrez confirma si se hizo la prueba con usuarios de la Tabla 5 del M2. Si no se hizo, se borra este marcador y el Acta la declara no realizada'),
 ];
 
 // ---------------------------------------------------------------------------------------------
@@ -99,8 +100,18 @@ const escenarios = [
     ['Respuesta', 'El motor entrega el horario completo o el reporte de conflictos sin cambiar código ni estructura de datos'],
     ['Medida', 'Tiempo de 60 s o menos en 1x (RNF-01), sin cambios de estructura hasta 3x (RNF-02) y tiempo y nodos reportados hasta 10x'],
   ]),
-  PEND('Tabla 3 con escala, sesiones, promedio, mediana y peor caso en ms y nodos, tomada de docs/evidencias/estres/resumen.txt y estres.csv'),
-  PEND('párrafo de lectura de la Tabla 3 y entorno de medición de docs/evidencias/entorno.txt'),
+  ...table(3, 'Tiempo y nodos explorados por escala y perfil de datos', [1300, 900, 1100, 1200, 1100, 1200, 1400, 1160], [
+    ['Perfil', 'Escala', 'Sesiones', 'Promedio (ms)', 'Mediana (ms)', 'Peor caso (ms)', 'Nodos promedio', 'Completos'],
+    ['Holgado', '1x', '40', '3,8', '3', '6', '9.882', '5 de 5'],
+    ['Holgado', '3x', '120', '89,4', '75', '142', '231.936', '5 de 5'],
+    ['Holgado', '5x', '200', '143,0', '139', '155', '1.093.954', '5 de 5'],
+    ['Holgado', '10x', '400', '1.070,0', '1.062', '1.105', '8.393.044', '5 de 5'],
+    ['Exigente', '1x', '40', '1,2', '1', '2', '18.078', '5 de 5'],
+    ['Exigente', '3x', '120', '35,4', '35', '37', '422.948', '5 de 5'],
+    ['Exigente', '5x', '200', '159,4', '160', '164', '1.950.337', '5 de 5'],
+    ['Exigente', '10x', '400', '1.201,8', '1.188', '1.238', '14.005.383', '5 de 5'],
+  ], { note: 'Cinco semillas por celda con un límite de 60.000 ms por corrida. Datos de docs/evidencias/estres/resumen.txt y estres.csv. Medido en GitHub Actions con 4 núcleos Intel Xeon Platinum 8370C a 2,80 GHz, 15 GB de memoria y OpenJDK Temurin 21.0.13 (docs/evidencias/entorno.txt).' }),
+  P('La respuesta cumple las tres medidas del escenario. En 1x la peor corrida fue de 6 ms, muy lejos de los 60 s de RNF-01. Hasta 3x y más allá no hubo que cambiar código ni estructura. Las 40 corridas terminaron con el horario completo y ninguna llegó al límite de tiempo. El dato que más crece es el número de nodos, que en 10x exigente pasa de 14 millones. Eso confirma lo que anticipó el Módulo 2. El backtracking y el conteo inicial crecen más rápido que los datos y serán el primer límite si la universidad crece mucho más allá de 10x. El perfil exigente exploró más nodos que el holgado en todas las escalas. Aun así fue más rápido en 1x y 3x y solo tardó más en 5x y 10x. El equipo no aisló la causa de esa diferencia y la deja registrada como observación.'),
   H2('Escenario de Modificabilidad'),
   ...table(4, 'Escenario de modificabilidad', [2000, 7360], [
     ['Parte', 'Descripción'],
@@ -111,8 +122,15 @@ const escenarios = [
     ['Respuesta', 'La regla se agrega creando una clase y registrándola. El tope se cambia como parámetro'],
     ['Medida', 'MotorAsignacion con cero líneas cambiadas en el diff de RD-09. Umbral de RV-01 igual a 39 sin recompilar'],
   ]),
-  PEND('fragmento del diff de docs/evidencias/modificabilidad/rd09.diff con el conteo de líneas por archivo'),
-  PEND('salida de docs/evidencias/modificabilidad/rv01_tope35.txt con el umbral 39 y los grupos marcados'),
+  P('La medida se tomó con el diff completo que produce activar RD-09 sobre el código final (docs/evidencias/modificabilidad/rd09.diff). El resumen del diff toca dos archivos y MotorAsignacion.java no aparece porque no cambia ninguna línea.'),
+  ...code(` .../horarios/aplicacion/ConfiguracionMotor.java    |  4 +++-
+ .../restricciones/RestriccionMismoDiaRD09.java     | 25 ++++++++++++++++++++++
+ 2 files changed, 28 insertions(+), 1 deletion(-)`),
+  P('Con RD-09 activa el motor generó el horario completo de 42 sesiones y ningún grupo quedó con dos sesiones el mismo día (docs/evidencias/modificabilidad/rd09.txt). El mismo archivo registra que RD-09 no rechazó ninguna tupla. La razón es que el orden intercalado de franjas ya reparte las sesiones de cada grupo en días distintos antes de que la regla tenga que actuar. La medida del escenario no depende de eso porque mide cuánto código cambia. Para ver la regla trabajando hay una prueba aparte. ModificabilidadTest.nuevaRestriccion la ejecuta y verifica que ningún grupo queda con dos sesiones el mismo día.'),
+  P('El cambio de tope se hizo a través de la API con el sistema en marcha. La salida de docs/evidencias/modificabilidad/rv01_tope35.txt lo registra así.'),
+  ...code(`API PUT /api/parametros capMax=35 respondió umbralMaximoGrupo=39
+Umbral RV-01 con tope 40 = 44. Con tope 35 = 39 (techo de 35 x 1,10). Sin recompilar`),
+  P('RD-10 es una segunda evidencia del mismo atributo. Entró al sistema durante la construcción como una clase nueva y una línea en ConfiguracionMotor, y tampoco modificó MotorAsignacion.'),
 ];
 
 // ---------------------------------------------------------------------------------------------
@@ -120,7 +138,23 @@ const qa = [
   H1('Informe de Calidad y Pruebas'),
   P('Las pruebas automáticas están en backend/src/test y corren con mvn verify en cada envío al repositorio mediante GitHub Actions. Se agrupan en dos paquetes. Las del paquete nucleo prueban el motor y las reglas sin Spring. Las del paquete api levantan la aplicación con H2 en modo PostgreSQL y prueban el sistema a través de la API con un token de administrador.'),
   H2('Pruebas Unitarias y de Integración'),
-  PEND('Tabla 5 con clase de prueba, número de pruebas y resultado tomada de docs/evidencias/qa/pruebas_unitarias.txt'),
+  P('La Tabla 5 resume la última ejecución. Las 37 pruebas pasaron sin fallas ni errores en 9,13 s.'),
+  ...table(5, 'Resultado de las pruebas automáticas por clase', [3600, 1300, 1300, 3160], [
+    ['Clase de prueba', 'Pruebas', 'Fallas', 'Qué verifica'],
+    ['api.FlujoHorarioTest', '7', '0', 'Ciclo completo por la API y rupturas de RD-01, RD-02, RD-06, RD-08 y carga'],
+    ['api.ParametrosApiTest', '3', '0', 'Tope 35 con umbral 39, cierre a las 20:00 y parámetro inválido'],
+    ['api.RestriccionesBaseDatosTest', '1', '0', 'Restricciones UNIQUE de asignacion'],
+    ['api.SeguridadTest', '4', '0', 'Token válido, sin token, clave errada y token alterado'],
+    ['nucleo.CargadorInventariosCSVTest', '2', '0', 'Carga de la demostración y rechazo fila por fila'],
+    ['nucleo.ConfiguracionParametrosTest', '4', '0', 'Grilla de 32 franjas, bloqueo del mediodía, cierre y umbral con techo'],
+    ['nucleo.EstresTest', '3', '0', 'Generación completa en tres escalas'],
+    ['nucleo.ModificabilidadTest', '2', '0', 'RD-09 sin tocar el motor y cambio de tope'],
+    ['nucleo.MotorAsignacionTest', '3', '0', 'Demostración completa, caso sobrerrestringido y exportación'],
+    ['nucleo.ReglasValidacionTest', '2', '0', 'RV-01 y RV-02'],
+    ['nucleo.RestriccionesDurasTest', '6', '0', 'RD-01, RD-02, RD-04, RD-05, RD-06 y RD-10'],
+    ['Total', '37', '0', ''],
+  ], { note: 'Fuente docs/evidencias/qa/pruebas_unitarias.txt. JUnit 5 con Surefire en GitHub Actions. Ninguna prueba omitida.' }),
+  P('Además de las pruebas del equipo, MotorAsignacionTest pasa cada horario generado por un verificador independiente que recorre las asignaciones y busca violaciones sin usar las clases de restricciones. La demostración salió COMPLETA con 42 de 42 sesiones en 2 ms y 11.706 nodos y el verificador no encontró violaciones (docs/evidencias/qa/motor.log).'),
   H2('Pruebas de Restricciones y de Ruptura'),
   P('La guía pide demostrar que el sistema bloquea los choques de horario, aula y docente. El equipo preparó pruebas de ruptura que fuerzan cada error y comprueban la respuesta. La Tabla 6 resume qué fuerza cada una y qué debe responder el sistema.'),
   ...table(6, 'Pruebas de ruptura y respuesta esperada', [2200, 3700, 3460], [
@@ -132,11 +166,28 @@ const qa = [
     ['rupturaCarga (FlujoHorarioTest)', 'Cargar archivos con filas inválidas', 'Cada fila rechazada con archivo, fila, código y motivo'],
     ['uniqueEnAsignacion (RestriccionesBaseDatosTest)', 'Insertar a mano un choque de docente y uno de aula en la base', 'PostgreSQL rechaza las dos filas por las restricciones UNIQUE'],
   ], { note: 'Los datos de ruptura están en datos/ruptura. Los choques directos se fuerzan sobre los datos de datos/demo.' }),
-  PEND('fragmentos del log docs/evidencias/qa/ruptura.log que muestren el bloqueo de RD-01, RD-02 y RD-06 y la exportación parcial'),
-  PEND('capturas 06_conflicto_pendiente y 07_reubicar de docs/evidencias/capturas'),
+  P('Las mismas rupturas se repitieron contra el sistema desplegado con Docker Compose y PostgreSQL 16, no solo contra la base de pruebas H2. El registro docs/evidencias/qa/ruptura_api_postgresql.log termina con cero fallas. Este es un extracto.'),
+  ...code(`OK  Ruptura RD-06 mover PRO1-G1 de 40 al aula A202 de 32 -> HTTP 409
+    ["RD-06 La capacidad del aula es menor que los matriculados del grupo",
+     "RD-02 El aula ya tiene otra sesión en esa franja"]
+OK  Ruptura RD-01 ARQ-G1-S1 a la franja de RED-G1-S1 -> HTTP 409
+    ["RD-01 El docente ya tiene otra sesión en esa franja",
+     "RD-02 El aula ya tiene otra sesión en esa franja"]
+OK  Ruptura RD-02 ARQ-G1-S1 al aula A101 -> HTTP 409
+    ["RD-02 El aula ya tiene otra sesión en esa franja"]
+OK  RD-08 caso sobrerrestringido queda PARCIAL -> causas RD-04, RD-10, RD-06, RD-01, RD-02
+OK  Ruptura RD-08 exportar un horario PARCIAL -> HTTP 409 HORARIO_PARCIAL
+OK  PostgreSQL rechazó el choque de docente RD-01 (D1 MARTES 07:00)
+    duplicate key value violates unique constraint "uq_asignacion_docente_franja"
+OK  PostgreSQL rechazó el choque de aula RD-02 (A204 MARTES 09:00)
+    duplicate key value violates unique constraint "uq_asignacion_aula_franja"
+Fin. Fallas 0`),
+  P('Las rupturas muestran que el sistema bloquea el error y además explica la causa con su código. Cuando una reubicación viola varias reglas la respuesta las lista todas. En el caso sobrerrestringido del Dr. Gómez la sesión CAL2-G2-S2 queda pendiente y el motor cuenta cuántas tuplas bloquea cada causa. RD-04 bloquea 183, RD-10 bloquea 96, RD-06 bloquea 64, RD-01 bloquea 9 y RD-02 bloquea 6 (docs/evidencias/qa/ruptura.log). RD-10 aparece como causa nueva frente al Módulo 2 porque la sesión 1 del grupo ya la dicta el Dr. Gómez.'),
+  ...CAPF(1, 'Ruptura de capacidad bloqueada en la interfaz', '09_ruptura_capacidad.png', 'El administrador intenta asignar a mano un grupo de 40 estudiantes a un aula de 32 puestos. El sistema rechaza la operación y muestra RD-06 y RD-02.'),
+  ...CAPF(2, 'Exportación bloqueada de un horario parcial', '10_exportar_bloqueado.png', 'El caso sobrerrestringido queda con 7 de 8 sesiones. La exportación responde HORARIO_PARCIAL porque el horario no cumple RD-08.'),
   H2('Pruebas de Estrés'),
   P('La prueba de estrés genera conjuntos de 1x, 3x, 5x y 10x con semillas fijas y ejecuta el motor con el mismo código del sistema. La corre el programa PruebaEstres en la integración continua y la prueba EstresTest en JUnit.'),
-  PEND('resultados de docs/evidencias/estres/estres.csv (se presentan en la Tabla 3) y conclusión de carga masiva'),
+  P('La Tabla 3 presenta los resultados. Con carga masiva de 10x, que son 100 docentes, 50 aulas y 400 sesiones, el motor generó el horario completo en las 10 corridas con un peor caso de 1,24 s. EstresTest repite tres escalas en cada ejecución de JUnit para que una regresión de desempeño rompa la integración continua.'),
 ];
 
 // ---------------------------------------------------------------------------------------------
@@ -165,9 +216,8 @@ const trazabilidad = [
     T('RNF-01', 'Tiempo de 60 s', 'RNF-01', 'MotorAsignacion y EstadoHorario', 'MotorAsignacion y app.motor.limite-ms', 'MotorAsignacionTest.demoCompleta, EstresTest'),
     T('RNF-02', 'Triple de datos', 'RNF-02', 'MotorAsignacion y EstadoHorario', 'PruebaEstres', 'EstresTest y docs/evidencias/estres'),
     T('RNF-03', 'Regla nueva sin tocar el motor', 'RNF-03', 'RestriccionDura y lista inyectada', 'ConfiguracionMotor y RestriccionMismoDiaRD09', 'ModificabilidadTest.nuevaRestriccion y cambioDeTope'),
-    T('RNF-05', 'Uso por un no técnico', 'RNF-05', 'Tres pantallas de la interfaz', 'frontend', 'Prueba con usuarios'),
+    T('RNF-05', 'Uso por un no técnico', 'RNF-05', 'Tres pantallas de la interfaz', 'frontend/src/app/paginas CargaComponent, ParametrosComponent y HorarioComponent', 'Recorrido e2e/capturas.mjs (docs/evidencias/capturas/recorrido.log)'),
   ], { size: 15, note: 'Oper. = condición operativa que no viene del caso de estudio y se declara para que ningún requisito quede huérfano. RB-01 a RB-04 y RE-01 a RE-04 siguen fuera del MVP por decisión heredada del Módulo 1.' }),
-  PEND('componentes del frontend de la fila RNF-05 y prueba con usuarios cuando exista la carpeta frontend'),
 ];
 
 // ---------------------------------------------------------------------------------------------
@@ -175,16 +225,16 @@ const acta = [
   H1('Acta de Cierre y Lecciones Aprendidas'),
   H2('Alcance Realmente Logrado'),
   P('El sistema carga los cuatro inventarios en CSV y rechaza fila por fila lo que no cumple el formato. Valida los grupos con RV-01 y RV-02 antes de generar. Genera el horario con backtracking respetando RD-01 a RD-08 y RD-10. Cuando no encuentra solución entrega un horario parcial con las causas de cada sesión pendiente por código y bloquea la exportación. Permite reubicar una sesión con alternativas que filtra el motor y bloquea la reubicación que viola una regla. Exporta el horario completo en CSV. Todo esto se hace a través de una API protegida con JWT para el perfil administrador y queda registrado quién generó cada horario.'),
-  PEND('confirmar al punto P3 que la interfaz web cubre las tres pantallas y el ciclo completo con las capturas 01 a 08'),
+  P('La interfaz web cubre el ciclo completo en tres pantallas. Las capturas del recorrido automático están en el ' + DOCS.doc4 + '. El sistema completo se levanta con docker compose up --build y en la prueba del equipo los tres contenedores quedaron sanos en menos de un minuto (docs/evidencias/sistema/contenedores.txt).'),
   H2('Brecha entre el Diseño y la Implementación'),
   P('La brecha más grande está en la persistencia. El diseño planteaba entidades JPA y el sistema usa repositorios con JdbcTemplate. El cambio no afecta al dominio pero sí al diagrama de componentes, que se actualizó en el Documento 2. La segunda brecha es el precálculo por franja del conteo inicial. Quedó como decisión pendiente en el Módulo 2 y el contrato del Módulo 3 lo incluía, pero el código final conserva el conteo completo. La tercera es RD-10, una regla que el Módulo 1 no tenía y que la construcción hizo visible. Las tres se explican en la Tabla 1.'),
   P('Los pendientes de la Tabla 5 del Módulo 2 quedaron así. El conteo factorizado no se implementó. El orden dinámico de sesiones no se comparó con el orden fijo. La prueba con usuarios de la interfaz construida se presenta en la sección de usabilidad o se declara no realizada.'),
-  PEND('estado final de la prueba con usuarios y del precálculo por franja'),
+  P('El precálculo por franja quedó definitivamente fuera de esta entrega. Con la Tabla 3 el equipo considera que no hacía falta para el tamaño del MVP, pero sigue siendo la primera mejora si la escala crece.'),
   H2('Limitaciones Conocidas'),
-  P('El motor no tiene verificación hacia adelante ni orden dinámico de sesiones. Todas las mediciones usan datos sintéticos del generador del equipo y un horario real puede tener restricciones más cruzadas. El intercambio es solo CSV y JSON quedó fuera. No hay restricciones blandas, de modo que el horario es válido pero no busca ser el mejor según preferencias. Solo existe el perfil administrador. Si los parámetros cambian después de generar un horario, ese horario ya no se puede consultar ni reubicar y el sistema pide generar uno nuevo con el código GRILLA_CAMBIADA.'),
+  P('El motor no tiene verificación hacia adelante ni orden dinámico de sesiones. Una carga nueva de inventarios reemplaza la anterior y borra el historial de ejecuciones. Los rechazos de la última carga se guardan en memoria y se pierden al reiniciar el backend. Las reglas RV-01 y RV-02 informan los grupos con problemas pero no los excluyen de la generación. Todas las mediciones usan datos sintéticos del generador del equipo y un horario real puede tener restricciones más cruzadas. El intercambio es solo CSV y JSON quedó fuera. No hay restricciones blandas, de modo que el horario es válido pero no busca ser el mejor según preferencias. Solo existe el perfil administrador. Si los parámetros cambian después de generar un horario, ese horario ya no se puede consultar ni reubicar y el sistema pide generar uno nuevo con el código GRILLA_CAMBIADA.'),
   H2('Lecciones Aprendidas'),
   P('La primera lección es que medir antes de decidir evitó errores. El Módulo 2 mostró que el orden ingenuo era más rápido en promedio y aun así se mantuvo la heurística por su peor caso. La segunda es que un diseño con Strategy sí se puede extender sin miedo. RD-10 entró al final del proyecto y no rompió nada. La tercera es que un autodiagnóstico honesto paga. Los tres ajustes que el equipo se puso quedaron cerrados con pruebas. La cuarta es que las afirmaciones del documento deben salir de la evidencia y no al revés. Por eso este informe cita el archivo de cada cifra.'),
-  PEND('lecciones propias del equipo sobre la integración del frontend y el trabajo en paralelo'),
+  P('La quinta lección viene de la organización del trabajo. El equipo escribió un acuerdo técnico (CONTRATO_M3.md) con el stack, la API, los formatos y las rutas de las evidencias antes de construir. Eso permitió avanzar en el código y en los documentos al mismo tiempo. El acuerdo también tuvo que actualizarse. JPA cambió a JdbcTemplate, el precálculo no entró y apareció RD-10. Un contrato sirve si se mantiene al día y no si se congela.'),
 ];
 
 const autoevaluacion = [
