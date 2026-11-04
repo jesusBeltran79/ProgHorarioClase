@@ -1,0 +1,2 @@
+[2026-11-04 00:03:12] API PUT /api/parametros capMax=35 respondió umbralMaximoGrupo=39
+[2026-11-04 00:03:14] Umbral RV-01 con tope 40 = 44. Con tope 35 = 39 (techo de 35 x 1,10). Sin recompilar

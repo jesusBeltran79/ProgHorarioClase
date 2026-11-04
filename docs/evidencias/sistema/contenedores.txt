@@ -1,0 +1,8 @@
+NAME                          IMAGE                       COMMAND                  SERVICE    CREATED          STATUS                    PORTS
+proghorarioclase-backend-1    proghorarioclase-backend    "java -Xss64m -jar a…"   backend    48 seconds ago   Up 42 seconds (healthy)   0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp
+proghorarioclase-db-1         postgres:16-alpine          "docker-entrypoint.s…"   db         48 seconds ago   Up 47 seconds (healthy)   0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
+proghorarioclase-frontend-1   proghorarioclase-frontend   "/docker-entrypoint.…"   frontend   48 seconds ago   Up 36 seconds             0.0.0.0:4200->80/tcp, [::]:4200->80/tcp
+CONTAINER                     REPOSITORY                  TAG                 PLATFORM            IMAGE ID            SIZE                CREATED
+proghorarioclase-backend-1    proghorarioclase-backend    latest              linux/amd64         e25db2dc9abe        354MB               48 seconds ago
+proghorarioclase-db-1         postgres                    16-alpine           linux/amd64         6a2e324ebe59        294MB               292 years ago
+proghorarioclase-frontend-1   proghorarioclase-frontend   latest              linux/amd64         52c2014f5a05        48.6MB              3 minutes ago

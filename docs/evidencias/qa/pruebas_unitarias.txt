@@ -1,0 +1,53 @@
+Resumen de pruebas automatizadas JUnit 5 (Surefire)
+Clase de prueba                               Pruebas  Fallas Errores  Segundos
+api.FlujoHorarioTest                               7       0       0      0.99
+    [OK] flujoCompleto
+    [OK] rupturaParcial
+    [OK] rupturaCapacidad
+    [OK] rupturaChoqueDocente
+    [OK] rupturaChoqueAula
+    [OK] rupturaCarga
+    [OK] reubicacionValida
+api.ParametrosApiTest                              3       0       0      5.75
+    [OK] cierre20
+    [OK] tope35
+    [OK] invalido
+api.RestriccionesBaseDatosTest                     1       0       0      0.19
+    [OK] uniqueEnAsignacion
+api.SeguridadTest                                  4       0       0      0.31
+    [OK] tokenValido
+    [OK] sinToken
+    [OK] credencialesInvalidas
+    [OK] tokenAlterado
+nucleo.CargadorInventariosCSVTest                  2       0       0      0.01
+    [OK] cargaConErrores
+    [OK] demoSinRechazos
+nucleo.ConfiguracionParametrosTest                 4       0       0      0.00
+    [OK] umbralConTecho
+    [OK] grillaPorDefecto
+    [OK] sinCruzarBloqueo
+    [OK] cambioDeCierre
+nucleo.EstresTest                                  3       0       0      1.81
+    [OK] escala(int)[1]
+    [OK] escala(int)[2]
+    [OK] escala(int)[3]
+nucleo.ModificabilidadTest                         2       0       0      0.02
+    [OK] nuevaRestriccion
+    [OK] cambioDeTope
+nucleo.MotorAsignacionTest                         3       0       0      0.03
+    [OK] exportacion
+    [OK] demoCompleta
+    [OK] sobrerrestringido
+nucleo.ReglasValidacionTest                        2       0       0      0.00
+    [OK] cierreMinimo
+    [OK] topeMatriculados
+nucleo.RestriccionesDurasTest                      6       0       0      0.01
+    [OK] capacidad
+    [OK] docenteUnico
+    [OK] disponibilidad
+    [OK] choqueAula
+    [OK] idoneidad
+    [OK] choqueDocente
+--------------------------------------------------------------------------------
+TOTAL                                             37       0       0      9.13
+Omitidas 0

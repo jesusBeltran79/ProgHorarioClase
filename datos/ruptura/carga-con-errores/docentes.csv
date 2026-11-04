@@ -1,0 +1,6 @@
+id_docente,nombre,dedicacion,escalafon,disponibilidad
+D01,Andrea Rojas Pineda,COMPLETO,TITULAR,TODAS
+D02,Carlos Méndez Ríos,COMPLETO,ASOCIADO,SAB 13:00;LUN 07:00
+D03,Laura Gómez Vargas,COMPLETO,ASOCIADO,LUNES SIETE
+D01,Docente repetido,MEDIO,ASISTENTE,TODAS
+D04,Felipe Duarte Castro,MEDIO,ASISTENTE,LUN 13:00;MAR 13:00

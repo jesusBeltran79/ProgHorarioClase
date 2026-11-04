@@ -1,0 +1,43 @@
+curso,grupo,sesion,docente,aula,dia,hora_inicio,hora_fin
+Física Mecánica,FIS1-G1,1,Carlos Méndez Ríos,A101,LUNES,07:00,09:00
+Probabilidad y Estadística,EST1-G1,1,Andrea Rojas Pineda,A102,LUNES,07:00,09:00
+Redes de Computadores,RED-G1,1,Andrés Moreno Quintero,A202,LUNES,07:00,09:00
+Gestión de Proyectos,GP-G1,1,Julián Ortiz Molina,A301,LUNES,07:00,09:00
+Ingeniería de Software 2,IS2-G1,1,Natalia Herrera Suárez,A101,LUNES,09:00,11:00
+Álgebra Lineal,MAT3-G1,2,Carlos Méndez Ríos,A102,LUNES,09:00,11:00
+Programación 2,PRO2-G1,2,Laura Gómez Vargas,A201,LUNES,09:00,11:00
+Comunicación Oral y Escrita,COE-G1,1,Diana Cárdenas Niño,A301,LUNES,15:00,17:00
+Sistemas Operativos,SO-G1,1,Camila Restrepo León,A101,LUNES,17:00,19:00
+Física Mecánica,FIS1-G1,2,Carlos Méndez Ríos,A101,MARTES,07:00,09:00
+Probabilidad y Estadística,EST1-G1,2,Andrea Rojas Pineda,A102,MARTES,07:00,09:00
+Bases de Datos 1,BD1-G1,2,Natalia Herrera Suárez,A201,MARTES,07:00,09:00
+Redes de Computadores,RED-G1,2,Andrés Moreno Quintero,A202,MARTES,07:00,09:00
+Gestión de Proyectos,GP-G1,2,Julián Ortiz Molina,A301,MARTES,07:00,09:00
+Ingeniería de Software 2,IS2-G1,2,Natalia Herrera Suárez,A101,MARTES,09:00,11:00
+Inteligencia Artificial,IA-G1,2,Mauricio Salazar Peña,A201,MARTES,09:00,11:00
+Programación 1,PRO1-G2,2,Laura Gómez Vargas,A202,MARTES,09:00,11:00
+Sistemas Operativos,SO-G1,2,Camila Restrepo León,A101,MARTES,17:00,19:00
+Cálculo Diferencial,MAT1-G1,1,Andrea Rojas Pineda,A101,MIERCOLES,07:00,09:00
+Cálculo Integral,MAT2-G1,1,Carlos Méndez Ríos,A102,MIERCOLES,07:00,09:00
+Programación 1,PRO1-G1,1,Laura Gómez Vargas,A201,MIERCOLES,07:00,09:00
+Bases de Datos 2,BD2-G1,1,Natalia Herrera Suárez,A202,MIERCOLES,07:00,09:00
+Proyecto Núcleo 2,PN2-G1,1,Julián Ortiz Molina,A301,MIERCOLES,07:00,09:00
+Bases de Datos 1,BD1-G1,1,Natalia Herrera Suárez,A201,MIERCOLES,09:00,11:00
+Comunicación Oral y Escrita,COE-G1,2,Diana Cárdenas Niño,A301,MIERCOLES,15:00,17:00
+Cálculo Diferencial,MAT1-G1,2,Andrea Rojas Pineda,A101,JUEVES,07:00,09:00
+Cálculo Integral,MAT2-G1,2,Carlos Méndez Ríos,A102,JUEVES,07:00,09:00
+Programación 1,PRO1-G1,2,Laura Gómez Vargas,A201,JUEVES,07:00,09:00
+Bases de Datos 2,BD2-G1,2,Natalia Herrera Suárez,A202,JUEVES,07:00,09:00
+Proyecto Núcleo 2,PN2-G1,2,Julián Ortiz Molina,A301,JUEVES,07:00,09:00
+Estructuras de Datos,EDD-G1,1,Mauricio Salazar Peña,A201,JUEVES,09:00,11:00
+Ingeniería de Software 1,IS1-G1,1,Julián Ortiz Molina,A101,VIERNES,07:00,09:00
+Arquitectura de Computadores,ARQ-G1,1,Andrés Moreno Quintero,A102,VIERNES,07:00,09:00
+Programación 2,PRO2-G1,1,Laura Gómez Vargas,A201,VIERNES,07:00,09:00
+Matemáticas Discretas,MAT4-G1,1,Andrea Rojas Pineda,A202,VIERNES,07:00,09:00
+Álgebra Lineal,MAT3-G1,1,Carlos Méndez Ríos,A301,VIERNES,07:00,09:00
+Estructuras de Datos,EDD-G1,2,Mauricio Salazar Peña,A201,VIERNES,09:00,11:00
+Ingeniería de Software 1,IS1-G1,2,Julián Ortiz Molina,A101,SABADO,07:00,09:00
+Arquitectura de Computadores,ARQ-G1,2,Andrés Moreno Quintero,A102,SABADO,07:00,09:00
+Inteligencia Artificial,IA-G1,1,Mauricio Salazar Peña,A201,SABADO,07:00,09:00
+Programación 1,PRO1-G2,1,Laura Gómez Vargas,A202,SABADO,07:00,09:00
+Matemáticas Discretas,MAT4-G1,2,Andrea Rojas Pineda,A301,SABADO,07:00,09:00

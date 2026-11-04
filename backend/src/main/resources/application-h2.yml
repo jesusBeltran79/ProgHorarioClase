@@ -1,0 +1,6 @@
+# Perfil de respaldo sin Docker ni PostgreSQL. Base en memoria compatible con PostgreSQL.
+spring:
+  datasource:
+    url: jdbc:h2:mem:horarios;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;DB_CLOSE_DELAY=-1
+    username: sa
+    password:

@@ -1,0 +1,8 @@
+Entorno de medición (GitHub Actions ubuntu-latest)
+openjdk version "21.0.13" 2026-10-20 LTS
+OpenJDK Runtime Environment Temurin-21.0.13+9 (build 21.0.13+9-LTS)
+OpenJDK 64-Bit Server VM Temurin-21.0.13+9 (build 21.0.13+9-LTS, mixed mode, sharing)
+Apache Maven 3.10.0 (c43a36b8d67be7e0805a411bc0898af1a51f5472)
+CPU 4 núcleos  Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz
+Memoria 15Gi
+Commit evaluado ab2b1b17fb4b4cce53e8492e04dbc40de8e6f08d
