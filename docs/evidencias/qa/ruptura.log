@@ -1,0 +1,21 @@
+[2026-11-04 00:03:13] BASE DE DATOS rechazó insertar CAL2-G2-S2 con D1 el MARTES 07:00 por uq_asignacion_docente_franja (RD-01)
+[2026-11-04 00:03:13] BASE DE DATOS rechazó insertar CAL2-G2-S2 en A204 el MARTES 07:00 por uq_asignacion_aula_franja (RD-02)
+[2026-11-04 00:03:13] SEGURIDAD bloqueó POST /api/horarios/generar sin token con 401 NO_AUTENTICADO
+[2026-11-04 00:03:13] SEGURIDAD rechazó el inicio de sesión con contraseña incorrecta con 401
+[2026-11-04 00:03:13] SEGURIDAD rechazó un token JWT con la firma alterada con 401
+[2026-11-04 00:03:13] API generó el caso sobrerrestringido PARCIAL 7/8 con causas [{"codigo":"RD-04","tuplasBloqueadas":183,"descripcion":"El docente no estÃ¡ disponible en esa franja o no estÃ¡ habilitado para el curso"},{"codigo":"RD-10","tuplasBloqueadas":96,"descripcion":"Las sesiones de un grupo deben tener el mismo docente"},{"codigo":"RD-06","tuplasBloqueadas":64,"descripcion":"La capacidad del aula es menor que los matriculados del grupo"},{"codigo":"RD-01","tuplasBloqueadas":9,"descripcion":"El docente ya tiene otra sesiÃ³n en esa franja"},{"codigo":"RD-02","tuplasBloqueadas":6,"descripcion":"El aula ya tiene otra sesiÃ³n en esa franja"}] y bloqueó la exportación con 409 HORARIO_PARCIAL
+[2026-11-04 00:03:14] API bloqueó mover PRO1-G1-S1 de 40 estudiantes al aula A202 de 32 puestos con 409 ["RD-06 La capacidad del aula es menor que los matriculados del grupo","RD-02 El aula ya tiene otra sesión en esa franja"]
+[2026-11-04 00:03:14] API bloqueó mover ARQ-G1-S1 a la franja 0 donde D10 dicta RED-G1-S1 con 409 ["RD-01 El docente ya tiene otra sesión en esa franja","RD-02 El aula ya tiene otra sesión en esa franja"]
+[2026-11-04 00:03:14] API bloqueó mover ARQ-G1-S1 al aula A101 ocupada por IS1-G1-S1 con 409 ["RD-02 El aula ya tiene otra sesión en esa franja"]
+[2026-11-04 00:03:14] API aceptó la carga con errores y devolvió 10 filas rechazadas y el hallazgo RV-01 del grupo de 47 matriculados
+[2026-11-04 00:03:14] CARGA bloqueó docentes.csv fila 3 [RD-03] La franja SAB 13:00 no pertenece a las 32 franjas válidas
+[2026-11-04 00:03:14] CARGA bloqueó docentes.csv fila 4 [FORMATO] No se entiende la disponibilidad LUNES SIETE. Use DIA HH:MM, por ejemplo MAR 07:00
+[2026-11-04 00:03:14] CARGA bloqueó docentes.csv fila 5 [FORMATO] El docente D01 está repetido
+[2026-11-04 00:03:14] CARGA bloqueó aulas.csv fila 3 [FORMATO] La capacidad del aula A102 debe ser un entero mayor que cero
+[2026-11-04 00:03:14] CARGA bloqueó aulas.csv fila 5 [FORMATO] La característica PROYECTOR no existe. Use COMPUTADORES o SILLAS_MOVILES
+[2026-11-04 00:03:14] CARGA bloqueó cursos.csv fila 3 [RD-07] El curso PRO1 debe tener entre 1 y 4 sesiones semanales
+[2026-11-04 00:03:14] CARGA bloqueó cursos.csv fila 4 [REFERENCIA] El docente habilitado D99 no existe en docentes.csv
+[2026-11-04 00:03:14] CARGA bloqueó grupos.csv fila 4 [REFERENCIA] El curso PRO1 del grupo PRO1-G1 no existe en cursos.csv
+[2026-11-04 00:03:14] CARGA bloqueó grupos.csv fila 5 [REFERENCIA] El curso ART del grupo ART-G1 no existe en cursos.csv
+[2026-11-04 00:03:14] CARGA bloqueó grupos.csv fila 6 [FORMATO] Los matriculados del grupo IS1-G2 deben ser un entero no negativo
+[2026-11-04 00:03:16] MOTOR caso sobrerrestringido ubicó 7 de 8 sesiones. Sesión CAL2-G2-S2 bloqueada por {RD-04=183, RD-10=96, RD-06=64, RD-01=9, RD-02=6}

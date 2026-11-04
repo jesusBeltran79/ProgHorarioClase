@@ -1,0 +1,11 @@
+perfil    escala    sesiones   prom_ms   mediana   peor_ms   nodos_prom  completos
+holgado   1x              40       3.8         3         6         9882       5/5
+holgado   3x             120      89.4        75       142       231936       5/5
+holgado   5x             200     143.0       139       155      1093954       5/5
+holgado   10x            400    1070.0      1062      1105      8393044       5/5
+exigente  1x              40       1.2         1         2        18078       5/5
+exigente  3x             120      35.4        35        37       422948       5/5
+exigente  5x             200     159.4       160       164      1950337       5/5
+exigente  10x            400    1201.8      1188      1238     14005383       5/5
+
+Límite por corrida 60000 ms. RNF-01 exige 60 s o menos sobre el conjunto de sustentación (1x).

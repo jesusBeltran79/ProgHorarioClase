@@ -1,0 +1,177 @@
+frontend-1  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+frontend-1  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+frontend-1  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+frontend-1  | 10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+frontend-1  | 10-listen-on-ipv6-by-default.sh: info: /etc/nginx/conf.d/default.conf differs from the packaged version
+frontend-1  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+db-1        | The files belonging to this database system will be owned by user "postgres".
+db-1        | This user must also own the server process.
+db-1        | 
+db-1        | The database cluster will be initialized with locale "en_US.utf8".
+db-1        | The default database encoding has accordingly been set to "UTF8".
+db-1        | The default text search configuration will be set to "english".
+db-1        | 
+db-1        | Data page checksums are disabled.
+db-1        | 
+db-1        | fixing permissions on existing directory /var/lib/postgresql/data ... ok
+db-1        | creating subdirectories ... ok
+db-1        | selecting dynamic shared memory implementation ... posix
+db-1        | selecting default max_connections ... 100
+db-1        | selecting default shared_buffers ... 128MB
+db-1        | selecting default time zone ... UTC
+db-1        | creating configuration files ... ok
+db-1        | running bootstrap script ... ok
+db-1        | sh: locale: not found
+db-1        | 2026-11-04 00:06:41.628 UTC [36] WARNING:  no usable system locales were found
+backend-1   | 
+frontend-1  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+backend-1   |   .   ____          _            __ _ _
+backend-1   |  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+backend-1   | ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+backend-1   |  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+backend-1   |   '  |____| .__|_| |_|_| |_\__, | / / / /
+backend-1   |  =========|_|==============|___/=/_/_/_/
+backend-1   | 
+backend-1   |  :: Spring Boot ::                (v3.3.5)
+backend-1   | 
+backend-1   | 2026-11-04T00:06:47.550Z  INFO 1 --- [motor-horarios] [           main] c.e.u.horarios.HorariosApplication       : Starting HorariosApplication v1.0.0 using Java 21.0.13 with PID 1 (/app/app.jar started by root in /app)
+backend-1   | 2026-11-04T00:06:47.552Z  INFO 1 --- [motor-horarios] [           main] c.e.u.horarios.HorariosApplication       : No active profile set, falling back to 1 default profile: "default"
+backend-1   | 2026-11-04T00:06:48.584Z  INFO 1 --- [motor-horarios] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+backend-1   | 2026-11-04T00:06:48.594Z  INFO 1 --- [motor-horarios] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+backend-1   | 2026-11-04T00:06:48.594Z  INFO 1 --- [motor-horarios] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.31]
+backend-1   | 2026-11-04T00:06:48.615Z  INFO 1 --- [motor-horarios] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+backend-1   | 2026-11-04T00:06:48.616Z  INFO 1 --- [motor-horarios] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1035 ms
+backend-1   | 2026-11-04T00:06:48.866Z  INFO 1 --- [motor-horarios] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+backend-1   | 2026-11-04T00:06:49.051Z  INFO 1 --- [motor-horarios] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@45d4421d
+backend-1   | 2026-11-04T00:06:49.052Z  INFO 1 --- [motor-horarios] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+backend-1   | 2026-11-04T00:06:49.077Z  INFO 1 --- [motor-horarios] [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://db:5432/horarios (PostgreSQL 16.15)
+backend-1   | 2026-11-04T00:06:49.105Z  INFO 1 --- [motor-horarios] [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Schema history table "public"."flyway_schema_history" does not exist yet
+backend-1   | 2026-11-04T00:06:49.107Z  INFO 1 --- [motor-horarios] [           main] o.f.core.internal.command.DbValidate     : Successfully validated 2 migrations (execution time 00:00.013s)
+backend-1   | 2026-11-04T00:06:49.120Z  INFO 1 --- [motor-horarios] [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Creating Schema History table "public"."flyway_schema_history" ...
+backend-1   | 2026-11-04T00:06:49.182Z  INFO 1 --- [motor-horarios] [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": << Empty Schema >>
+backend-1   | 2026-11-04T00:06:49.197Z  INFO 1 --- [motor-horarios] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "1 - esquema"
+backend-1   | 2026-11-04T00:06:49.286Z  INFO 1 --- [motor-horarios] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "2 - datos base"
+backend-1   | 2026-11-04T00:06:49.305Z  INFO 1 --- [motor-horarios] [           main] o.f.core.internal.command.DbMigrate      : Successfully applied 2 migrations to schema "public", now at version v2 (execution time 00:00.079s)
+backend-1   | 2026-11-04T00:06:49.440Z  WARN 1 --- [motor-horarios] [           main] .s.s.UserDetailsServiceAutoConfiguration : 
+backend-1   | 
+backend-1   | Using generated security password: dab88075-1d60-4005-b2fd-fcb66ad4150f
+backend-1   | 
+backend-1   | This generated password is for development use only. Your security configuration must be updated before running your application in production.
+backend-1   | 
+backend-1   | 2026-11-04T00:06:49.446Z  INFO 1 --- [motor-horarios] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+backend-1   | 2026-11-04T00:06:49.618Z  INFO 1 --- [motor-horarios] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoints beneath base path '/actuator'
+backend-1   | 2026-11-04T00:06:49.815Z  INFO 1 --- [motor-horarios] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+backend-1   | 2026-11-04T00:06:49.825Z  INFO 1 --- [motor-horarios] [           main] c.e.u.horarios.HorariosApplication       : Started HorariosApplication in 2.575 seconds (process running for 2.89)
+backend-1   | 2026-11-04T00:06:49.955Z  INFO 1 --- [motor-horarios] [           main] c.e.u.h.seguridad.InicializadorDatos     : Usuario administrador admin creado
+backend-1   | 2026-11-04T00:06:49.966Z  INFO 1 --- [motor-horarios] [           main] c.e.u.h.seguridad.InicializadorDatos     : Grilla sincronizada con 32 franjas válidas
+backend-1   | 2026-11-04T00:06:52.573Z  INFO 1 --- [motor-horarios] [nio-8080-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+backend-1   | 2026-11-04T00:06:52.573Z  INFO 1 --- [motor-horarios] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+backend-1   | 2026-11-04T00:06:52.574Z  INFO 1 --- [motor-horarios] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+db-1        | performing post-bootstrap initialization ... ok
+db-1        | syncing data to disk ... ok
+db-1        | 
+db-1        | 
+db-1        | Success. You can now start the database server using:
+db-1        | 
+db-1        |     pg_ctl -D /var/lib/postgresql/data -l logfile start
+db-1        | 
+db-1        | initdb: warning: enabling "trust" authentication for local connections
+db-1        | initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+db-1        | waiting for server to start....2026-11-04 00:06:42.245 UTC [42] LOG:  starting PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+db-1        | 2026-11-04 00:06:42.245 UTC [42] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+db-1        | 2026-11-04 00:06:42.247 UTC [45] LOG:  database system was shut down at 2026-11-04 00:06:41 UTC
+frontend-1  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+frontend-1  | /docker-entrypoint.sh: Configuration complete; ready for start up
+frontend-1  | 2026/11/04 00:06:52 [notice] 1#1: using the "epoll" event method
+frontend-1  | 2026/11/04 00:06:52 [notice] 1#1: nginx/1.27.5
+frontend-1  | 2026/11/04 00:06:52 [notice] 1#1: built by gcc 14.2.0 (Alpine 14.2.0) 
+frontend-1  | 2026/11/04 00:06:52 [notice] 1#1: OS: Linux 7.0.0-1017-azure
+db-1        | 2026-11-04 00:06:42.250 UTC [42] LOG:  database system is ready to accept connections
+db-1        |  done
+db-1        | server started
+db-1        | CREATE DATABASE
+db-1        | 
+db-1        | 
+db-1        | /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+db-1        | 
+db-1        | waiting for server to shut down....2026-11-04 00:06:42.384 UTC [42] LOG:  received fast shutdown request
+db-1        | 2026-11-04 00:06:42.385 UTC [42] LOG:  aborting any active transactions
+db-1        | 2026-11-04 00:06:42.387 UTC [42] LOG:  background worker "logical replication launcher" (PID 48) exited with exit code 1
+db-1        | 2026-11-04 00:06:42.388 UTC [43] LOG:  shutting down
+db-1        | 2026-11-04 00:06:42.388 UTC [43] LOG:  checkpoint starting: shutdown immediate
+db-1        | 2026-11-04 00:06:42.455 UTC [43] LOG:  checkpoint complete: wrote 926 buffers (5.7%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.065 s, sync=0.002 s, total=0.068 s; sync files=301, longest=0.001 s, average=0.001 s; distance=4283 kB, estimate=4283 kB; lsn=0/1925D68, redo lsn=0/1925D68
+db-1        | 2026-11-04 00:06:42.462 UTC [42] LOG:  database system is shut down
+db-1        |  done
+db-1        | server stopped
+db-1        | 
+db-1        | PostgreSQL init process complete; ready for start up.
+db-1        | 
+db-1        | 2026-11-04 00:06:42.500 UTC [1] LOG:  starting PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+db-1        | 2026-11-04 00:06:42.500 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+db-1        | 2026-11-04 00:06:42.500 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+db-1        | 2026-11-04 00:06:42.501 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+db-1        | 2026-11-04 00:06:42.503 UTC [58] LOG:  database system was shut down at 2026-11-04 00:06:42 UTC
+db-1        | 2026-11-04 00:06:42.506 UTC [1] LOG:  database system is ready to accept connections
+db-1        | 2026-11-04 00:07:28.818 UTC [142] ERROR:  duplicate key value violates unique constraint "uq_asignacion_docente_franja"
+db-1        | 2026-11-04 00:07:28.818 UTC [142] DETAIL:  Key (id_ejecucion, id_docente, dia, hora_inicio)=(4, D1, MARTES, 07:00:00) already exists.
+db-1        | 2026-11-04 00:07:28.818 UTC [142] STATEMENT:  INSERT INTO asignacion VALUES (4,'CAL2-G2-S2','D1','A302','MARTES','07:00','09:00');
+db-1        | 2026-11-04 00:07:28.911 UTC [149] ERROR:  duplicate key value violates unique constraint "uq_asignacion_aula_franja"
+db-1        | 2026-11-04 00:07:28.911 UTC [149] DETAIL:  Key (id_ejecucion, id_aula, dia, hora_inicio)=(4, A204, MARTES, 09:00:00) already exists.
+db-1        | 2026-11-04 00:07:28.911 UTC [149] STATEMENT:  INSERT INTO asignacion VALUES (4,'CAL2-G2-S2','D2','A204','MARTES','09:00','11:00');
+frontend-1  | 2026/11/04 00:06:52 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 65536:65536
+frontend-1  | 2026/11/04 00:06:52 [notice] 1#1: start worker processes
+frontend-1  | 2026/11/04 00:06:52 [notice] 1#1: start worker process 29
+frontend-1  | 2026/11/04 00:06:52 [notice] 1#1: start worker process 30
+frontend-1  | 2026/11/04 00:06:52 [notice] 1#1: start worker process 31
+frontend-1  | 2026/11/04 00:06:52 [notice] 1#1: start worker process 32
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:06:52 +0000] "GET /actuator/health HTTP/1.1" 200 25 "-" "curl/8.5.0" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:20 +0000] "GET /ingresar HTTP/1.1" 200 1072 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:20 +0000] "GET /polyfills-FFHMD2TL.js HTTP/1.1" 200 34519 "http://localhost:4200/ingresar" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:20 +0000] "GET /main-DXQBRTCY.js HTTP/1.1" 200 301891 "http://localhost:4200/ingresar" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:20 +0000] "GET /styles-CTIK5GHS.css HTTP/1.1" 200 6648 "http://localhost:4200/ingresar" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:21 +0000] "POST /api/auth/login HTTP/1.1" 200 228 "http://localhost:4200/ingresar" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:21 +0000] "GET /carga HTTP/1.1" 200 1072 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:21 +0000] "GET /api/inventarios/resumen HTTP/1.1" 499 0 "http://localhost:4200/carga" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:21 +0000] "GET /api/inventarios/resumen HTTP/1.1" 200 112 "http://localhost:4200/carga" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:21 +0000] "POST /api/inventarios HTTP/1.1" 200 228 "http://localhost:4200/carga" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:22 +0000] "GET /parametros HTTP/1.1" 200 1072 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:22 +0000] "GET /api/parametros HTTP/1.1" 200 2491 "http://localhost:4200/parametros" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:22 +0000] "GET /horario HTTP/1.1" 200 1072 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:22 +0000] "GET /api/parametros HTTP/1.1" 200 2491 "http://localhost:4200/horario" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:22 +0000] "GET /api/horarios HTTP/1.1" 200 12 "http://localhost:4200/horario" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:22 +0000] "GET /api/inventarios/catalogo HTTP/1.1" 200 1156 "http://localhost:4200/horario" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:22 +0000] "POST /api/horarios/generar HTTP/1.1" 200 12197 "http://localhost:4200/horario" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:22 +0000] "GET /api/horarios HTTP/1.1" 200 142 "http://localhost:4200/horario" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:23 +0000] "GET /api/horarios/1/alternativas/BD1-G1-S1 HTTP/1.1" 200 3197 "http://localhost:4200/horario" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:24 +0000] "POST /api/horarios/1/reubicar HTTP/1.1" 200 12202 "http://localhost:4200/horario" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:24 +0000] "GET /api/horarios HTTP/1.1" 200 142 "http://localhost:4200/horario" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:24 +0000] "GET /api/horarios/1/exportar HTTP/1.1" 200 3273 "http://localhost:4200/horario" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:25 +0000] "GET /api/horarios/1/alternativas/PRO1-G1-S1 HTTP/1.1" 200 3118 "http://localhost:4200/horario" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:25 +0000] "POST /api/horarios/1/reubicar HTTP/1.1" 409 252 "http://localhost:4200/horario" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:26 +0000] "GET /api/inventarios/resumen HTTP/1.1" 200 228 "http://localhost:4200/carga" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:26 +0000] "POST /api/inventarios HTTP/1.1" 200 1456 "http://localhost:4200/carga" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:26 +0000] "GET /api/inventarios/resumen HTTP/1.1" 200 1456 "http://localhost:4200/carga" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:26 +0000] "POST /api/inventarios HTTP/1.1" 499 0 "http://localhost:4200/carga" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:26 +0000] "GET /api/horarios HTTP/1.1" 200 12 "http://localhost:4200/horario" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:26 +0000] "GET /api/parametros HTTP/1.1" 200 2491 "http://localhost:4200/horario" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:26 +0000] "GET /api/inventarios/catalogo HTTP/1.1" 200 347 "http://localhost:4200/horario" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:26 +0000] "POST /api/horarios/generar HTTP/1.1" 200 3426 "http://localhost:4200/horario" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:26 +0000] "GET /api/horarios HTTP/1.1" 200 140 "http://localhost:4200/horario" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:26 +0000] "GET /api/horarios/2/alternativas/CAL2-G2-S2 HTTP/1.1" 200 1037 "http://localhost:4200/horario" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:27 +0000] "GET /api/horarios/2/exportar HTTP/1.1" 409 164 "http://localhost:4200/horario" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:28 +0000] "GET /api/inventarios/resumen HTTP/1.1" 200 225 "http://localhost:4200/carga" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:28 +0000] "POST /api/inventarios HTTP/1.1" 499 0 "http://localhost:4200/carga" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:28 +0000] "POST /api/auth/login HTTP/1.1" 401 117 "-" "curl/8.5.0" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:28 +0000] "POST /api/horarios/generar HTTP/1.1" 401 98 "-" "curl/8.5.0" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:28 +0000] "POST /api/auth/login HTTP/1.1" 200 228 "-" "curl/8.5.0" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:28 +0000] "POST /api/inventarios HTTP/1.1" 200 1456 "-" "curl/8.5.0" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:28 +0000] "POST /api/inventarios HTTP/1.1" 200 228 "-" "curl/8.5.0" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:28 +0000] "POST /api/horarios/generar HTTP/1.1" 200 12195 "-" "curl/8.5.0" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:28 +0000] "POST /api/horarios/3/reubicar HTTP/1.1" 409 252 "-" "curl/8.5.0" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:28 +0000] "POST /api/horarios/3/reubicar HTTP/1.1" 409 237 "-" "curl/8.5.0" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:28 +0000] "POST /api/horarios/3/reubicar HTTP/1.1" 409 175 "-" "curl/8.5.0" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:28 +0000] "GET /api/horarios/3/exportar HTTP/1.1" 200 3269 "-" "curl/8.5.0" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:28 +0000] "POST /api/inventarios HTTP/1.1" 200 225 "-" "curl/8.5.0" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:28 +0000] "POST /api/horarios/generar HTTP/1.1" 200 3426 "-" "curl/8.5.0" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:28 +0000] "GET /api/horarios/4/exportar HTTP/1.1" 409 164 "-" "curl/8.5.0" "-"
+frontend-1  | 172.18.0.1 - - [04/Nov/2026:00:07:28 +0000] "POST /api/inventarios HTTP/1.1" 200 228 "-" "curl/8.5.0" "-"

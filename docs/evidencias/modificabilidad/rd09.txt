@@ -1,0 +1,1 @@
+[2026-11-04 00:03:14] RD-09 agregada con una clase nueva. Horario COMPLETO 42 sesiones. Grupos con dos sesiones el mismo día = 0. Rechazos de RD-09 = 0

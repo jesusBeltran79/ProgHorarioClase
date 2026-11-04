@@ -1,0 +1,18 @@
+Pruebas de ruptura contra http://localhost:4200 con PostgreSQL (2026-11-04T00:07:28Z)
+OK    RNF-06 inicio de sesión con contraseña incorrecta -> HTTP 401 {"codigo":"CREDENCIALES_INVALIDAS","mensaje":"El usuario o la contraseña no son correctos","detalles":[]}
+OK    RNF-06 generar sin token -> HTTP 401 {"codigo":"NO_AUTENTICADO","mensaje":"Debe iniciar sesión para usar esta función","detalles":[]}
+OK    RNF-06 inicio de sesión correcto entrega JWT -> HTTP 200 token de 170 caracteres
+OK    Carga con filas inválidas acepta lo válido y rechaza 10 filas -> HTTP 200 ["RD-03","FORMATO","FORMATO","FORMATO","FORMATO","RD-07","REFERENCIA","REFERENCIA","REFERENCIA","FORMATO"]
+OK    RF-01 a RF-05 carga de la demostración -> HTTP 200 {"docentes":10,"aulas":5,"cursos":20,"grupos":21,"sesiones":42}
+OK    RF-06 generación de la demostración estado COMPLETO -> HTTP 200 {"nodosExplorados":11706,"duracionMs":2,"totalSesiones":42,"sesionesUbicadas":42}
+OK    Ruptura RD-06 mover PRO1-G1 de 40 al aula A202 de 32 -> HTTP 409 ["RD-06 La capacidad del aula es menor que los matriculados del grupo","RD-02 El aula ya tiene otra sesión en esa franja"]
+OK    Ruptura RD-01 ARQ-G1-S1 a la franja de RED-G1-S1 -> HTTP 409 ["RD-01 El docente ya tiene otra sesión en esa franja","RD-02 El aula ya tiene otra sesión en esa franja"]
+OK    Ruptura RD-02 ARQ-G1-S1 al aula A101 -> HTTP 409 ["RD-02 El aula ya tiene otra sesión en esa franja"]
+OK    RF-09 exportar horario completo con 42 sesiones -> HTTP 200 curso,grupo,sesion,docente,aula,dia,hora_inicio,hora_fin Física Mecánica,FIS1-G1,1,Carlos Méndez Ríos,A101,LUNES,07:00,09:00 
+OK    RD-08 caso sobrerrestringido queda PARCIAL -> HTTP 200 {"idSesion":"CAL2-G2-S2","causas":["RD-04","RD-10","RD-06","RD-01","RD-02"]}
+OK    Ruptura RD-08 exportar un horario PARCIAL -> HTTP 409 {"codigo":"HORARIO_PARCIAL","mensaje":"El horario tiene sesiones sin asignar y no cumple RD-08. Resuelva los conflictos antes de exportar","detalles":[]}
+OK    PostgreSQL rechazó el choque de docente RD-01 (D1 MARTES 07:00). ERROR:  duplicate key value violates unique constraint "uq_asignacion_docente_franja"
+DETAIL:  Key (id_ejecucion, id_docente, dia, hora_inicio)=(4, D1, MARTES, 07:00:00) already exists.
+OK    PostgreSQL rechazó el choque de aula RD-02 (A204 MARTES 09:00). ERROR:  duplicate key value violates unique constraint "uq_asignacion_aula_franja"
+DETAIL:  Key (id_ejecucion, id_aula, dia, hora_inicio)=(4, A204, MARTES, 09:00:00) already exists.
+Fin. Fallas 0
