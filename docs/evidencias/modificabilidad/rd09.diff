@@ -1,0 +1,60 @@
+Cambio necesario para activar RD-09 (dos sesiones de un grupo no pueden quedar el mismo día)
+Resumen del diff. MotorAsignacion.java no aparece porque no cambia ninguna línea
+
+ .../horarios/aplicacion/ConfiguracionMotor.java    |  4 +++-
+ .../restricciones/RestriccionMismoDiaRD09.java     | 25 ++++++++++++++++++++++
+ 2 files changed, 28 insertions(+), 1 deletion(-)
+
+diff --git a/backend/src/main/java/co/edu/unbosque/horarios/aplicacion/ConfiguracionMotor.java b/backend/src/main/java/co/edu/unbosque/horarios/aplicacion/ConfiguracionMotor.java
+index 61eced7..a776ce2 100644
+--- a/backend/src/main/java/co/edu/unbosque/horarios/aplicacion/ConfiguracionMotor.java
++++ b/backend/src/main/java/co/edu/unbosque/horarios/aplicacion/ConfiguracionMotor.java
+@@ -7,6 +7,7 @@ import co.edu.unbosque.horarios.restricciones.RestriccionDisponibilidadDocenteRD
+ import co.edu.unbosque.horarios.restricciones.RestriccionDocenteUnicoGrupoRD10;
+ import co.edu.unbosque.horarios.restricciones.RestriccionDura;
+ import co.edu.unbosque.horarios.restricciones.RestriccionIdoneidadAulaRD05;
++import co.edu.unbosque.horarios.restricciones.RestriccionMismoDiaRD09;
+ import co.edu.unbosque.horarios.validacion.ReglaCierreMinimoRV02;
+ import co.edu.unbosque.horarios.validacion.ReglaTopeMatriculadosRV01;
+ import co.edu.unbosque.horarios.validacion.ValidadorEntrada;
+@@ -33,7 +34,8 @@ public class ConfiguracionMotor {
+                 new RestriccionCapacidadAulaRD06(),
+                 new RestriccionChoqueDocenteRD01(),
+                 new RestriccionChoqueAulaRD02(),
+-                new RestriccionDocenteUnicoGrupoRD10()));
++                new RestriccionDocenteUnicoGrupoRD10(),
++                new RestriccionMismoDiaRD09()));
+     }
+ 
+     @Bean
+diff --git a/backend/src/main/java/co/edu/unbosque/horarios/restricciones/RestriccionMismoDiaRD09.java b/backend/src/main/java/co/edu/unbosque/horarios/restricciones/RestriccionMismoDiaRD09.java
+new file mode 100644
+index 0000000..918e08e
+--- /dev/null
++++ b/backend/src/main/java/co/edu/unbosque/horarios/restricciones/RestriccionMismoDiaRD09.java
+@@ -0,0 +1,25 @@
++package co.edu.unbosque.horarios.restricciones;
++
++import co.edu.unbosque.horarios.configuracion.ConfiguracionParametros;
++import co.edu.unbosque.horarios.dominio.Asignacion;
++import co.edu.unbosque.horarios.motor.EstadoHorario;
++
++/**
++ * RD-09 (prueba de cambio). Dos sesiones del mismo grupo no pueden quedar el mismo día.
++ * Se agrega como clase nueva sin modificar MotorAsignacion (OCP, RNF-03).
++ */
++public final class RestriccionMismoDiaRD09 implements RestriccionDura {
++    @Override public String getCodigo() { return "RD-09"; }
++    @Override public boolean esLocal() { return false; }
++
++    @Override
++    public boolean esValida(Asignacion c, EstadoHorario estado, ConfiguracionParametros config) {
++        for (Asignacion a : estado.getAsignaciones()) {
++            if (a.getSesion().getGrupo() == c.getSesion().getGrupo()
++                    && a.getFranja().getDia() == c.getFranja().getDia()) {
++                return false;
++            }
++        }
++        return true;
++    }
++}
