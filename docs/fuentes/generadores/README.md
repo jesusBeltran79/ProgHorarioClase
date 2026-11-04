@@ -16,3 +16,15 @@ soffice --headless --convert-to pdf salida.docx
 ```
 
 Las versiones Word editables del Módulo 2 están en `../m2/`.
+
+## Entrega final del Módulo 3
+
+- `comun.js` portada, marcadores `[PENDIENTE]`, secciones horizontales y figuras ajustadas.
+- `doc1.js` a `doc4.js` generan los cuatro documentos de la entrega final.
+- `generar_m3.sh` genera los cuatro PDF en `../../entregables/`.
+
+```
+./generar_m3.sh
+```
+
+Las figuras salen de `../../diagramas/*.png` y de `../../evidencias/capturas/`.
