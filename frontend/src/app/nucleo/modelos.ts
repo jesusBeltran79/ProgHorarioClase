@@ -34,9 +34,9 @@ export interface Conflicto {
 export interface Metricas { nodosExplorados: number; duracionMs: number; totalSesiones: number; sesionesUbicadas: number; }
 export interface Resultado {
   idEjecucion: number; estado: 'COMPLETO' | 'PARCIAL'; fechaHora: string; usuario: string; metricas: Metricas;
-  asignaciones: Asignacion[]; conflictos: Conflicto[]; hallazgos: Hallazgo[];
+  asignaciones: Asignacion[]; conflictos: Conflicto[]; hallazgos: Hallazgo[]; publicado: boolean;
 }
-export interface Ejecucion { idEjecucion: number; usuario: string; fechaHora: string; estado: string; nodosExplorados: number; duracionMs: number; }
+export interface Ejecucion { idEjecucion: number; usuario: string; fechaHora: string; estado: string; nodosExplorados: number; duracionMs: number; publicado: boolean; }
 
 export interface ItemCatalogo { id: string; nombre: string; detalle: string; }
 export interface Catalogo { docentes: ItemCatalogo[]; aulas: ItemCatalogo[]; }

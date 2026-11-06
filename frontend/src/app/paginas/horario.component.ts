@@ -1,6 +1,8 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { CdkDrag, CdkDragDrop, CdkDragPlaceholder, CdkDropList, CdkDropListGroup } from '@angular/cdk/drag-drop';
+import { GestionService } from '../nucleo/gestion.service';
 import { ApiService } from '../nucleo/api.service';
 import {
   Alternativa, Asignacion, Catalogo, Conflicto, DIAS, Ejecucion, ErrorApi, Franja, Resultado
@@ -12,13 +14,13 @@ interface Seleccion { idSesion: string; titulo: string; detalle: string; pendien
 
 /**
  * Paso 3. Generación, consulta del horario y resolución de conflictos (RF-06, RF-07, RF-09).
- * La edición se hace con selección asistida. Las alternativas las filtra el motor y la asignación
+ * La edición se hace arrastrando la sesión a otra celda (RF-13) o con selección asistida. Las alternativas las filtra el motor y la asignación
  * manual se valida en el servidor, que bloquea cualquier choque con el código de la restricción.
  */
 @Component({
   selector: 'app-horario',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CdkDropListGroup, CdkDropList, CdkDrag, CdkDragPlaceholder],
   template: `
   <div class="encabezado">
     <div>
@@ -31,9 +33,11 @@ interface Seleccion { idSesion: string; titulo: string; detalle: string; pendien
     <div class="botones">
       @if (ejecuciones().length) {
         <select [ngModel]="resultado()?.idEjecucion" (ngModelChange)="abrir($event)" aria-label="Historial">
-          @for (e of ejecuciones(); track e.idEjecucion) { <option [ngValue]="e.idEjecucion">#{{ e.idEjecucion }} {{ e.estado }} {{ e.fechaHora }}</option> }
+          @for (e of ejecuciones(); track e.idEjecucion) { <option [ngValue]="e.idEjecucion">#{{ e.idEjecucion }} {{ e.estado }} {{ e.fechaHora }}{{ e.publicado ? ' · publicado' : '' }}</option> }
         </select>
       }
+      @if (resultado()?.publicado) { <span class="etiqueta verde publicado">Publicado a los docentes</span> }
+      @else if (resultado()?.estado === 'COMPLETO') { <button class="btn sec" (click)="publicar()" [disabled]="publicando()">Publicar (RF-12)</button> }
       <button class="btn sec" (click)="generar()" [disabled]="generando()">{{ generando() ? 'Generando…' : 'Generar horario' }}</button>
       <button class="btn" [class.peligro]="resultado()?.estado === 'PARCIAL'" (click)="exportar()" [disabled]="!resultado()">Exportar CSV (RF-09)</button>
     </div>
@@ -52,7 +56,7 @@ interface Seleccion { idSesion: string; titulo: string; detalle: string; pendien
         Faltan {{ r.conflictos.length }} y la exportación queda bloqueada hasta resolverlas (RD-08).</span><span class="etiqueta">PARCIAL</span></div>
     }
 
-    <div class="horario">
+    <div class="horario" cdkDropListGroup [class.arrastrando]="arrastrando()">
       <section class="tarjeta">
         <div class="filtros">
           <label>Ver por
@@ -80,11 +84,15 @@ interface Seleccion { idSesion: string; titulo: string; detalle: string; pendien
               @if (f.bloqueada || !franja(d, f.rango)) {
                 <div class="celda bloqueada"></div>
               } @else {
-                <div class="celda" [class.sugerida]="sugerida(d, f.rango)">
+                <div class="celda" [class.sugerida]="sugerida(d, f.rango)" cdkDropList [cdkDropListSortingDisabled]="true"
+                     [attr.data-celda]="d + ' ' + f.rango" (cdkDropListDropped)="soltar($event, d, f.rango)">
                   @for (a of enCelda(d, f.rango); track a.idSesion) {
                     <button class="sesion" [class.sel]="seleccion()?.idSesion === a.idSesion" (click)="seleccionar(a)"
-                      [title]="a.curso + ' · ' + a.docente + ' · ' + a.idAula">
+                      cdkDrag [cdkDragData]="a.idSesion" [cdkDragDisabled]="moviendo()" (cdkDragStarted)="arrastrando.set(true); seleccionar(a)"
+                      (cdkDragEnded)="arrastrando.set(false)"
+                      [title]="a.curso + ' · ' + a.docente + ' · ' + a.idAula + ' · arrastre para mover'">
                       <b>{{ a.curso }}</b> · {{ a.idGrupo.split('-').pop() }} · S{{ a.numeroSesion }}<br>{{ a.idAula }} · {{ corto(a.docente) }}
+                      <div *cdkDragPlaceholder class="sesion hueco"></div>
                     </button>
                   }
                 </div>
@@ -92,18 +100,23 @@ interface Seleccion { idSesion: string; titulo: string; detalle: string; pendien
             }
           }
         </div>
-        <p class="meta">Las celdas grises no son franjas válidas. Seleccione una sesión para ver sus alternativas o moverla.</p>
+        <p class="meta">Las celdas grises no son franjas válidas. Arrastre una sesión a otra celda para moverla. Las celdas con borde verde son ubicaciones válidas.</p>
       </section>
 
       <aside class="panel">
         @if (r.conflictos.length) {
           <section class="tarjeta">
             <h3>Sesiones pendientes ({{ r.conflictos.length }})</h3>
+            <p class="meta">Arrastre cada sesión pendiente a una celda de la grilla.</p>
+            <div cdkDropList [cdkDropListSortingDisabled]="true">
             @for (c of r.conflictos; track c.idSesion) {
-              <button class="pendiente" [class.sel]="seleccion()?.idSesion === c.idSesion" (click)="seleccionarConflicto(c)">
+              <button class="pendiente" [class.sel]="seleccion()?.idSesion === c.idSesion" (click)="seleccionarConflicto(c)"
+                cdkDrag [cdkDragData]="c.idSesion" [cdkDragDisabled]="moviendo()" (cdkDragStarted)="arrastrando.set(true); seleccionarConflicto(c)"
+                (cdkDragEnded)="arrastrando.set(false)">
                 <b>{{ c.curso }}</b> · {{ c.idSesion }}<br><span class="meta">{{ c.matriculados }} matriculados</span>
               </button>
             }
+            </div>
           </section>
         }
         @if (seleccion(); as s) {
@@ -167,6 +180,7 @@ interface Seleccion { idSesion: string; titulo: string; detalle: string; pendien
 })
 export class HorarioComponent implements OnInit {
   private api = inject(ApiService);
+  private gestion = inject(GestionService);
 
   resultado = signal<Resultado | null>(null);
   ejecuciones = signal<Ejecucion[]>([]);
@@ -180,6 +194,10 @@ export class HorarioComponent implements OnInit {
   cargandoAlt = signal(false);
   generando = signal(false);
   moviendo = signal(false);
+  publicando = signal(false);
+  arrastrando = signal(false);
+  /** Aula y docente actuales de la sesión seleccionada. Al soltar se prefieren para no cambiar más de lo necesario. */
+  private actual: { idAula: string; idDocente: string } | null = null;
   aviso = signal<{ tipo: 'ok' | 'error' | 'info'; titulo: string; texto: string; detalles: string[] } | null>(null);
   manualFranja: number | null = null;
   manualAula: string | null = null;
@@ -286,6 +304,7 @@ export class HorarioComponent implements OnInit {
     this.seleccion.set({ idSesion: a.idSesion, titulo: `${a.curso} · ${a.idGrupo} · Sesión ${a.numeroSesion}`,
       detalle: `${a.matriculados} matriculados · hoy en ${this.nombreDia(a.dia)} ${a.horaInicio} · ${a.idAula} · ${a.docente}`,
       pendiente: false, causas: [] });
+    this.actual = { idAula: a.idAula, idDocente: a.idDocente };
     this.prepararManual(a.idFranja, a.idAula, a.idDocente);
     this.buscarAlternativas(a.idSesion);
   }
@@ -293,6 +312,7 @@ export class HorarioComponent implements OnInit {
   seleccionarConflicto(c: Conflicto): void {
     this.seleccion.set({ idSesion: c.idSesion, titulo: `${c.curso} · ${c.idGrupo}`, detalle: `${c.matriculados} matriculados · sin ubicar`,
       pendiente: true, causas: c.causas });
+    this.actual = null;
     const primera = c.alternativas[0];
     this.prepararManual(primera?.idFranja ?? this.franjas()[0]?.idFranja ?? null, primera?.idAula ?? null, primera?.idDocente ?? null);
     this.buscarAlternativas(c.idSesion);
@@ -313,6 +333,52 @@ export class HorarioComponent implements OnInit {
     this.api.alternativas(r.idEjecucion, idSesion).subscribe({
       next: l => { this.cargandoAlt.set(false); this.alternativas.set(l); },
       error: e => { this.cargandoAlt.set(false); this.error('No se pudieron calcular las alternativas', e); }
+    });
+  }
+
+  /**
+   * RF-13. Soltar una sesión en una celda. Se piden de nuevo las alternativas y se aplica la de esa franja,
+   * prefiriendo la misma aula y el mismo docente. Si no hay ninguna se envía igual al servidor, que bloquea
+   * el movimiento con el código de la restricción violada y así el coordinador ve la causa.
+   */
+  soltar(e: CdkDragDrop<unknown>, dia: string, rango: string): void {
+    this.arrastrando.set(false);
+    const r = this.resultado();
+    const destino = this.franja(dia, rango);
+    const idSesion = e.item.data as string;
+    if (!r || !destino || e.previousContainer === e.container) return;
+    const actual = this.actual;
+    this.moviendo.set(true);
+    this.api.alternativas(r.idEjecucion, idSesion).subscribe({
+      next: lista => {
+        this.moviendo.set(false);
+        const enFranja = lista.filter(a => a.idFranja === destino.idFranja && a.liberar.length === 0);
+        const puntaje = (a: Alternativa) => (a.idAula === actual?.idAula ? 2 : 0) + (a.idDocente === actual?.idDocente ? 1 : 0);
+        const mejor = [...enFranja].sort((x, y) => puntaje(y) - puntaje(x))[0];
+        if (mejor) {
+          this.mover(mejor.idFranja, mejor.idAula, mejor.idDocente);
+        } else {
+          const aula = actual?.idAula ?? this.manualAula;
+          const docente = actual?.idDocente ?? this.manualDocente;
+          if (aula && docente) this.mover(destino.idFranja, aula, docente);
+        }
+      },
+      error: x => { this.moviendo.set(false); this.error('No se pudieron calcular las alternativas', x); }
+    });
+  }
+
+  publicar(): void {
+    const r = this.resultado();
+    if (!r) return;
+    this.publicando.set(true);
+    this.gestion.publicar(r.idEjecucion).subscribe({
+      next: nuevo => {
+        this.publicando.set(false);
+        this.resultado.set(nuevo);
+        this.api.ejecuciones().subscribe(l => this.ejecuciones.set(l));
+        this.aviso.set({ tipo: 'ok', titulo: 'Horario publicado.', texto: `Los docentes ya ven la ejecución ${nuevo.idEjecucion} en Mi horario`, detalles: [] });
+      },
+      error: x => { this.publicando.set(false); this.error('No se pudo publicar', x); }
     });
   }
 

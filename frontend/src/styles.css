@@ -127,3 +127,15 @@ tr.inactiva td { color: var(--suave); }
 .cdk-drag-placeholder { opacity: .35; }
 .cdk-drag-animating, .cdk-drop-list-dragging .cdk-drag { transition: transform 200ms ease; }
 @media (max-width: 1100px) { .gestion, .materias, .arrastre { grid-template-columns: 1fr; } }
+
+/* Horario y portal */
+.horario .celda.cdk-drop-list-receiving, .horario .celda.cdk-drop-list-dragging { background: #eef5ff; }
+.horario.arrastrando .celda:not(.sugerida):not(.bloqueada) { opacity: .75; }
+.sesion.cdk-drag-preview { box-shadow: 0 8px 20px rgba(0,0,0,.22); }
+.sesion.hueco { min-height: 30px; background: var(--azul-claro); border: 1px dashed var(--azul); opacity: .6; }
+.sesion[cdkdrag], .pendiente[cdkdrag] { cursor: grab; }
+.pendiente.cdk-drag-preview { box-shadow: 0 8px 20px rgba(0,0,0,.22); width: 300px; }
+.etiqueta.publicado { padding: 6px 10px; font-size: 12px; }
+.sesion.propia { border-left-color: var(--verde); background: var(--verde-claro); cursor: default; }
+.disponibilidad .pintar { max-width: 760px; }
+.disponibilidad .casilla { height: 22px; }
