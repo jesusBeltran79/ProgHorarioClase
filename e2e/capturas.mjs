@@ -22,7 +22,9 @@ async function cargar(conjunto) {
   for (const c of ['docentes', 'aulas', 'cursos', 'grupos']) {
     await pagina.setInputFiles(`input[data-prueba="${c}"]`, resolve(raiz, 'datos', conjunto, `${c}.csv`));
   }
+  const subida = pagina.waitForResponse(r => r.url().endsWith('/api/inventarios') && r.request().method() === 'POST');
   await pagina.getByRole('button', { name: 'Cargar y validar' }).click();
+  await subida;
   await pagina.getByText('Resultado de la carga').waitFor();
 }
 
