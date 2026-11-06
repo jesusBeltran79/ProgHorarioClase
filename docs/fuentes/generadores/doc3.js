@@ -15,7 +15,7 @@ const intro = [
 
 const requisitos = [
   H1('Requisitos del Sistema'),
-  P('El sistema corre en tres contenedores. Uno sirve la interfaz web, otro ejecuta el backend y el tercero guarda los datos. La Tabla 1 fija las versiones de cada pieza. Son las mismas que declaran el archivo <c>backend/pom.xml</c> y el acuerdo técnico del equipo en <c>CONTRATO_M3.md</c>.'),
+  P('El sistema corre en tres contenedores. Uno sirve la interfaz web, otro ejecuta el backend y el tercero guarda los datos. La Tabla 1 fija las versiones de cada pieza. Son las mismas que declaran <c>backend/pom.xml</c> y <c>frontend/package.json</c>.'),
   ...table(1, 'Versiones de lenguajes, frameworks y bases de datos', [2600, 2900, 3860], [
     ['Capa', 'Tecnología', 'Versión'],
     ['Lenguaje del backend', 'Java (Eclipse Temurin)', '21'],
@@ -55,6 +55,7 @@ const arquitectura = [
     ['app', 'No', 'Programas de consola para medir y demostrar. MedicionEscalabilidad, PruebaEstres, PruebaDeCambio, DemostracionConflicto y EjecutarConjuntoCSV'],
   ], { note: 'Los cuatro primeros paquetes y motor forman el núcleo. Los paquetes persistencia, aplicacion y seguridad lo envuelven para la versión web.' }),
   P('La interfaz web es un proyecto Angular 18.2 con componentes standalone. Tiene cuatro páginas, IngresoComponent, CargaComponent, ParametrosComponent y HorarioComponent, dentro de un MarcoComponent con el menú lateral. ApiService concentra las llamadas a la API. AutenticacionService guarda el token y un interceptor lo agrega en la cabecera de cada petición. Una guardia de rutas envía a la pantalla de ingreso a quien no tenga sesión.'),
+  P('La apariencia de toda la interfaz sale de un sistema de diseño propio con tonos verdes. Sus valores están como variables CSS al comienzo de <c>frontend/src/styles.css</c>, por ejemplo <c>--brand</c> para el color principal, <c>--choque</c> para los errores y <c>--aviso</c> para las advertencias, además de las fuentes, los espacios y los radios. Para cambiar el aspecto se editan esas variables y no cada pantalla. Cada pantalla trae un texto corto de ayuda que explica qué hacer en ella.'),
   P('El módulo de usuarios agregó dos grupos de páginas. Las páginas de gestión del administrador están en <c>paginas/gestion</c> y son docentes, aulas, materias y usuarios. Las del docente están en <c>paginas/portal</c> y son mi horario, mi disponibilidad y mi cuenta. <c>GestionService</c> y <c>PortalService</c> llaman a la API de cada perfil. La grilla de disponibilidad es un componente reutilizable, <c>SelectorFranjasComponent</c>, que se pinta con clic o arrastrando. El arrastre de docentes entre listas y el de sesiones en la grilla del horario usan Angular CDK 18.2. La guardia <c>guardiaRol</c> deja entrar a cada ruta solo al perfil que corresponde y el menú cambia según el rol del token.'),
   P('El acceso a la base se hace con <c>JdbcTemplate</c> de Spring y consultas SQL explícitas en los repositorios. No se usan entidades JPA. Con eso el esquema queda definido en un solo lugar, que son los scripts de Flyway, y el núcleo no carga anotaciones de persistencia.'),
 
