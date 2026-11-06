@@ -12,7 +12,7 @@ type Clave = 'docentes' | 'aulas' | 'cursos' | 'grupos';
   template: `
   <div class="encabezado">
     <div>
-      <h2>1. Cargar inventarios y validar datos</h2>
+      <h2>1. Importar inventarios desde CSV y validar</h2>
       <div class="meta">Los cuatro archivos se leen una sola vez y se revisan antes de asignar (RF-01 a RF-05)</div>
     </div>
     <button class="btn" (click)="ir()" [disabled]="!resumen() || resumen()!.cargados.sesiones === 0">Continuar a parámetros →</button>

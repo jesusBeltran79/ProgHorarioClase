@@ -1,6 +1,7 @@
 /** Tipos de la API REST. La forma de cada uno está fijada en CONTRATO_M3.md. */
 
-export interface Token { token: string; expiraEn: number; usuario: string; }
+export type Rol = 'ADMIN' | 'DOCENTE';
+export interface Token { token: string; expiraEn: number; usuario: string; rol: Rol; idDocente: string | null; }
 
 export interface ErrorApi { codigo: string; mensaje: string; detalles: string[]; }
 

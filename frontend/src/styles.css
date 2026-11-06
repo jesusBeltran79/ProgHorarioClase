@@ -85,3 +85,5 @@ table.compacta td { padding: 5px 8px; }
 .ingreso-caja .btn { width: 100%; margin-top: 6px; }
 .ingreso-caja .nota { font-size: 11px; color: var(--suave); text-align: center; margin: 12px 0 0; }
 @media (max-width: 1100px) { .horario { grid-template-columns: 1fr; } .dos-columnas { grid-template-columns: 1fr; } }
+
+.lateral .seccion { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: #7f93ab; margin: 14px 10px 6px; }

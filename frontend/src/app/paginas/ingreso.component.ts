@@ -22,7 +22,7 @@ import { ApiService } from '../nucleo/api.service';
       </label>
       @if (error()) { <div class="alerta error">{{ error() }}</div> }
       <button class="btn" type="submit" [disabled]="cargando()">{{ cargando() ? 'Ingresando…' : 'Ingresar' }}</button>
-      <p class="nota">Acceso exclusivo para el perfil administrador</p>
+      <p class="nota">Perfiles administrador y docente</p>
     </form>
   </div>`
 })
@@ -38,7 +38,7 @@ export class IngresoComponent {
     this.error.set(null);
     this.cargando.set(true);
     this.auth.iniciarSesion(this.usuario, this.contrasena).subscribe({
-      next: () => { this.cargando.set(false); this.router.navigate(['/carga']); },
+      next: () => { this.cargando.set(false); this.router.navigate([this.auth.inicio()]); },
       error: e => { this.cargando.set(false); this.error.set(ApiService.error(e).mensaje); }
     });
   }

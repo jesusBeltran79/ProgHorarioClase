@@ -2,7 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
-import { Token } from './modelos';
+import { Rol, Token } from './modelos';
 
 const CLAVE = 'horarios.token';
 
@@ -12,17 +12,19 @@ export class AutenticacionService {
   private http = inject(HttpClient);
   private router = inject(Router);
   readonly usuario = signal<string | null>(null);
+  readonly rol = signal<Rol | null>(null);
+  readonly idDocente = signal<string | null>(null);
 
   constructor() {
     const t = this.leer();
-    if (t && this.vigente(t.token)) this.usuario.set(t.usuario);
+    if (t && this.vigente(t.token)) this.fijar(t);
   }
 
   iniciarSesion(usuario: string, contrasena: string): Observable<Token> {
     return this.http.post<Token>('/api/auth/login', { usuario, contrasena }).pipe(tap(t => {
       try { localStorage.setItem(CLAVE, JSON.stringify(t)); } catch { /* sin almacenamiento */ }
       this.memoria = t;
-      this.usuario.set(t.usuario);
+      this.fijar(t);
     }));
   }
 
@@ -30,6 +32,8 @@ export class AutenticacionService {
     try { localStorage.removeItem(CLAVE); } catch { /* sin almacenamiento */ }
     this.memoria = null;
     this.usuario.set(null);
+    this.rol.set(null);
+    this.idDocente.set(null);
     this.router.navigate(['/ingresar']);
   }
 
@@ -40,6 +44,17 @@ export class AutenticacionService {
 
   autenticado(): boolean {
     return this.token() !== null;
+  }
+
+  /** Ruta de inicio según el perfil. */
+  inicio(): string {
+    return this.rol() === 'DOCENTE' ? '/mi/horario' : '/carga';
+  }
+
+  private fijar(t: Token): void {
+    this.usuario.set(t.usuario);
+    this.rol.set(t.rol ?? 'ADMIN');
+    this.idDocente.set(t.idDocente ?? null);
   }
 
   private memoria: Token | null = null;
