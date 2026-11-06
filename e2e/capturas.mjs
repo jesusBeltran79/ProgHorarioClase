@@ -68,7 +68,7 @@ try {
 
   // Exportación del horario completo
   const descarga = pagina.waitForEvent('download');
-  await pagina.getByRole('button', { name: 'Exportar CSV (RF-09)' }).click();
+  await pagina.getByRole('button', { name: 'Exportar CSV' }).click();
   const archivo = await descarga;
   await archivo.saveAs(`${salida}/horario_exportado.csv`);
   await foto('08_exportar');
@@ -91,7 +91,7 @@ try {
   await pagina.getByText('Horario pendiente de resolución.').waitFor();
   await pagina.getByText('Causas detectadas').waitFor();
   await foto('06_conflicto_pendiente');
-  await pagina.getByRole('button', { name: 'Exportar CSV (RF-09)' }).click();
+  await pagina.getByRole('button', { name: 'Exportar CSV' }).click();
   await pagina.getByText('HORARIO_PARCIAL.').waitFor();
   await foto('10_exportar_bloqueado');
 

@@ -8,14 +8,18 @@ import { ErrorApi } from '../../nucleo/modelos';
 import { DocenteGestion, UsuarioGestion, UsuarioNuevo } from '../../nucleo/modelos-gestion';
 import { ErrorApiComponent } from '../../componentes/error-api.component';
 
-/** RF-11. Cuentas ADMIN y DOCENTE. Cada cuenta DOCENTE queda ligada a un docente del catálogo. */
+/** Cuentas ADMIN y DOCENTE. Cada cuenta DOCENTE queda ligada a un docente del catálogo. */
 @Component({
   selector: 'app-gestion-usuarios',
   standalone: true,
   imports: [FormsModule, ErrorApiComponent],
   template: `
     <div class="encabezado">
-      <div><h2>Usuarios</h2><div class="meta">{{ usuarios().length }} cuentas · {{ sinCuenta().length }} docentes sin cuenta</div></div>
+      <div>
+        <div class="paso">Datos del semestre</div>
+        <h2>Usuarios</h2>
+        <p class="intro">{{ usuarios().length }} cuentas y {{ sinCuenta().length }} docentes sin cuenta. Una cuenta de docente solo ve su propio horario y su disponibilidad.</p>
+      </div>
     </div>
     <app-error-api [error]="error()" />
     @if (aviso()) { <div class="alerta ok">{{ aviso() }}</div> }
@@ -26,9 +30,9 @@ import { ErrorApiComponent } from '../../componentes/error-api.component';
           @for (u of usuarios(); track u.id) {
             <tr [class.inactiva]="!u.activo">
               <td><b>{{ u.nombreUsuario }}</b> @if (u.nombreUsuario === sesion.usuario()) { <span class="meta">(usted)</span> }</td>
-              <td><span class="etiqueta" [class.verde]="u.rol === 'DOCENTE'">{{ u.rol }}</span></td>
+              <td><span class="etiqueta" [class.verde]="u.rol === 'DOCENTE'">{{ u.rol === 'DOCENTE' ? 'Docente' : 'Administrador' }}</span></td>
               <td>{{ u.nombreDocente ? u.idDocente + ' · ' + u.nombreDocente : '—' }}</td>
-              <td>{{ u.activo ? 'Activa' : 'Inactiva' }}</td>
+              <td><span class="etiqueta" [class.verde]="u.activo">{{ u.activo ? 'Activa' : 'Inactiva' }}</span></td>
               <td class="derecha">
                 <button class="enlace azul" (click)="alternarActivo(u)">{{ u.activo ? 'Desactivar' : 'Activar' }}</button>
                 <button class="enlace azul" (click)="restablecer(u)">Restablecer clave</button>
@@ -43,8 +47,8 @@ import { ErrorApiComponent } from '../../componentes/error-api.component';
         <label>Usuario <input name="u" [(ngModel)]="nueva.nombreUsuario" required></label>
         <label>Perfil
           <select name="r" [(ngModel)]="nueva.rol">
-            <option value="DOCENTE">DOCENTE · ve su horario y su disponibilidad</option>
-            <option value="ADMIN">ADMIN · gestiona todo</option>
+            <option value="DOCENTE">Docente · ve su horario y su disponibilidad</option>
+            <option value="ADMIN">Administrador · gestiona todo el sistema</option>
           </select></label>
         @if (nueva.rol === 'DOCENTE') {
           <label>Docente

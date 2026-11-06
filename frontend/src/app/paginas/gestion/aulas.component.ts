@@ -12,14 +12,18 @@ export const CARACTERISTICAS = [
   { codigo: 'SILLAS_MOVILES', nombre: 'Sillas móviles' }
 ];
 
-/** RF-10. Gestión de aulas con capacidad y características. */
+/** Gestión de aulas con capacidad y características. */
 @Component({
   selector: 'app-gestion-aulas',
   standalone: true,
   imports: [FormsModule, ErrorApiComponent],
   template: `
     <div class="encabezado">
-      <div><h2>Aulas</h2><div class="meta">{{ aulas().length }} aulas registradas</div></div>
+      <div>
+        <div class="paso">Datos del semestre</div>
+        <h2>Aulas</h2>
+        <p class="intro">{{ aulas().length }} aulas registradas. La capacidad y las características deciden qué cursos caben en cada una.</p>
+      </div>
       <div class="botones"><button class="btn" (click)="nueva()">Nueva aula</button></div>
     </div>
     <app-error-api [error]="error()" />
@@ -29,8 +33,8 @@ export const CARACTERISTICAS = [
         <table>
           <tr><th>Código</th><th>Capacidad</th><th>Características</th><th></th></tr>
           @for (a of aulas(); track a.id) {
-            <tr><td class="codigo">{{ a.id }}</td><td>{{ a.capacidad }}</td>
-              <td>@for (c of a.caracteristicas; track c) { <span class="etiqueta">{{ c }}</span> } @empty { <span class="meta">Ninguna</span> }</td>
+            <tr><td class="codigo">{{ a.id }}</td><td>{{ a.capacidad }} puestos</td>
+              <td>@for (c of a.caracteristicas; track c) { <span class="etiqueta">{{ nombreCaracteristica(c) }}</span> } @empty { <span class="meta">Ninguna</span> }</td>
               <td class="derecha"><button class="enlace azul" (click)="editar(a)">Editar</button>
                 <button class="enlace rojo" (click)="borrar(a)">Borrar</button></td></tr>
           } @empty { <tr><td colspan="4" class="meta">No hay aulas registradas</td></tr> }
@@ -51,6 +55,11 @@ export const CARACTERISTICAS = [
             <button class="btn sec" type="button" (click)="editando.set(null)">Cancelar</button>
           </div>
         </form>
+      } @else {
+        <div class="tarjeta ayuda-panel">
+          <h3>Editar un aula</h3>
+          Presione <b>Editar</b> en la lista o <b>Nueva aula</b> para abrir el formulario aquí.
+        </div>
       }
     </div>`
 })
@@ -64,6 +73,7 @@ export class GestionAulasComponent implements OnInit {
   aviso = signal('');
 
   ngOnInit() { this.cargar(); }
+  nombreCaracteristica(c: string) { return CARACTERISTICAS.find(x => x.codigo === c)?.nombre ?? c; }
   cargar() { this.gestion.aulas().subscribe(a => this.aulas.set(a)); }
   nueva() { this.esNueva.set(true); this.editando.set({ id: '', capacidad: 30, caracteristicas: [] }); }
   editar(a: AulaGestion) { this.esNueva.set(false); this.editando.set({ ...a, caracteristicas: [...a.caracteristicas] }); }

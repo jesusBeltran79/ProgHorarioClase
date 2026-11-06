@@ -8,7 +8,7 @@ export const DIAS_CORTOS: Record<string, string> = {
 };
 
 /**
- * Grilla semanal para marcar disponibilidad (RF-10 y RF-14). Se pinta con clic o arrastrando con el
+ * Grilla semanal para marcar disponibilidad. Se pinta con clic o arrastrando con el
  * botón presionado. Solo las franjas válidas de la grilla vigente se pueden marcar (RD-03).
  */
 @Component({

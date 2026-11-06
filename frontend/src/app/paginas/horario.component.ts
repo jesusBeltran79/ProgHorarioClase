@@ -13,9 +13,9 @@ interface Fila { rango: string; bloqueada: boolean; }
 interface Seleccion { idSesion: string; titulo: string; detalle: string; pendiente: boolean; causas: Conflicto['causas']; }
 
 /**
- * Paso 3. Generación, consulta del horario y resolución de conflictos (RF-06, RF-07, RF-09).
- * La edición se hace arrastrando la sesión a otra celda (RF-13) o con selección asistida. Las alternativas las filtra el motor y la asignación
- * manual se valida en el servidor, que bloquea cualquier choque con el código de la restricción.
+ * Una sesión se mueve arrastrándola a otra celda o eligiendo una alternativa. Las alternativas las filtra
+ * el motor y la asignación manual se valida en el servidor, que rechaza cualquier choque con el código
+ * de la restricción que se violaría.
  */
 @Component({
   selector: 'app-horario',
@@ -24,36 +24,51 @@ interface Seleccion { idSesion: string; titulo: string; detalle: string; pendien
   template: `
   <div class="encabezado">
     <div>
-      <h2>3. Horario generado</h2>
-      <div class="meta">
-        @if (resultado(); as r) { Ejecución {{ r.idEjecucion }} · {{ r.fechaHora }} · {{ r.usuario }} ·
-          {{ r.metricas.duracionMs }} ms · {{ r.metricas.nodosExplorados }} nodos } @else { Todavía no hay un horario generado }
-      </div>
+      <div class="paso">Paso 3 de 3</div>
+      <h2>Generar y resolver el horario</h2>
+      <p class="intro">Genere el horario, resuelva las sesiones que queden sin lugar, publíquelo para los docentes y expórtelo cuando esté completo.</p>
     </div>
     <div class="botones">
       @if (ejecuciones().length) {
-        <select [ngModel]="resultado()?.idEjecucion" (ngModelChange)="abrir($event)" aria-label="Historial">
-          @for (e of ejecuciones(); track e.idEjecucion) { <option [ngValue]="e.idEjecucion">#{{ e.idEjecucion }} {{ e.estado }} {{ e.fechaHora }}{{ e.publicado ? ' · publicado' : '' }}</option> }
-        </select>
+        <label class="historial">Horario mostrado
+          <select [ngModel]="resultado()?.idEjecucion" (ngModelChange)="abrir($event)">
+            @for (e of ejecuciones(); track e.idEjecucion) {
+              <option [ngValue]="e.idEjecucion">N.º {{ e.idEjecucion }} · {{ e.estado === 'COMPLETO' ? 'Completo' : 'Parcial' }} · {{ e.fechaHora }}{{ e.publicado ? ' · publicado' : '' }}</option>
+            }
+          </select>
+        </label>
       }
+      <button class="btn" [class.sec]="resultado()?.estado === 'COMPLETO'" (click)="generar()" [disabled]="generando()">
+        {{ generando() ? 'Generando…' : 'Generar horario' }}</button>
       @if (resultado()?.publicado) { <span class="etiqueta verde publicado">Publicado a los docentes</span> }
-      @else if (resultado()?.estado === 'COMPLETO') { <button class="btn sec" (click)="publicar()" [disabled]="publicando()">Publicar (RF-12)</button> }
-      <button class="btn sec" (click)="generar()" [disabled]="generando()">{{ generando() ? 'Generando…' : 'Generar horario' }}</button>
-      <button class="btn" [class.peligro]="resultado()?.estado === 'PARCIAL'" (click)="exportar()" [disabled]="!resultado()">Exportar CSV (RF-09)</button>
+      @else if (resultado()?.estado === 'COMPLETO') {
+        <button class="btn sec" (click)="publicar()" [disabled]="publicando()" title="Los docentes podrán verlo en Mi horario">
+          {{ publicando() ? 'Publicando…' : 'Publicar' }}</button>
+      }
+      <button class="btn" [class.bloqueado]="resultado()?.estado === 'PARCIAL'" (click)="exportar()" [disabled]="!resultado()"
+        [title]="resultado()?.estado === 'PARCIAL' ? 'Primero hay que ubicar las sesiones pendientes' : 'Descargar el horario en CSV'">Exportar CSV</button>
     </div>
   </div>
 
   @if (aviso()) { <div class="alerta" [class.error]="aviso()!.tipo === 'error'" [class.ok]="aviso()!.tipo === 'ok'">
     <b>{{ aviso()!.titulo }}</b> {{ aviso()!.texto }}
-    @for (d of aviso()!.detalles; track $index) { <div>{{ d }}</div> }
+    @for (d of aviso()!.detalles; track $index) { <div class="detalle">{{ d }}</div> }
   </div> }
 
   @if (resultado(); as r) {
     @if (r.estado === 'COMPLETO') {
-      <div class="banda ok"><span><b>Horario completo.</b> Se ubicaron las {{ r.metricas.sesionesUbicadas }} sesiones sin violar ninguna restricción dura.</span><span class="etiqueta">COMPLETO</span></div>
+      <div class="banda ok">
+        <div><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg><div><b>Horario completo.</b> Se ubicaron las {{ r.metricas.sesionesUbicadas }} sesiones sin violar ninguna restricción dura. Ya se puede publicar y exportar.
+          <div class="meta">{{ detalleEjecucion(r) }}</div></div></div>
+        <span class="etiqueta ok">COMPLETO</span>
+      </div>
     } @else {
-      <div class="banda parcial"><span><b>Horario pendiente de resolución.</b> Se ubicaron {{ r.metricas.sesionesUbicadas }} de {{ r.metricas.totalSesiones }} sesiones.
-        Faltan {{ r.conflictos.length }} y la exportación queda bloqueada hasta resolverlas (RD-08).</span><span class="etiqueta">PARCIAL</span></div>
+      <div class="banda parcial">
+        <div><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 3.9 2.6 17.5A2 2 0 0 0 4.3 20.5h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9.5v4"/><path d="M12 17h.01"/></svg><div><b>Horario pendiente de resolución.</b> Se ubicaron {{ r.metricas.sesionesUbicadas }} de {{ r.metricas.totalSesiones }} sesiones.
+          {{ r.conflictos.length === 1 ? 'Falta 1' : 'Faltan ' + r.conflictos.length }} y la exportación queda bloqueada hasta resolverlas.
+          <div class="meta">{{ detalleEjecucion(r) }}</div></div></div>
+        <span class="etiqueta parcial">PARCIAL</span>
+      </div>
     }
 
     <div class="horario" cdkDropListGroup [class.arrastrando]="arrastrando()">
@@ -90,7 +105,7 @@ interface Seleccion { idSesion: string; titulo: string; detalle: string; pendien
                     <button class="sesion" [class.sel]="seleccion()?.idSesion === a.idSesion" (click)="seleccionar(a)"
                       cdkDrag [cdkDragData]="a.idSesion" [cdkDragDisabled]="moviendo()" (cdkDragStarted)="arrastrando.set(true); seleccionar(a)"
                       (cdkDragEnded)="arrastrando.set(false)"
-                      [title]="a.curso + ' · ' + a.docente + ' · ' + a.idAula + ' · arrastre para mover'">
+                      [title]="a.curso + ' · grupo ' + a.idGrupo + ' · sesión ' + a.numeroSesion + ' · ' + a.docente + ' · aula ' + a.idAula + '. Arrástrela para moverla'">
                       <b>{{ a.curso }}</b> · {{ a.idGrupo.split('-').pop() }} · S{{ a.numeroSesion }}<br>{{ a.idAula }} · {{ corto(a.docente) }}
                       <div *cdkDragPlaceholder class="sesion hueco"></div>
                     </button>
@@ -100,14 +115,19 @@ interface Seleccion { idSesion: string; titulo: string; detalle: string; pendien
             }
           }
         </div>
-        <p class="meta">Las celdas grises no son franjas válidas. Arrastre una sesión a otra celda para moverla. Las celdas con borde verde son ubicaciones válidas.</p>
+        <div class="leyenda">
+          <span><i class="clase"></i><b>G1 · S2</b> = grupo 1, sesión 2 de la semana</span>
+          <span><i class="bloqueada"></i>Fuera del horario</span>
+          <span><i class="sugerida"></i>Lugar libre para la sesión elegida</span>
+        </div>
+        <p class="meta" style="margin: 6px 0 0">Para mover una sesión, arrástrela a una celda con borde verde o haga clic en ella y elija una alternativa.</p>
       </section>
 
       <aside class="panel">
         @if (r.conflictos.length) {
           <section class="tarjeta">
             <h3>Sesiones pendientes ({{ r.conflictos.length }})</h3>
-            <p class="meta">Arrastre cada sesión pendiente a una celda de la grilla.</p>
+            <p class="meta">No encontraron lugar. Haga clic en una para ver por qué, o arrástrela a una celda de la grilla.</p>
             <div cdkDropList [cdkDropListSortingDisabled]="true">
             @for (c of r.conflictos; track c.idSesion) {
               <button class="pendiente" [class.sel]="seleccion()?.idSesion === c.idSesion" (click)="seleccionarConflicto(c)"
@@ -125,30 +145,35 @@ interface Seleccion { idSesion: string; titulo: string; detalle: string; pendien
             <div class="titulo-sesion">{{ s.titulo }}</div>
             <div class="meta">{{ s.detalle }}</div>
             @if (s.causas.length) {
-              <h4>Causas detectadas (RNF-04)</h4>
+              <h4>Causas detectadas</h4>
               @for (c of s.causas; track c.codigo) {
-                <div class="causa"><span class="codigo">{{ c.codigo }}</span> {{ c.descripcion }} <span class="meta">· bloquea {{ c.tuplasBloqueadas }} opciones</span></div>
+                <div class="causa"><span class="codigo">{{ c.codigo }}</span> {{ c.descripcion }}
+                  <span class="meta">Descarta {{ c.tuplasBloqueadas }} {{ c.tuplasBloqueadas === 1 ? 'opción' : 'opciones' }}</span></div>
               }
             }
             <h4>Alternativas válidas</h4>
-            @if (cargandoAlt()) { <div class="meta">Buscando alternativas…</div> }
+            @if (cargandoAlt()) { <div class="cargando">Buscando alternativas…</div> }
             @for (a of validas(); track $index) {
               <label class="opcion" [class.activa]="elegida() === a">
                 <input type="radio" name="alt" [checked]="elegida() === a" (change)="elegida.set(a)">
-                <span>{{ nombreDia(a.dia) }} {{ a.horaInicio }}–{{ a.horaFin }} · {{ a.idAula }} ({{ a.capacidadAula }}) · {{ a.docente }}</span>
+                <span>{{ nombreDia(a.dia) }} {{ a.horaInicio }}–{{ a.horaFin }} · aula {{ a.idAula }} ({{ a.capacidadAula }} puestos) · {{ a.docente }}</span>
               </label>
-            } @empty { @if (!cargandoAlt()) { <div class="meta">No hay una ubicación libre que cumpla todas las restricciones</div> } }
+            } @empty { @if (!cargandoAlt()) { <div class="vacio">No hay una ubicación libre que cumpla todas las restricciones.</div> } }
             @if (liberando().length) {
               <h4>Requieren liberar otra sesión</h4>
+              <p class="meta">Estos lugares solo sirven si antes se mueve la sesión que los ocupa.</p>
               @for (a of liberando(); track $index) {
-                <div class="opcion inactiva">{{ nombreDia(a.dia) }} {{ a.horaInicio }} · {{ a.idAula }} · {{ a.docente }} <span class="codigo">{{ a.liberar.join(' ') }}</span></div>
+                <div class="opcion inactiva"><span>{{ nombreDia(a.dia) }} {{ a.horaInicio }} · {{ a.idAula }} · {{ a.docente }}</span>
+                  <span class="codigo" title="Regla con la que choca">{{ a.liberar.join(' ') }}</span></div>
               }
             }
-            <button class="btn ancho" (click)="aplicarElegida()" [disabled]="!elegida() || moviendo()">Aplicar alternativa</button>
+            <button class="btn ancho" style="margin-top: 10px" (click)="aplicarElegida()" [disabled]="!elegida() || moviendo()">
+              {{ moviendo() ? 'Aplicando…' : 'Aplicar alternativa' }}</button>
+            @if (validas().length && !elegida()) { <p class="meta" style="margin: 6px 0 0">Marque una alternativa para aplicarla, o arrastre la sesión a una celda verde.</p> }
 
             <details class="manual">
               <summary>Asignación manual</summary>
-              <p class="meta">El servidor revisa todas las restricciones duras y bloquea la operación si alguna se viola.</p>
+              <p class="meta">Elija franja, aula y docente. El sistema revisa todas las restricciones y rechaza el cambio si alguna se viola.</p>
               <label>Franja
                 <select [(ngModel)]="manualFranja">
                   @for (f of franjas(); track f.idFranja) { <option [ngValue]="f.idFranja">{{ nombreDia(f.dia) }} {{ f.horaInicio }}–{{ f.horaFin }}</option> }
@@ -167,15 +192,30 @@ interface Seleccion { idSesion: string; titulo: string; detalle: string; pendien
               <button class="btn sec ancho" (click)="aplicarManual()" [disabled]="moviendo() || manualFranja === null || !manualAula || !manualDocente">Intentar asignar</button>
             </details>
           </section>
+        } @else {
+          <section class="tarjeta ayuda-panel">
+            <h3>Ajustar una sesión</h3>
+            Haga clic en cualquier sesión de la grilla para:
+            <ol>
+              <li>ver a dónde más se puede mover,</li>
+              <li>ver esos lugares resaltados en verde,</li>
+              <li>aplicar el cambio, arrastrarla o asignarla a mano.</li>
+            </ol>
+          </section>
         }
         @if (r.hallazgos.length) {
           <section class="tarjeta">
-            <h3>Hallazgos de validación</h3>
+            <h3>Avisos sobre los grupos</h3>
             @for (h of r.hallazgos; track $index) { <div class="causa ambar"><span class="codigo">{{ h.codigo }}</span> {{ h.idGrupo }} · {{ h.mensaje }}</div> }
           </section>
         }
       </aside>
     </div>
+  } @else if (!ejecuciones().length) {
+    <section class="tarjeta inicio">
+      <h3>Todavía no hay un horario generado</h3>
+      <p>Presione <b>Generar horario</b> arriba a la derecha. El motor ubicará cada sesión cargada en una franja, un aula y un docente sin choques. Si alguna no tiene lugar, verá la causa y las opciones para resolverla.</p>
+    </section>
   }`
 })
 export class HorarioComponent implements OnInit {
@@ -257,8 +297,6 @@ export class HorarioComponent implements OnInit {
         this.generando.set(false);
         this.mostrar(r);
         this.api.ejecuciones().subscribe(l => this.ejecuciones.set(l));
-        this.aviso.set({ tipo: r.estado === 'COMPLETO' ? 'ok' : 'info', titulo: `Generación ${r.estado}.`,
-          texto: `${r.metricas.sesionesUbicadas} de ${r.metricas.totalSesiones} sesiones en ${r.metricas.duracionMs} ms`, detalles: [] });
       },
       error: e => { this.generando.set(false); this.error('No se pudo generar', e); }
     });
@@ -270,6 +308,11 @@ export class HorarioComponent implements OnInit {
     this.alternativas.set([]);
     this.elegida.set(null);
     if (r.conflictos.length) this.seleccionarConflicto(r.conflictos[0]);
+  }
+
+  detalleEjecucion(r: Resultado): string {
+    return `Horario N.º ${r.idEjecucion} · generado por ${r.usuario} el ${r.fechaHora} · ${r.metricas.duracionMs} ms · ` +
+      `${r.metricas.nodosExplorados.toLocaleString('es-CO')} combinaciones revisadas`;
   }
 
   cambiarVista(v: Vista): void {
@@ -337,7 +380,7 @@ export class HorarioComponent implements OnInit {
   }
 
   /**
-   * RF-13. Soltar una sesión en una celda. Se piden de nuevo las alternativas y se aplica la de esa franja,
+   * Soltar una sesión en una celda. Se piden de nuevo las alternativas y se aplica la de esa franja,
    * prefiriendo la misma aula y el mismo docente. Si no hay ninguna se envía igual al servidor, que bloquea
    * el movimiento con el código de la restricción violada y así el coordinador ve la causa.
    */
@@ -376,7 +419,7 @@ export class HorarioComponent implements OnInit {
         this.publicando.set(false);
         this.resultado.set(nuevo);
         this.api.ejecuciones().subscribe(l => this.ejecuciones.set(l));
-        this.aviso.set({ tipo: 'ok', titulo: 'Horario publicado.', texto: `Los docentes ya ven la ejecución ${nuevo.idEjecucion} en Mi horario`, detalles: [] });
+        this.aviso.set({ tipo: 'ok', titulo: 'Horario publicado.', texto: `Los docentes ya ven el horario N.º ${nuevo.idEjecucion} en Mi horario.`, detalles: [] });
       },
       error: x => { this.publicando.set(false); this.error('No se pudo publicar', x); }
     });
@@ -403,7 +446,7 @@ export class HorarioComponent implements OnInit {
         this.moviendo.set(false);
         this.mostrar(nuevo);
         this.api.ejecuciones().subscribe(l => this.ejecuciones.set(l));
-        this.aviso.set({ tipo: 'ok', titulo: 'Sesión reubicada.', texto: `${s.idSesion} quedó asignada. Estado ${nuevo.estado}`, detalles: [] });
+        this.aviso.set({ tipo: 'ok', titulo: 'Sesión reubicada.', texto: `${s.idSesion} quedó asignada. El horario está ${nuevo.estado === 'COMPLETO' ? 'completo' : 'parcial'}.`, detalles: [] });
       },
       error: e => { this.moviendo.set(false); this.error('El sistema bloqueó la operación.', e); }
     });
@@ -425,7 +468,7 @@ export class HorarioComponent implements OnInit {
       error: async (e: HttpErrorResponse) => {
         let err: ErrorApi = ApiService.error(e);
         if (e.error instanceof Blob) {
-          try { err = JSON.parse(await e.error.text()) as ErrorApi; } catch { /* se deja el error genérico */ }
+          try { err = JSON.parse(await e.error.text()) as ErrorApi; } catch { /* el cuerpo no era JSON, queda el error HTTP */ }
         }
         this.aviso.set({ tipo: 'error', titulo: `${err.codigo}.`, texto: err.mensaje, detalles: err.detalles });
       }

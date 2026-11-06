@@ -6,7 +6,7 @@ import { Rol, Token } from './modelos';
 
 const CLAVE = 'horarios.token';
 
-/** Guarda el token JWT del administrador y expone si hay una sesión vigente (RNF-06). */
+/** Guarda el token JWT del administrador y expone si hay una sesión vigente. */
 @Injectable({ providedIn: 'root' })
 export class AutenticacionService {
   private http = inject(HttpClient);

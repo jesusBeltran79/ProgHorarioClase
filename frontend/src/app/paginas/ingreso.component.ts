@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { AutenticacionService } from '../nucleo/autenticacion.service';
 import { ApiService } from '../nucleo/api.service';
 
-/** Pantalla de inicio de sesión del administrador (RNF-06). */
 @Component({
   selector: 'app-ingreso',
   standalone: true,
@@ -12,17 +11,17 @@ import { ApiService } from '../nucleo/api.service';
   template: `
   <div class="ingreso">
     <form class="tarjeta ingreso-caja" (ngSubmit)="entrar()">
-      <h1>Motor de Horarios</h1>
+      <h1 class="logo" style="margin: 0"><span class="mini-grilla" aria-hidden="true"><i></i><i class="llena"></i><i></i><i></i><i></i><i></i></span><b>Motor de Horarios</b></h1>
       <p class="sub">Programa de Ingeniería de Sistemas · Universidad El Bosque</p>
       <label>Usuario
-        <input name="usuario" [(ngModel)]="usuario" autocomplete="username" required>
+        <input name="usuario" [(ngModel)]="usuario" autocomplete="username" autofocus required>
       </label>
       <label>Contraseña
         <input name="contrasena" type="password" [(ngModel)]="contrasena" autocomplete="current-password" required>
       </label>
       @if (error()) { <div class="alerta error">{{ error() }}</div> }
-      <button class="btn" type="submit" [disabled]="cargando()">{{ cargando() ? 'Ingresando…' : 'Ingresar' }}</button>
-      <p class="nota">Perfiles administrador y docente</p>
+      <button class="btn" type="submit" [disabled]="cargando() || !usuario || !contrasena">{{ cargando() ? 'Ingresando…' : 'Ingresar' }}</button>
+      <p class="nota">Ingrese con su cuenta de coordinación o de docente</p>
     </form>
   </div>`
 })

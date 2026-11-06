@@ -6,17 +6,20 @@ import { FranjaDisponible } from '../../nucleo/modelos-gestion';
 import { SelectorFranjasComponent } from '../../componentes/selector-franjas.component';
 import { ErrorApiComponent } from '../../componentes/error-api.component';
 
-/** RF-14. El docente pinta las franjas en que puede dictar clase. Se usa en la próxima generación. */
+/** El docente pinta las franjas en que puede dictar clase. Se usa en la próxima generación. */
 @Component({
   selector: 'app-mi-disponibilidad',
   standalone: true,
   imports: [SelectorFranjasComponent, ErrorApiComponent],
   template: `
     <div class="encabezado">
-      <div><h2>Mi disponibilidad</h2>
-        <div class="meta">Haga clic o arrastre con el botón presionado para marcar o desmarcar franjas</div></div>
+      <div>
+        <div class="paso">Mi portal</div>
+        <h2>Mi disponibilidad</h2>
+        <p class="intro">Marque en verde las franjas en que puede dictar clase. Haga clic en una o arrastre sobre varias con el botón presionado.</p>
+      </div>
       <div class="botones">
-        @if (cambios()) { <span class="meta">Cambios sin guardar</span> }
+        @if (cambios()) { <span class="alerta aviso en-linea">Cambios sin guardar</span> }
         <button class="btn" (click)="guardar()" [disabled]="guardando()">{{ guardando() ? 'Guardando…' : 'Guardar' }}</button>
       </div>
     </div>

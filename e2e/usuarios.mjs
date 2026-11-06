@@ -101,7 +101,7 @@ try {
   await pagina.getByText('Sesión reubicada.').waitFor();
   await foto('u06_horario_movido_arrastrando');
   nota('sesión movida arrastrando a una celda sugerida');
-  await pagina.getByRole('button', { name: 'Publicar (RF-12)' }).click();
+  await pagina.getByRole('button', { name: 'Publicar' }).click();
   await pagina.getByText('Horario publicado.').waitFor();
   await foto('u07_horario_publicado');
 
