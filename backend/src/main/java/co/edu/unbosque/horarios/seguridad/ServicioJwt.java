@@ -30,10 +30,16 @@ public class ServicioJwt {
     }
 
     public String emitir(String usuario, String rol) {
+        return emitir(usuario, rol, null);
+    }
+
+    /** El token lleva el rol y, para un DOCENTE, el identificador de su registro docente. */
+    public String emitir(String usuario, String rol, String idDocente) {
         Instant ahora = Instant.now();
         return Jwts.builder()
                 .subject(usuario)
                 .claim("rol", rol)
+                .claim("idDocente", idDocente)
                 .issuedAt(Date.from(ahora))
                 .expiration(Date.from(ahora.plus(minutos, ChronoUnit.MINUTES)))
                 .signWith(clave)

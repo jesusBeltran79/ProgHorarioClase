@@ -50,7 +50,7 @@ public final class Dto {
 
     public record Login(@NotBlank String usuario, @NotBlank String contrasena) { }
 
-    public record Token(String token, long expiraEn, String usuario) { }
+    public record Token(String token, long expiraEn, String usuario, String rol, String idDocente) { }
 
     public record ItemCatalogo(String id, String nombre, String detalle) { }
 

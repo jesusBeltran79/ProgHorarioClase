@@ -43,6 +43,9 @@ public class ConfiguracionSeguridad {
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                     .requestMatchers("/actuator/health", "/actuator/health/**", "/error").permitAll()
+                    // El docente lee los parámetros para dibujar la grilla y usa solo su portal /api/mi/**
+                    .requestMatchers(HttpMethod.GET, "/api/parametros").hasAnyRole("ADMIN", "DOCENTE")
+                    .requestMatchers("/api/mi/**").hasRole("DOCENTE")
                     .requestMatchers("/api/**").hasRole("ADMIN")
                     .anyRequest().permitAll())
             .exceptionHandling(e -> e

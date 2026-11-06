@@ -39,12 +39,26 @@ public class RepositorioInventarios {
     public void reemplazar(InventarioCargado inv) {
         for (String tabla : List.of("hallazgo_validacion", "conflicto_restriccion", "conflicto", "asignacion",
                 "ejecucion_horario", "sesion", "grupo", "habilitacion_docente", "curso_requisito_aula", "curso",
-                "aula_caracteristica", "aula", "disponibilidad_docente", "docente")) {
+                "aula_caracteristica", "aula", "disponibilidad_docente")) {
             jdbc.update("DELETE FROM " + tabla);
         }
+        // Los docentes se actualizan en lugar de borrarse porque un usuario DOCENTE apunta a su registro.
+        // Si un docente ya no viene en la carga se borra junto con su usuario.
+        java.util.Set<String> nuevos = new java.util.HashSet<>();
+        inv.docentes().forEach(d -> nuevos.add(d.id()));
+        for (String existente : jdbc.queryForList("SELECT id_docente FROM docente", String.class)) {
+            if (!nuevos.contains(existente)) {
+                jdbc.update("DELETE FROM usuario WHERE id_docente = ?", existente);
+                jdbc.update("DELETE FROM docente WHERE id_docente = ?", existente);
+            }
+        }
         for (RegistroDocente d : inv.docentes()) {
-            jdbc.update("INSERT INTO docente (id_docente, nombre, dedicacion, escalafon) VALUES (?, ?, ?, ?)",
-                    d.id(), d.nombre(), vacioANulo(d.dedicacion()), vacioANulo(d.escalafon()));
+            int actualizados = jdbc.update("UPDATE docente SET nombre = ?, dedicacion = ?, escalafon = ? WHERE id_docente = ?",
+                    d.nombre(), vacioANulo(d.dedicacion()), vacioANulo(d.escalafon()), d.id());
+            if (actualizados == 0) {
+                jdbc.update("INSERT INTO docente (id_docente, nombre, dedicacion, escalafon) VALUES (?, ?, ?, ?)",
+                        d.id(), d.nombre(), vacioANulo(d.dedicacion()), vacioANulo(d.escalafon()));
+            }
             jdbc.batchUpdate("INSERT INTO disponibilidad_docente (id_docente, dia, hora_inicio) VALUES (?, ?, ?)",
                     d.disponibilidad(), d.disponibilidad().size(), (ps, x) -> {
                         ps.setString(1, d.id());

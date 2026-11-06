@@ -29,9 +29,11 @@ public class ControladorAutenticacion {
     @PostMapping("/login")
     public Dto.Token login(@Valid @RequestBody Dto.Login login) {
         RepositorioUsuarios.Usuario u = usuarios.buscar(login.usuario())
+                .filter(RepositorioUsuarios.Usuario::activo)
                 .filter(x -> codificador.matches(login.contrasena(), x.hashContrasena()))
                 .orElseThrow(() -> new ExcepcionNegocio(HttpStatus.UNAUTHORIZED, "CREDENCIALES_INVALIDAS",
                         "El usuario o la contraseña no son correctos"));
-        return new Dto.Token(jwt.emitir(u.nombre(), u.rol()), jwt.segundosDeVigencia(), u.nombre());
+        return new Dto.Token(jwt.emitir(u.nombre(), u.rol(), u.idDocente()), jwt.segundosDeVigencia(), u.nombre(),
+                u.rol(), u.idDocente());
     }
 }
