@@ -26,7 +26,7 @@ import java.util.Optional;
 public class RepositorioEjecuciones {
 
     public record Ejecucion(int id, String usuario, LocalDateTime fechaHora, String estado,
-                            long nodosExplorados, long duracionMs) { }
+                            long nodosExplorados, long duracionMs, boolean publicado) { }
 
     public record FilaAsignacion(String idSesion, String idDocente, String idAula,
                                  String dia, LocalTime horaInicio, LocalTime horaFin) { }
@@ -93,17 +93,17 @@ public class RepositorioEjecuciones {
     }
 
     public Optional<Ejecucion> buscar(int id) {
-        return jdbc.query("SELECT e.id_ejecucion, u.nombre_usuario, e.fecha_hora, e.estado, e.nodos_explorados, e.duracion_ms "
+        return jdbc.query("SELECT e.id_ejecucion, u.nombre_usuario, e.fecha_hora, e.estado, e.nodos_explorados, e.duracion_ms, e.publicado "
                         + "FROM ejecucion_horario e JOIN usuario u ON u.id_usuario = e.id_usuario WHERE e.id_ejecucion = ?",
                 (rs, i) -> new Ejecucion(rs.getInt(1), rs.getString(2), rs.getTimestamp(3).toLocalDateTime(),
-                        rs.getString(4), rs.getLong(5), rs.getLong(6)), id).stream().findFirst();
+                        rs.getString(4), rs.getLong(5), rs.getLong(6), rs.getBoolean(7)), id).stream().findFirst();
     }
 
     public List<Ejecucion> listar() {
-        return jdbc.query("SELECT e.id_ejecucion, u.nombre_usuario, e.fecha_hora, e.estado, e.nodos_explorados, e.duracion_ms "
+        return jdbc.query("SELECT e.id_ejecucion, u.nombre_usuario, e.fecha_hora, e.estado, e.nodos_explorados, e.duracion_ms, e.publicado "
                         + "FROM ejecucion_horario e JOIN usuario u ON u.id_usuario = e.id_usuario ORDER BY e.id_ejecucion DESC",
                 (rs, i) -> new Ejecucion(rs.getInt(1), rs.getString(2), rs.getTimestamp(3).toLocalDateTime(),
-                        rs.getString(4), rs.getLong(5), rs.getLong(6)));
+                        rs.getString(4), rs.getLong(5), rs.getLong(6), rs.getBoolean(7)));
     }
 
     public List<FilaAsignacion> asignaciones(int id) {
@@ -157,5 +157,16 @@ public class RepositorioEjecuciones {
             m.put(rs.getString(1), rs.getString(2));
         });
         return m;
+    }
+
+    /** Deja una sola ejecución publicada (RF-12). */
+    public void publicar(int idEjecucion) {
+        jdbc.update("UPDATE ejecucion_horario SET publicado = FALSE WHERE publicado = TRUE AND id_ejecucion <> ?", idEjecucion);
+        jdbc.update("UPDATE ejecucion_horario SET publicado = TRUE WHERE id_ejecucion = ?", idEjecucion);
+    }
+
+    public Optional<Integer> idPublicada() {
+        return jdbc.queryForList("SELECT id_ejecucion FROM ejecucion_horario WHERE publicado = TRUE", Integer.class)
+                .stream().findFirst();
     }
 }

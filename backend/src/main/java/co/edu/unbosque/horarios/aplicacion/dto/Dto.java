@@ -40,10 +40,11 @@ public final class Dto {
                             List<Causa> causas, List<Alternativa> alternativas) { }
 
     public record Resultado(int idEjecucion, String estado, String fechaHora, String usuario, Metricas metricas,
-                            List<AsignacionDto> asignaciones, List<Conflicto> conflictos, List<Hallazgo> hallazgos) { }
+                            List<AsignacionDto> asignaciones, List<Conflicto> conflictos, List<Hallazgo> hallazgos,
+                            boolean publicado) { }
 
     public record Ejecucion(int idEjecucion, String usuario, String fechaHora, String estado,
-                            long nodosExplorados, long duracionMs) { }
+                            long nodosExplorados, long duracionMs, boolean publicado) { }
 
     public record Reubicacion(@NotBlank String idSesion, @NotNull Integer idFranja,
                               @NotBlank String idAula, @NotBlank String idDocente) { }

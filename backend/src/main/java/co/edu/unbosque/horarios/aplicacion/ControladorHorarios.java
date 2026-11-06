@@ -49,6 +49,11 @@ public class ControladorHorarios {
         return servicio.alternativas(id, idSesion);
     }
 
+    @PostMapping("/{id}/publicar")
+    public Dto.Resultado publicar(@PathVariable int id) {
+        return servicio.publicar(id);
+    }
+
     @PostMapping("/{id}/reubicar")
     public Dto.Resultado reubicar(@PathVariable int id, @Valid @RequestBody Dto.Reubicacion solicitud) {
         return servicio.reubicar(id, solicitud);

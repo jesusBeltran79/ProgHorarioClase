@@ -47,4 +47,32 @@ public class RepositorioUsuarios {
         jdbc.update("INSERT INTO usuario (nombre_usuario, hash_contrasena, rol, id_docente) VALUES (?, ?, ?, ?)",
                 nombre, hash, rol, idDocente);
     }
+
+    public Optional<Usuario> buscarPorDocente(String idDocente) {
+        return jdbc.query(COLUMNAS + "WHERE id_docente = ?", (rs, i) -> mapear(rs), idDocente).stream().findFirst();
+    }
+
+    public void actualizar(int id, String rol, String idDocente, boolean activo) {
+        jdbc.update("UPDATE usuario SET rol = ?, id_docente = ?, activo = ? WHERE id_usuario = ?", rol, idDocente, activo, id);
+    }
+
+    public void cambiarContrasena(int id, String hash) {
+        jdbc.update("UPDATE usuario SET hash_contrasena = ? WHERE id_usuario = ?", hash, id);
+    }
+
+    /** Las ejecuciones del usuario borrado pasan a quien lo borra para no perder el historial. */
+    public void borrar(int id, int idHeredero) {
+        jdbc.update("UPDATE ejecucion_horario SET id_usuario = ? WHERE id_usuario = ?", idHeredero, id);
+        jdbc.update("DELETE FROM usuario WHERE id_usuario = ?", id);
+    }
+
+    public int adminsActivos() {
+        Integer n = jdbc.queryForObject("SELECT COUNT(*) FROM usuario WHERE rol = 'ADMIN' AND activo = TRUE", Integer.class);
+        return n == null ? 0 : n;
+    }
+
+    public Optional<String> nombreDocente(String idDocente) {
+        if (idDocente == null) return Optional.empty();
+        return jdbc.queryForList("SELECT nombre FROM docente WHERE id_docente = ?", String.class, idDocente).stream().findFirst();
+    }
 }

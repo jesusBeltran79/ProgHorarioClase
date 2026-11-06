@@ -113,11 +113,28 @@ public class ServicioHorarios {
 
     public List<Dto.Ejecucion> listar() {
         return ejecuciones.listar().stream().map(e -> new Dto.Ejecucion(e.id(), e.usuario(), e.fechaHora().format(FECHA),
-                e.estado(), e.nodosExplorados(), e.duracionMs())).toList();
+                e.estado(), e.nodosExplorados(), e.duracionMs(), e.publicado())).toList();
     }
 
     public Dto.Resultado obtener(int id) {
         return armarResultado(id, contexto());
+    }
+
+    /** RF-12. Publica un horario COMPLETO para que lo vean los docentes. Solo queda uno publicado. */
+    @Transactional
+    public Dto.Resultado publicar(int id) {
+        RepositorioEjecuciones.Ejecucion e = buscarEjecucion(id);
+        if (!"COMPLETO".equals(e.estado())) {
+            throw new ExcepcionNegocio(HttpStatus.CONFLICT, "HORARIO_PARCIAL",
+                    "Solo se puede publicar un horario COMPLETO. Resuelva primero las sesiones pendientes");
+        }
+        ejecuciones.publicar(id);
+        return armarResultado(id, contexto());
+    }
+
+    /** El horario publicado vigente, si existe. Lo usa el portal del docente. */
+    public java.util.Optional<Dto.Resultado> publicado() {
+        return ejecuciones.idPublicada().map(id -> armarResultado(id, contexto()));
     }
 
     public List<Dto.Alternativa> alternativas(int id, String idSesion) {
@@ -267,6 +284,6 @@ public class ServicioHorarios {
                 .map(h -> new Dto.Hallazgo(h.codigoRegla(), h.idGrupo(), h.mensaje())).toList();
         Dto.Metricas metricas = new Dto.Metricas(e.nodosExplorados(), e.duracionMs(), ctx.datos().sesiones().size(), filas.size());
         return new Dto.Resultado(e.id(), e.estado(), e.fechaHora().format(FECHA), e.usuario(), metricas,
-                asignaciones, conflictos, hallazgos);
+                asignaciones, conflictos, hallazgos, e.publicado());
     }
 }
