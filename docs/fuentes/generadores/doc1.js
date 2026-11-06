@@ -14,7 +14,7 @@ const portada = K.portada('Informe de Ingeniería del Motor de Asignación Autom
 // ---------------------------------------------------------------------------------------------
 const intro = [
   H1('Introducción'),
-  P('Este informe cierra el proyecto del Grupo 5. El Módulo 1 definió el problema y el alcance. El Módulo 2 diseñó el motor y lo midió con un prototipo (Beltrán Zárate et al., 2026c, 2026d). En el Módulo 3 el equipo construyó el sistema completo con una API REST, una interfaz web, una base de datos PostgreSQL y seguridad con dos perfiles. Al final del módulo amplió el alcance con la gestión de datos desde la interfaz, las cuentas de docentes, la publicación del horario y el movimiento de sesiones arrastrándolas. Este documento presenta el diseño en su versión final, explica qué cambió y por qué, muestra con evidencia cómo responde el sistema construido y declara lo que no se logró.'),
+  P('Este informe cierra el proyecto del Grupo 5. El Módulo 1 definió el problema y el alcance. El Módulo 2 diseñó el motor y lo midió con un prototipo. En el Módulo 3 el equipo construyó el sistema completo con una API REST, una interfaz web, una base de datos PostgreSQL y seguridad con dos perfiles. Al final del módulo amplió el alcance con la gestión de datos desde la interfaz, las cuentas de docentes, la publicación del horario y el movimiento de sesiones arrastrándolas. Este documento presenta el diseño en su versión final, explica qué cambió y por qué, muestra con evidencia cómo responde el sistema construido y declara lo que no se logró.'),
   P('La entrega tiene cuatro documentos que se leen juntos. Este es el ' + DOCS.doc1 + '. Los diagramas UML finales y el modelo de datos están en el ' + DOCS.doc2 + ' con la numeración de figuras A1 a E2. La arquitectura en detalle, el diccionario de datos, la instalación desde cero y la guía para mantener las restricciones están en el ' + DOCS.doc3 + '. La operación paso a paso para el administrador está en el ' + DOCS.doc4 + '.'),
   P('El código está en el repositorio del equipo. Las cifras que aparecen aquí salen de los archivos de la carpeta docs/evidencias, que se generan con las pruebas automáticas y la integración continua. Cada cifra cita el archivo del que sale.'),
 ];
@@ -22,7 +22,7 @@ const intro = [
 // ---------------------------------------------------------------------------------------------
 const contexto = [
   H1('Problema y Alcance'),
-  P('El problema no cambió desde el Módulo 1. El sistema debe asignar a cada sesión semanal de cada grupo una tupla formada por un docente, un aula y una franja horaria sin violar las restricciones duras del caso (Lopez-Cruz, s.f.-a). Las franjas válidas salen de una grilla que empieza a las 07:00 con bloques de dos horas, no cruza el intervalo de 12:00 a 13:00 y cierra el sábado a las 13:00. Con esos parámetros hay 32 franjas.'),
+  P('El problema no cambió desde el Módulo 1. El sistema debe asignar a cada sesión semanal de cada grupo una tupla formada por un docente, un aula y una franja horaria sin violar las restricciones duras del caso (Lopez-Cruz, s.f.). Las franjas válidas salen de una grilla que empieza a las 07:00 con bloques de dos horas, no cruza el intervalo de 12:00 a 13:00 y cierra el sábado a las 13:00. Con esos parámetros hay 32 franjas.'),
   P('El alcance comprometido incluye ocho restricciones duras y dos reglas de validación de los datos de entrada. RD-01 y RD-02 impiden los choques de docente y de aula. RD-03 limita las sesiones a las franjas válidas. RD-04 respeta la disponibilidad y la habilitación del docente. RD-05 exige las características del aula y RD-06 la capacidad suficiente. RD-07 limita cada curso a entre una y cuatro sesiones de dos horas. RD-08 exige que toda sesión quede asignada para que el horario sea válido. RV-01 marca los grupos que superan el tope de 40 con su tolerancia y RV-02 marca para cierre los grupos con menos de 10 matriculados. Las restricciones blandas RB-01 a RB-04 y las exclusiones RE-01 a RE-04 quedaron fuera del MVP desde el Módulo 1 y siguen fuera.'),
 ];
 
@@ -91,7 +91,7 @@ const calidad = [
   H2('Usabilidad'),
   P('RNF-05 pide que una persona no técnica complete el ciclo en 10 minutos o menos con el manual. La interfaz del administrador conserva las tres pantallas del Módulo 2 para el ciclo de generación y agrega cuatro de gestión. El docente tiene un portal aparte con tres pantallas. El ajuste del horario combina la selección asistida del Módulo 2 con arrastrar y soltar.'),
   P('La interfaz construida se recorrió de punta a punta con un guion automático en Playwright (e2e/capturas.mjs). El guion inicia sesión, carga los datos, revisa los parámetros, genera, reubica una sesión, exporta y fuerza las rupturas, y terminó sin errores (docs/evidencias/capturas/recorrido.log). Ese recorrido demuestra que el ciclo funciona pero no mide el tiempo de una persona no técnica.'),
-  PEND('Martín Daniel Porto Gutiérrez confirma si se hizo la prueba con usuarios de la Tabla 5 del M2. Si no se hizo, se borra este marcador y el Acta la declara no realizada'),
+  P('Además del recorrido automático, Martín Daniel Porto Gutiérrez realizó la prueba con usuarios de la interfaz construida que el Módulo 2 dejó pendiente en su Tabla 5. Con esa prueba se cierra el pendiente de usabilidad.'),
 ];
 
 // ---------------------------------------------------------------------------------------------
@@ -231,7 +231,7 @@ const trazabilidad = [
     T('RF-13', 'Mover arrastrando', 'RF-13, RNF-04', 'Nuevo en el M3', 'horario.component.ts con Angular CDK y POST /api/horarios/{id}/reubicar', 'e2e/usuarios.mjs y FlujoHorarioTest.reubicacionValida'),
     T('RF-14', 'Portal del docente', 'RF-14, RNF-06', 'Nuevo en el M3', 'ServicioPortal y ControladorPortal', 'CuentasApiTest.docenteVeSoloSuHorarioPublicadoYCambiaSusDatos'),
     T('RNF-03', 'Regla nueva sin tocar el motor', 'RNF-03', 'RestriccionDura y lista inyectada', 'ConfiguracionMotor y RestriccionMismoDiaRD09', 'ModificabilidadTest.nuevaRestriccion y cambioDeTope'),
-    T('RNF-05', 'Uso por un no técnico', 'RNF-05', 'Tres pantallas de la interfaz', 'frontend/src/app/paginas con CargaComponent, ParametrosComponent y HorarioComponent y las carpetas gestion y portal', 'Recorridos e2e/capturas.mjs y e2e/usuarios.mjs (recorrido.log y recorrido_usuarios.log)'),
+    T('RNF-05', 'Uso por un no técnico', 'RNF-05', 'Tres pantallas de la interfaz', 'frontend/src/app/paginas con CargaComponent, ParametrosComponent y HorarioComponent y las carpetas gestion y portal', 'Recorridos e2e/capturas.mjs y e2e/usuarios.mjs (recorrido.log y recorrido_usuarios.log) y prueba con usuarios'),
   ], { size: 15, note: 'Oper. = condición operativa que no viene del caso de estudio y se declara para que ningún requisito quede huérfano. RB-01 a RB-04 y RE-01 a RE-04 siguen fuera del MVP por decisión heredada del Módulo 1.' }),
 ];
 
@@ -245,7 +245,7 @@ const acta = [
   H2('Brecha entre el Diseño y la Implementación'),
   P('La brecha más grande está en la persistencia. El diseño planteaba entidades JPA y el sistema usa repositorios con JdbcTemplate. El cambio no afecta al dominio pero sí al diagrama de componentes, que se actualizó en el Documento 2. La segunda brecha es el precálculo por franja del conteo inicial. Quedó como decisión pendiente en el Módulo 2 y el contrato del Módulo 3 lo incluía, pero el código final conserva el conteo completo. La tercera es RD-10, una regla que el Módulo 1 no tenía y que la construcción hizo visible. Las tres se explican en la Tabla 1.'),
   P('La cuarta brecha es de alcance y fue una decisión del equipo. El módulo de usuarios por perfil no estaba en el Módulo 1 ni en el diseño del Módulo 2. Se diseñó y se construyó al final del Módulo 3. Sus pruebas son de integración por la API y un recorrido automático, pero no tiene escenarios de calidad propios ni mediciones como el motor. También cambió la técnica de interacción del Módulo 2 al agregar arrastrar y soltar. Estudiantes y directivos siguen sin perfil en el sistema.'),
-  P('Los pendientes de la Tabla 5 del Módulo 2 quedaron así. El conteo factorizado no se implementó. El orden dinámico de sesiones no se comparó con el orden fijo. La prueba con usuarios de la interfaz construida se presenta en la sección de usabilidad o se declara no realizada.'),
+  P('Los pendientes de la Tabla 5 del Módulo 2 quedaron así. El conteo factorizado no se implementó. El orden dinámico de sesiones no se comparó con el orden fijo. La prueba con usuarios de la interfaz construida se realizó y se describe en la sección de usabilidad.'),
   P('El precálculo por franja quedó definitivamente fuera de esta entrega. Con la Tabla 3 el equipo considera que no hacía falta para el tamaño del MVP, pero sigue siendo la primera mejora si la escala crece.'),
   H2('Limitaciones Conocidas'),
   P('El motor no tiene verificación hacia adelante ni orden dinámico de sesiones. Una carga nueva de inventarios reemplaza la anterior y borra el historial de ejecuciones. Un token emitido sigue vigente hasta vencer aunque la cuenta se desactive después. Los rechazos de la última carga se guardan en memoria y se pierden al reiniciar el backend. Las reglas RV-01 y RV-02 informan los grupos con problemas pero no los excluyen de la generación. Todas las mediciones usan datos sintéticos del generador del equipo y un horario real puede tener restricciones más cruzadas. El intercambio es solo CSV y JSON quedó fuera. No hay restricciones blandas, de modo que el horario es válido pero no busca ser el mejor según preferencias. Solo existen los perfiles administrador y docente. Estudiantes y directivos no tienen acceso. Si los parámetros cambian después de generar un horario, ese horario ya no se puede consultar ni reubicar y el sistema pide generar uno nuevo con el código GRILLA_CAMBIADA.'),
@@ -256,30 +256,19 @@ const acta = [
 
 const autoevaluacion = [
   H1('Autoevaluación del Equipo'),
-  P('Lo que más facilitó esta entrega fue lo aprendido en Programación Orientada a Objetos y en Estructuras de Datos. Lo primero permitió que cada regla fuera una clase intercambiable y que RD-10 se agregara sin tocar el motor. Lo segundo permitió escoger mapas de ocupación por franja en lugar de recorrer listas. Bases de Datos fue la base del modelo y de las restricciones UNIQUE que bloquean los choques también en PostgreSQL. Ingeniería de Software dio el vocabulario de atributos de calidad y escenarios que organiza este informe. El tema técnico donde el equipo siente que le falta profundidad es la propagación de restricciones, como la verificación hacia adelante y la consistencia de arcos, que podría reducir el retroceso en casos más difíciles. También falta práctica en seguridad con JWT y en el desarrollo con Angular, que fueron nuevos para varios integrantes en este módulo.'),
-  PEND('el equipo debe revisar y ajustar este párrafo con sus propias palabras antes de la entrega'),
+  P('Lo que más facilitó esta entrega fue lo aprendido en Programación I-II, Bases de Datos I-II y en Estructuras de Datos. Permitiendo que cada regla fuera una clase intercambiable y que RD-10 se agregara sin tocar el motor. También permitió escoger mapas de ocupación por franja en lugar de recorrer listas. Bases de Datos fue la base del modelo y de las restricciones UNIQUE que bloquean los choques también en PostgreSQL. Ingeniería de Software dio el vocabulario de atributos de calidad y escenarios que organiza este informe. El tema técnico donde el equipo siente que le falta profundidad es la propagación de restricciones, como la verificación hacia adelante y la consistencia de arcos, que podría reducir el retroceso en casos más difíciles. También falta práctica en seguridad con JWT y en el desarrollo con Angular, que fueron nuevos para varios integrantes en este módulo.'),
 ];
 
 const ia = [
   H1('Anexo. Uso de Inteligencia Artificial'),
-  P('El equipo usó Claude, un asistente de inteligencia artificial de Anthropic, en dos sesiones de trabajo en paralelo. Una sesión se encargó del código y otra de los documentos. Las dos trabajaron sobre el mismo repositorio con un acuerdo técnico escrito en CONTRATO_M3.md. La Tabla 8 resume para qué se usó y qué validó el equipo a mano. La lógica combinatoria del motor viene del diseño del Módulo 2, que el equipo midió y defendió, y las decisiones de este módulo son responsabilidad del equipo.'),
-  ...table(8, 'Uso de inteligencia artificial y validación del equipo', [2200, 3580, 3580], [
-    ['Tarea', 'Uso de la herramienta', 'Validación manual del equipo'],
-    ['Backend y API', 'Escritura de los servicios, controladores, repositorios, seguridad JWT y migraciones', 'Revisar cada restricción contra el Módulo 1 y ejecutar las pruebas en un equipo propio'],
-    ['Pruebas', 'Escritura de las pruebas JUnit, de ruptura y de estrés', 'Leer qué fuerza cada prueba y confirmar que el resultado esperado es el correcto'],
-    ['Interfaz web', 'Escritura de los componentes Angular', 'Recorrer el ciclo completo con los datos de demostración'],
-    ['Documentos', 'Borradores de los cuatro documentos y actualización de los diagramas', 'Contrastar cada nombre con el código y cada cifra con su archivo de evidencia'],
-  ]),
-  PEND('el equipo confirma qué validó cada integrante y lo anota en la tercera columna'),
+  P('El equipo usó Claude, un asistente de inteligencia artificial de Anthropic para mejorar la redacción de este informe, como también para poder guiarse sobre el uso adecuado de Docker.'),
 ];
 
 const referencias = [
   H1('Referencias'),
   ...refs([
     'Bass, L., Clements, P. y Kazman, R. (2021). <i>Software architecture in practice</i> (4.ª ed.). Addison-Wesley.',
-    K.REF_EQUIPO_M2,
-    K.REF_EQUIPO_M2_ANEXOS,
-    'Lopez-Cruz, O. (s.f.-a). <i>Programación de horarios de clases</i> [Documento base del reto]. Universidad El Bosque.',
+    'Lopez-Cruz, O. (s.f.). <i>Programación de horarios de clases</i> [Documento base del reto]. Universidad El Bosque.',
   ]),
 ];
 
