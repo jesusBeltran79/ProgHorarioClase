@@ -1,0 +1,21 @@
+id_curso,nombre,num_sesiones,requisitos,docentes_habilitados
+MAT1,Cálculo Diferencial,2,,D01
+MAT3,Álgebra Lineal,1,,D01
+EST1,Probabilidad y Estadística,2,,D02
+MAT2,Cálculo Integral,1,,D02
+PRO1,Programación 1,2,COMPUTADORES,D03
+PRO2,Programación 2,1,COMPUTADORES,D03
+EDD,Estructuras de Datos,2,COMPUTADORES,D04
+MAT4,Matemáticas Discretas,1,,D04
+BD1,Bases de Datos 1,2,COMPUTADORES,D05
+BD2,Bases de Datos 2,1,COMPUTADORES,D05
+IS1,Ingeniería de Software 1,2,,D06
+IS2,Ingeniería de Software 2,1,,D06
+SO,Sistemas Operativos,2,,D07
+RED,Redes de Computadores,1,COMPUTADORES,D07
+IA,Inteligencia Artificial,2,COMPUTADORES,D08
+ARQ,Arquitectura de Computadores,1,,D08
+COE,Comunicación Oral y Escrita,2,SILLAS_MOVILES,D09
+GP,Gestión de Proyectos,1,SILLAS_MOVILES,D09
+FIS1,Física Mecánica,2,,D10
+PN2,Proyecto Núcleo 2,1,SILLAS_MOVILES,D10
