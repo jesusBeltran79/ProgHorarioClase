@@ -1,13 +1,13 @@
-2026-11-04T00:07:21.281Z captura 01_login
-2026-11-04T00:07:22.116Z captura 02_carga_validacion
-2026-11-04T00:07:22.676Z captura 03_parametros
-2026-11-04T00:07:23.392Z captura 04_horario_completo
-2026-11-04T00:07:23.882Z captura 05_vista_por_aula
-2026-11-04T00:07:24.582Z captura 07_reubicar
-2026-11-04T00:07:24.667Z reubicación aplicada y el horario sigue COMPLETO
-2026-11-04T00:07:25.260Z captura 08_exportar
-2026-11-04T00:07:26.012Z captura 09_ruptura_capacidad
-2026-11-04T00:07:26.608Z captura 11_carga_con_errores
-2026-11-04T00:07:27.426Z captura 06_conflicto_pendiente
-2026-11-04T00:07:28.009Z captura 10_exportar_bloqueado
-2026-11-04T00:07:28.110Z recorrido completo sin errores
+2026-11-06T03:57:29.877Z captura 01_login
+2026-11-06T03:57:31.194Z captura 02_carga_validacion
+2026-11-06T03:57:31.861Z captura 03_parametros
+2026-11-06T03:57:32.815Z captura 04_horario_completo
+2026-11-06T03:57:33.381Z captura 05_vista_por_aula
+2026-11-06T03:57:34.289Z captura 07_reubicar
+2026-11-06T03:57:34.437Z reubicación aplicada y el horario sigue COMPLETO
+2026-11-06T03:57:35.136Z captura 08_exportar
+2026-11-06T03:57:36.125Z captura 09_ruptura_capacidad
+2026-11-06T03:57:36.964Z captura 11_carga_con_errores
+2026-11-06T03:57:38.082Z captura 06_conflicto_pendiente
+2026-11-06T03:57:38.822Z captura 10_exportar_bloqueado
+2026-11-06T03:57:39.051Z recorrido completo sin errores

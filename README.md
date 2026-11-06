@@ -36,13 +36,13 @@ La primera vez tarda unos minutos porque descarga las imágenes y compila. Cuand
 
 Usuario administrador **`admin`** con clave **`Horarios2026*`**.
 
-Para probar, en la pantalla *Cargar y validar* elija los cuatro archivos de `datos/demo/`
+Para probar, en la pantalla *Importar CSV y validar* elija los cuatro archivos de `datos/demo/`
 (`docentes.csv`, `aulas.csv`, `cursos.csv`, `grupos.csv`), pulse *Cargar y validar*, revise los
 parámetros y en *Generar y resolver* pulse *Generar horario*.
 
 Para probar el perfil docente
 
-1. En *Generar y resolver* pulse *Publicar (RF-12)*. Si vuelve a generar, hay que publicar otra vez.
+1. En *Generar y resolver* pulse *Publicar*. Si vuelve a generar, hay que publicar otra vez.
 2. En *Usuarios* cree la cuenta `docente.d03` con perfil DOCENTE, docente `D03 · Laura Gómez Vargas`
    y clave `Clave2026*` (mínimo 8 caracteres).
 3. Cierre sesión y entre con esa cuenta. En *Mi horario* aparecen sus 6 sesiones.
