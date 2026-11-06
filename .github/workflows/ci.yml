@@ -99,6 +99,7 @@ jobs:
           npm ci --no-audit --no-fund
           npx playwright install --with-deps chromium
           mkdir -p ../salida && node capturas.mjs http://localhost:4200 ../salida/capturas
+          node usuarios.mjs http://localhost:4200 ../salida/capturas_usuarios
 
       - name: Pruebas de ruptura contra la API desplegada
         run: bash .github/scripts/ruptura_api.sh http://localhost:4200 salida/ruptura_api.log
