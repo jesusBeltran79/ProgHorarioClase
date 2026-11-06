@@ -16,7 +16,7 @@ const portada = K.portada('Anexos Técnicos del Motor de Asignación Automática
 
 const intro = [
   H1('Introducción'),
-  P('Este documento reúne los diagramas finales del sistema construido. Reemplaza al Documento de Anexos del Módulo 2 (Beltrán Zárate et al., 2026d) y conserva su numeración para que las citas del ' + DOCS.doc1 + ' y del ' + DOCS.doc3 + ' sigan siendo válidas. Cada diagrama se actualizó contra el código de la rama principal del repositorio. Los nombres de clases, métodos, tipos y tablas son los del código. Las fuentes en PlantUML están en la carpeta docs/diagramas.'),
+  P('Este documento reúne los diagramas finales del sistema construido. Reemplaza al Documento de Anexos del Módulo 2 y conserva su numeración para que las citas del ' + DOCS.doc1 + ' y del ' + DOCS.doc3 + ' sigan siendo válidas. Cada diagrama se actualizó contra el código de la rama principal del repositorio. Los nombres de clases, métodos, tipos y tablas son los del código. Las fuentes en PlantUML están en la carpeta docs/diagramas.'),
   P('Frente al Módulo 2 hay tres cambios en el conjunto de diagramas. El diagrama de clases se dividió en dos figuras porque el sistema construido tiene una capa de aplicación con servicios, seguridad y repositorios que no cabía en una sola página. El diagrama de secuencia ahora sigue una generación real a través de la API con el token JWT. Se agregó el diagrama de despliegue en contenedores, que en el Módulo 2 estaba combinado con el de componentes. La Tabla 1 lista los artefactos. Al final del módulo se agregó la Figura A4 con el módulo de usuarios por perfil y el diagrama entidad relación y el de componentes incluyen sus cambios.'),
   ...table(1, 'Índice de artefactos', [1100, 5260, 3000], [
     ['Figura', 'Artefacto', 'Fuente PlantUML'],
@@ -82,8 +82,6 @@ const verticalD2 = [
     'El núcleo corre en memoria dentro del backend. La persistencia lee los CSV una vez, guarda cada ejecución en PostgreSQL y Flyway crea el esquema al arrancar.'),
   ...V('E2', 'Despliegue en contenedores', 'despliegue.png',
     'Los tres contenedores se levantan con docker compose up --build. El orden de arranque lo controlan las verificaciones de salud de cada servicio.'),
-  H1('Referencias'),
-  ...refs([K.REF_EQUIPO_M2_ANEXOS]),
 ];
 
 K.guardar([

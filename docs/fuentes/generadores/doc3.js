@@ -9,7 +9,7 @@ const portada = K.portada('Manual Técnico del Motor de Asignación Automática 
 
 const intro = [
   H1('Introducción'),
-  P('Este manual explica cómo está construido el motor de horarios del Grupo 5 y cómo se instala, se opera y se mantiene. Está escrito para quien reciba el sistema después del equipo y tenga que levantarlo desde cero o cambiar una regla. Parte del diseño aprobado en el Módulo 2 (Beltrán Zárate et al., 2026c, 2026d) en su versión construida. No repite la justificación del diseño. Esa justificación está en el ' + DOCS.doc1 + '. Los diagramas UML y el diagrama entidad relación están en el ' + DOCS.doc2 + '. La operación desde la interfaz web para el administrador está en el ' + DOCS.doc4 + '.'),
+  P('Este manual explica cómo está construido el motor de horarios del Grupo 5 y cómo se instala, se opera y se mantiene. Está escrito para quien reciba el sistema después del equipo y tenga que levantarlo desde cero o cambiar una regla. Parte del diseño aprobado en el Módulo 2 en su versión construida. No repite la justificación del diseño. Esa justificación está en el ' + DOCS.doc1 + '. Los diagramas UML y el diagrama entidad relación están en el ' + DOCS.doc2 + '. La operación desde la interfaz web para el administrador está en el ' + DOCS.doc4 + '.'),
   P('Todos los nombres de clases, paquetes, rutas y tablas de este documento se tomaron del código del repositorio. Si un nombre de este manual no coincide con el código, manda el código y el manual debe corregirse.'),
 ];
 
@@ -59,7 +59,7 @@ const arquitectura = [
   P('El acceso a la base se hace con <c>JdbcTemplate</c> de Spring y consultas SQL explícitas en los repositorios. No se usan entidades JPA. Con eso el esquema queda definido en un solo lugar, que son los scripts de Flyway, y el núcleo no carga anotaciones de persistencia.'),
 
   H2('Ensamblaje del Núcleo'),
-  P('La clase <c>ConfiguracionMotor</c> del paquete aplicacion es el único lugar donde se registran las reglas. Publica un bean <c>CatalogoRestricciones</c> con la lista de restricciones duras y un bean <c>ValidadorEntrada</c> con las reglas RV-01 y RV-02. <c>ServicioHorarios</c> recibe los dos por constructor y crea un <c>MotorAsignacion</c> nuevo en cada generación. El motor nunca crea reglas ni conoce sus clases concretas. Ese es el principio de inversión de dependencias que el diseño del Módulo 2 había ubicado en ControladorHorarios. En la construcción pasó a una clase de configuración para que el controlador no tenga lógica.'),
+  P('La clase <c>ConfiguracionMotor</c> del paquete aplicacion es el único lugar donde se registran las reglas. Publica un bean <c>CatalogoRestricciones</c> con la lista de restricciones duras y un bean <c>ValidadorEntrada</c> con las reglas RV-01 y RV-02. <c>ServicioHorarios</c> recibe los dos por constructor y crea un <c>MotorAsignacion</c> nuevo en cada generación. El motor nunca crea reglas ni conoce sus clases concretas. Ese es el principio de inversión de dependencias (Martin, 2003) que el diseño del Módulo 2 había ubicado en ControladorHorarios. En la construcción pasó a una clase de configuración para que el controlador no tenga lógica.'),
   ...code(`@Bean
 public CatalogoRestricciones catalogoRestricciones() {
     return new CatalogoRestricciones(List.of(
@@ -76,7 +76,7 @@ public CatalogoRestricciones catalogoRestricciones() {
   P('Con todo en memoria el servicio llama a <c>MotorAsignacion.generarHorario</c> con el orden de la sesión más restringida primero y los mapas de ocupación activos. Al terminar guarda la ejecución con <c>RepositorioEjecuciones</c> en una sola transacción. Se guardan la fila de <c>ejecucion_horario</c>, las asignaciones, los conflictos con sus códigos y los hallazgos de validación. La respuesta es un objeto <c>Resultado</c> con el estado COMPLETO o PARCIAL. La Figura C1 del ' + DOCS.doc2 + ' sigue este flujo como diagrama de secuencia.'),
 
   H2('Algoritmo de Asignación'),
-  P('El motor trata cada sesión como una variable cuyo dominio son las tuplas de docente, aula y franja. Trabaja en cuatro pasos. El primero cuenta para cada sesión cuántas tuplas pasan las restricciones locales, que son las que devuelven verdadero en <c>esLocal</c>. Hoy son RD-04, RD-05 y RD-06. El segundo ordena las sesiones de menor a mayor dominio para atender primero la más restringida. El tercero es el backtracking. Para cada sesión prueba tuplas y evalúa las reglas locales antes que las de choque porque son más baratas. Si ninguna tupla sirve deshace la última asignación y retrocede.'),
+  P('El motor trata cada sesión como una variable cuyo dominio son las tuplas de docente, aula y franja, como en un problema de satisfacción de restricciones (Russell y Norvig, 2021). Trabaja en cuatro pasos. El primero cuenta para cada sesión cuántas tuplas pasan las restricciones locales, que son las que devuelven verdadero en <c>esLocal</c>. Hoy son RD-04, RD-05 y RD-06. El segundo ordena las sesiones de menor a mayor dominio para atender primero la más restringida. El tercero es el backtracking. Para cada sesión prueba tuplas y evalúa las reglas locales antes que las de choque porque son más baratas. Si ninguna tupla sirve deshace la última asignación y retrocede.'),
   P('El cuarto paso solo ocurre si el árbol se agota o se supera el tiempo límite. El motor recupera la asignación parcial más profunda que alcanzó e intenta ubicar sobre ella las sesiones que faltan. Para cada sesión que sigue sin lugar evalúa todas las reglas sin detenerse en la primera falla y cuenta cuántas tuplas bloquea cada código. Con eso arma un <c>ReporteConflicto</c>. La Figura B1 del ' + DOCS.doc2 + ' muestra los cuatro pasos como diagrama de actividades.'),
   P('Hay dos detalles de la construcción que conviene conocer. El primero es que las franjas no se prueban en el orden de la grilla. <c>OrdenFranjas.intercalarDias</c> las ordena por hora y luego por día, de modo que después del lunes a las 07:00 se prueba el martes a las 07:00. Así las sesiones de un mismo grupo tienden a caer en días distintos sin agregar una regla. Ese orden no cambia qué horarios son válidos. Solo cambia cuál encuentra primero el motor. El segundo detalle es que el conteo inicial sigue recorriendo todas las tuplas de cada sesión. El precálculo por franja que se planteó en el Módulo 2 no quedó implementado en esta versión y el conteo sigue siendo el paso más costoso del motor.'),
   P('<c>EstadoHorario</c> guarda las asignaciones confirmadas y dos listas de conjuntos, una de docentes ocupados y otra de aulas ocupadas, con un conjunto por franja. Responder si un docente o un aula ya están ocupados cuesta una consulta a un conjunto. Al deshacer una asignación se quita de la lista y de los dos conjuntos. El tiempo límite del motor se lee de la propiedad <c>app.motor.limite-ms</c>, que por defecto vale 60.000 ms para cumplir RNF-01.'),
@@ -309,7 +309,7 @@ java -Xss64m -cp target/classes co.edu.unbosque.horarios.app.PruebaEstres target
 
 const mantenimiento = [
   H1('Guía de Mantenimiento del Algoritmo de Restricciones'),
-  P('Esta sección explica cómo cambiar las reglas del motor sin romperlo. El diseño se pensó para que los cambios frecuentes no toquen <c>MotorAsignacion</c>. La Tabla 25 dice dónde se hace cada tipo de cambio.'),
+  P('Esta sección explica cómo cambiar las reglas del motor sin romperlo. El diseño se pensó para que los cambios frecuentes no toquen <c>MotorAsignacion</c>. Cada restricción es una estrategia del patrón Strategy (Gamma et al., 1994) y el motor solo conoce su interfaz. La Tabla 25 dice dónde se hace cada tipo de cambio.'),
   ...table(25, 'Dónde se hace cada tipo de cambio', [3000, 3400, 2960], [
     ['Cambio', 'Dónde se hace', 'Recompilar'],
     ['Tope de matriculados, tolerancia o mínimo de cierre', 'Pantalla de parámetros o PUT /api/parametros', 'No'],
@@ -366,8 +366,6 @@ const problemas = [
 const referencias = [
   H1('Referencias'),
   ...refs([
-    K.REF_EQUIPO_M2,
-    K.REF_EQUIPO_M2_ANEXOS,
     'Gamma, E., Helm, R., Johnson, R. y Vlissides, J. (1994). <i>Design patterns: Elements of reusable object-oriented software</i>. Addison-Wesley.',
     'Martin, R. C. (2003). <i>Agile software development: Principles, patterns, and practices</i>. Prentice Hall.',
     'Russell, S. y Norvig, P. (2021). <i>Artificial intelligence: A modern approach</i> (4.ª ed.). Pearson.',
