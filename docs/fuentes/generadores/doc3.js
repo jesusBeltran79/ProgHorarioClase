@@ -49,12 +49,13 @@ const arquitectura = [
     ['validacion', 'No', 'ReglaValidacionEntrada, ReglaTopeMatriculadosRV01, ReglaCierreMinimoRV02, ValidadorEntrada y ReporteValidacion'],
     ['motor', 'No', 'MotorAsignacion, EstadoHorario, OrdenExploracion, OrdenFranjas, ReporteConflicto y ResultadoAsignacion'],
     ['datos', 'No', 'ConjuntoDatos y GeneradorDatosSinteticos para las mediciones con semilla fija'],
-    ['persistencia', 'Sí', 'CargadorInventariosCSV, LectorCSV, ConstructorDominio, ExportadorHorarioCSV y los repositorios JDBC RepositorioInventarios, RepositorioParametros, RepositorioEjecuciones y RepositorioUsuarios'],
-    ['aplicacion', 'Sí', 'ControladorInventarios, ControladorParametros, ControladorHorarios, sus servicios, ConfiguracionMotor, ManejadorErrores, ExcepcionNegocio y los DTO en dto.Dto'],
+    ['persistencia', 'Sí', 'CargadorInventariosCSV, LectorCSV, ConstructorDominio, ExportadorHorarioCSV y los repositorios JDBC RepositorioInventarios, RepositorioParametros, RepositorioEjecuciones, RepositorioUsuarios y RepositorioCatalogos'],
+    ['aplicacion', 'Sí', 'ControladorInventarios, ControladorParametros, ControladorHorarios, sus servicios, ConfiguracionMotor, ManejadorErrores, ExcepcionNegocio y los DTO en dto.Dto. Subpaquete catalogos con ServicioCatalogos y ControladorCatalogos. Subpaquete cuentas con ServicioCuentas, ServicioPortal, ControladorUsuarios y ControladorPortal'],
     ['seguridad', 'Sí', 'ConfiguracionSeguridad, FiltroJwt, ServicioJwt, ControladorAutenticacion e InicializadorDatos'],
     ['app', 'No', 'Programas de consola para medir y demostrar. MedicionEscalabilidad, PruebaEstres, PruebaDeCambio, DemostracionConflicto y EjecutarConjuntoCSV'],
   ], { note: 'Los cuatro primeros paquetes y motor forman el núcleo. Los paquetes persistencia, aplicacion y seguridad lo envuelven para la versión web.' }),
   P('La interfaz web es un proyecto Angular 18.2 con componentes standalone. Tiene cuatro páginas, IngresoComponent, CargaComponent, ParametrosComponent y HorarioComponent, dentro de un MarcoComponent con el menú lateral. ApiService concentra las llamadas a la API. AutenticacionService guarda el token y un interceptor lo agrega en la cabecera de cada petición. Una guardia de rutas envía a la pantalla de ingreso a quien no tenga sesión.'),
+  P('El módulo de usuarios agregó dos grupos de páginas. Las páginas de gestión del administrador están en <c>paginas/gestion</c> y son docentes, aulas, materias y usuarios. Las del docente están en <c>paginas/portal</c> y son mi horario, mi disponibilidad y mi cuenta. <c>GestionService</c> y <c>PortalService</c> llaman a la API de cada perfil. La grilla de disponibilidad es un componente reutilizable, <c>SelectorFranjasComponent</c>, que se pinta con clic o arrastrando. El arrastre de docentes entre listas y el de sesiones en la grilla del horario usan Angular CDK 18.2. La guardia <c>guardiaRol</c> deja entrar a cada ruta solo al perfil que corresponde y el menú cambia según el rol del token.'),
   P('El acceso a la base se hace con <c>JdbcTemplate</c> de Spring y consultas SQL explícitas en los repositorios. No se usan entidades JPA. Con eso el esquema queda definido en un solo lugar, que son los scripts de Flyway, y el núcleo no carga anotaciones de persistencia.'),
 
   H2('Ensamblaje del Núcleo'),
@@ -85,7 +86,7 @@ public CatalogoRestricciones catalogoRestricciones() {
   P('La base de datos es la segunda barrera. La tabla <c>asignacion</c> tiene dos restricciones UNIQUE, una sobre ejecución, docente, día y hora de inicio y otra sobre ejecución, aula, día y hora de inicio. Un choque de docente o de aula que llegue por un camino distinto del motor lo rechaza PostgreSQL.'),
 
   H2('Seguridad'),
-  P('La seguridad es sin sesión de servidor. <c>ControladorAutenticacion</c> recibe usuario y contraseña en <c>POST /api/auth/login</c>, compara la contraseña con el hash bcrypt de la tabla <c>usuario</c> y entrega un token JWT firmado por <c>ServicioJwt</c>. El token dura 480 minutos por defecto. <c>FiltroJwt</c> lee la cabecera <c>Authorization: Bearer</c> en cada petición y deja pasar solo a usuarios con rol ADMIN. Las únicas rutas públicas son el inicio de sesión y <c>/actuator/health</c>. Al arrancar, <c>InicializadorDatos</c> crea el usuario administrador si no existe y guarda su clave con bcrypt.'),
+  P('La seguridad es sin sesión de servidor. <c>ControladorAutenticacion</c> recibe usuario y contraseña en <c>POST /api/auth/login</c>, compara la contraseña con el hash bcrypt de la tabla <c>usuario</c> y entrega un token JWT firmado por <c>ServicioJwt</c>. El token dura 480 minutos por defecto. <c>FiltroJwt</c> lee la cabecera <c>Authorization: Bearer</c> en cada petición y deja autenticado al usuario con el rol que trae el token. <c>ConfiguracionSeguridad</c> exige el rol DOCENTE en <c>/api/mi/**</c> y el rol ADMIN en el resto de <c>/api</c>, salvo <c>GET /api/parametros</c> que leen los dos perfiles. El token también lleva el docente al que está ligada la cuenta. El portal no confía en ese dato y busca el docente de la cuenta en la base con el nombre del usuario autenticado, así un docente nunca lee ni cambia datos de otro. Las únicas rutas públicas son el inicio de sesión y <c>/actuator/health</c>. Al arrancar, <c>InicializadorDatos</c> crea el usuario administrador si no existe y guarda su clave con bcrypt.'),
   P('El horario exportado no lleva datos personales de estudiantes. El archivo de salida solo tiene curso, grupo, sesión, docente, aula, día y horas, como pide RNF-06.'),
 
   H2('API REST'),
@@ -104,7 +105,13 @@ public CatalogoRestricciones catalogoRestricciones() {
     ['GET /api/horarios/{id}/alternativas/{idSesion}', 'Lista de alternativas', 'RF-07'],
     ['POST /api/horarios/{id}/reubicar', 'Resultado o 409 con códigos RD', 'RF-07, RNF-04'],
     ['GET /api/horarios/{id}/exportar', 'Archivo CSV o 409 si el horario es PARCIAL', 'RF-09, RD-08'],
-  ], { note: 'Todas las rutas salvo el inicio de sesión exigen un token de un usuario con rol ADMIN. Sin token la respuesta es 401 con el código NO_AUTENTICADO.' }),
+    ['POST /api/horarios/{id}/publicar', 'Resultado publicado o 409 HORARIO_PARCIAL', 'RF-12'],
+    ['GET, POST, PUT y DELETE /api/admin/docentes, aulas, materias y grupos', 'El recurso, 204 al borrar, 409 DUPLICADO, 400 RD-03, RD-07, REFERENCIA o FORMATO y 404 NO_ENCONTRADO', 'RF-10'],
+    ['GET, POST, PUT y DELETE /api/admin/usuarios', 'UsuarioGestion o 409 DUPLICADO, DOCENTE_CON_CUENTA, ULTIMO_ADMIN o USUARIO_ACTUAL', 'RF-11'],
+    ['GET /api/mi/perfil y GET /api/mi/horario', 'Perfil del docente y sus sesiones del horario publicado o 404 SIN_PUBLICAR', 'RF-12, RF-14'],
+    ['GET y PUT /api/mi/disponibilidad', 'Franjas válidas y franjas marcadas o 400 RD-03', 'RF-14'],
+    ['PUT /api/mi/contrasena', '204 o 400 CONTRASENA_INCORRECTA', 'RF-14'],
+  ], { note: 'Las rutas /api/mi exigen el rol DOCENTE. Las demás salvo el inicio de sesión y GET /api/parametros exigen el rol ADMIN. Sin token la respuesta es 401 con el código NO_AUTENTICADO y con el rol equivocado es 403.' }),
 ];
 
 // Diccionario de datos tomado de backend/src/main/resources/db/migration/V1__esquema.sql
@@ -116,7 +123,7 @@ const dic = (n, tabla, desc, filas, nota) => [
 
 const diccionario = [
   H1('Diccionario de Datos'),
-  P('El esquema lo crea Flyway al arrancar el backend con dos scripts. <c>V1__esquema.sql</c> crea las 19 tablas y <c>V2__datos_base.sql</c> carga los catálogos de características y de restricciones y los valores por defecto de los parámetros. El mismo SQL corre en PostgreSQL 16 y en H2 en modo PostgreSQL. Las tablas se agrupan en cuatro bloques. El bloque de inventarios guarda lo que llega en los CSV. El bloque de configuración guarda los parámetros y las franjas vigentes. El bloque de ejecuciones guarda cada horario generado con sus conflictos. El bloque de seguridad guarda el usuario administrador. El diagrama entidad relación está en la Figura D1 del ' + DOCS.doc2 + '.'),
+  P('El esquema lo crea Flyway al arrancar el backend con tres scripts. <c>V1__esquema.sql</c> crea las 19 tablas, <c>V2__datos_base.sql</c> carga los catálogos de características y de restricciones y los valores por defecto de los parámetros y <c>V3__usuarios_y_publicacion.sql</c> agrega los perfiles de usuario y la publicación del horario. El mismo SQL corre en PostgreSQL 16 y en H2 en modo PostgreSQL. Las tablas se agrupan en cuatro bloques. El bloque de inventarios guarda lo que llega en los CSV. El bloque de configuración guarda los parámetros y las franjas vigentes. El bloque de ejecuciones guarda cada horario generado con sus conflictos. El bloque de seguridad guarda las cuentas de los dos perfiles. El diagrama entidad relación está en la Figura D1 del ' + DOCS.doc2 + '.'),
   H2('Inventarios'),
   ...dic(4, 'docente', 'Un registro por docente del archivo docentes.csv.', [
     ['id_docente', 'VARCHAR(10)', 'PK', 'Identificador del docente, por ejemplo D01'],
@@ -189,6 +196,7 @@ const diccionario = [
     ['estado', 'VARCHAR(10)', '', 'CHECK COMPLETO o PARCIAL'],
     ['nodos_explorados', 'BIGINT', '', 'Nodos del backtracking'],
     ['duracion_ms', 'INTEGER', '', 'Duración total en milisegundos'],
+    ['publicado', 'BOOLEAN', '', 'Verdadero en la única ejecución publicada a los docentes. Por defecto falso (V3)'],
   ]),
   ...dic(18, 'asignacion', 'Una fila por sesión ubicada en una ejecución.', [
     ['id_ejecucion', 'INTEGER', 'PK, FK', 'Referencia a ejecucion_horario'],
@@ -216,11 +224,13 @@ const diccionario = [
     ['mensaje', 'VARCHAR(200)', '', 'Texto del hallazgo'],
   ]),
   H2('Seguridad'),
-  ...dic(22, 'usuario', 'Usuarios que pueden entrar al sistema. En el MVP solo existe el perfil administrador.', [
+  ...dic(22, 'usuario', 'Usuarios que pueden entrar al sistema con perfil ADMIN o DOCENTE. Cada cuenta DOCENTE queda ligada a un docente.', [
     ['id_usuario', 'INTEGER', 'PK', 'Identidad generada por la base'],
     ['nombre_usuario', 'VARCHAR(40)', 'UNIQUE', 'Nombre para iniciar sesión'],
     ['hash_contrasena', 'VARCHAR(100)', '', 'Hash bcrypt, nunca la clave en claro'],
-    ['rol', 'VARCHAR(15)', '', 'CHECK igual a ADMIN'],
+    ['rol', 'VARCHAR(15)', '', 'CHECK ADMIN o DOCENTE (V3)'],
+    ['id_docente', 'VARCHAR(10)', 'FK', 'Referencia a docente. CHECK obligatorio si el rol es DOCENTE (V3)'],
+    ['activo', 'BOOLEAN', '', 'Una cuenta inactiva no puede iniciar sesión. Por defecto verdadero (V3)'],
   ]),
   H2('Archivos de Intercambio'),
   P('El intercambio de archivos es solo en CSV. Los archivos usan coma como separador, codificación UTF-8 y una primera fila de encabezados. Las listas dentro de un campo van separadas por punto y coma. La Tabla 23 muestra el encabezado exacto que exige el cargador y un ejemplo de fila.'),
@@ -285,6 +295,7 @@ const operacion = [
   ]),
   H2('Comportamientos que Conviene Conocer'),
   P('Una carga nueva de inventarios reemplaza los anteriores y borra el historial de ejecuciones, porque las asignaciones guardadas apuntan a sesiones que dejan de existir. Los rechazos de la última carga se guardan en memoria y no en la base de datos, de modo que se pierden al reiniciar el backend. Las reglas RV-01 y RV-02 informan los grupos con problemas pero no los excluyen de la generación. Si los parámetros cambian después de generar, los horarios anteriores ya no se pueden consultar ni reubicar y el sistema responde GRILLA_CAMBIADA.'),
+  P('Una carga nueva por CSV conserva las cuentas de los docentes que siguen en el archivo y borra la cuenta de los que ya no están. Cualquier cambio de catálogo desde la interfaz también borra los horarios generados. El cambio de disponibilidad que hace un docente desde su portal no borra nada y se aplica en la siguiente generación. Un token emitido sigue vigente hasta vencer aunque la cuenta se desactive después.'),
   H2('Tareas Frecuentes'),
   P('Para detener el sistema se presiona Ctrl+C en la terminal donde corre o se ejecuta <c>docker compose down</c> en otra. Los datos de PostgreSQL se conservan entre arranques. Para empezar con una base vacía se ejecuta <c>docker compose down -v</c>, que borra también el volumen de datos.'),
   P('Los registros del backend se ven con <c>docker compose logs -f backend</c>. Cada generación deja en la tabla <c>ejecucion_horario</c> el usuario, la fecha, el estado, los nodos explorados y la duración. Eso permite revisar el historial sin abrir los registros.'),

@@ -45,12 +45,14 @@ try {
   for (const c of ['docentes', 'aulas', 'cursos', 'grupos']) {
     await pagina.setInputFiles(`input[data-prueba="${c}"]`, resolve(raiz, 'datos', 'demo', `${c}.csv`));
   }
+  const subida = pagina.waitForResponse(r => r.url().endsWith('/api/inventarios') && r.request().method() === 'POST');
   await pagina.getByRole('button', { name: 'Cargar y validar' }).click();
+  await subida;
   await pagina.getByText('Resultado de la carga').waitFor();
 
   // Docentes con disponibilidad pintada en la grilla
   await pagina.goto(`${base}/gestion/docentes`);
-  await pagina.locator('table tr').nth(1).waitFor();
+  await pagina.locator('td.codigo').first().waitFor();
   await pagina.getByRole('button', { name: 'Nuevo docente' }).click();
   await pagina.locator('input[name="id"]').fill('D90');
   await pagina.locator('input[name="nombre"]').fill('Laura Méndez');
@@ -63,7 +65,7 @@ try {
   nota('docente D90 creado con disponibilidad pintada');
 
   await pagina.goto(`${base}/gestion/aulas`);
-  await pagina.locator('table tr').nth(1).waitFor();
+  await pagina.locator('td.codigo').first().waitFor();
   await foto('u02_aulas');
 
   // Materias. Habilitar a D90 arrastrándolo a la lista de habilitados

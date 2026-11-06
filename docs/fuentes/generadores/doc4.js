@@ -5,16 +5,18 @@ const K = require('./comun');
 const { P, H1, H2, table } = L;
 const { DOCS } = K;
 const CAP = path.join(__dirname, '../../evidencias/capturas/');
+const CAPU = path.join(__dirname, '../../evidencias/capturas_usuarios/');
 
 let nFig = 0;
 const captura = (archivo, titulo, nota) => { nFig += 1; return K.figuraAjustada(nFig, titulo, CAP + archivo, 6.5, 6.6, nota); };
+const capturaU = (archivo, titulo, nota) => { nFig += 1; return K.figuraAjustada(nFig, titulo, CAPU + archivo, 6.5, 6.6, nota); };
 
 const portada = K.portada('Manual de Usuario del Motor de Asignación Automática de Horarios de Clases',
-  'Documento 4 de la Entrega Final del Módulo 3. Guía del Administrador');
+  'Documento 4 de la Entrega Final del Módulo 3. Guía del Administrador y del Docente');
 
 const intro = [
   H1('Introducción'),
-  P('Este manual guía al coordinador académico con perfil administrador por todo el ciclo del sistema. Empieza en el inicio de sesión y termina en la exportación del horario. No hace falta saber programar para seguirlo. Para instalar el sistema se usa el ' + DOCS.doc3 + '. Las decisiones de diseño detrás de cada pantalla se explican en el ' + DOCS.doc1 + '.'),
+  P('Este manual guía al coordinador académico con perfil administrador por todo el ciclo del sistema. Empieza en el inicio de sesión y termina en la exportación del horario. No hace falta saber programar para seguirlo. Al final hay una sección para el administrador sobre la gestión de datos y cuentas desde la interfaz y otra para los docentes, que entran con su propia cuenta. Para instalar el sistema se usa el ' + DOCS.doc3 + '. Las decisiones de diseño detrás de cada pantalla se explican en el ' + DOCS.doc1 + '.'),
   P('El ciclo tiene siete pasos. Iniciar sesión, cargar los datos, revisar la validación, ajustar los parámetros, generar el horario, resolver los conflictos y exportar. Las capturas de este manual son pantallas reales del sistema tomadas con los datos de demostración de la carpeta datos/demo, que tienen 10 docentes, 5 aulas, 20 cursos y 21 grupos.'),
   H2('Antes de Empezar'),
   P('El sistema debe estar instalado y en marcha. Con la instalación por defecto se abre en el navegador la dirección http://localhost:4200. Además se necesitan los cuatro archivos de la Tabla 1 en formato CSV con codificación UTF-8. Se pueden preparar en una hoja de cálculo y guardar como CSV separado por comas.'),
@@ -29,9 +31,9 @@ const intro = [
 
 const pasos = [
   H1('Paso 1. Iniciar Sesión'),
-  P('La primera pantalla pide usuario y contraseña. Solo el perfil administrador puede entrar. En una instalación nueva el usuario es admin y la contraseña es Horarios2026*, a menos que quien instaló el sistema la haya cambiado. Se escriben los datos y se presiona Ingresar. Si los datos no son correctos el sistema lo avisa y no deja pasar.'),
-  ...captura('01_login.png', 'Pantalla de inicio de sesión', 'Acceso exclusivo para el perfil administrador.'),
-  P('Una vez dentro aparece a la izquierda el menú con los tres pasos del trabajo. Cargar y validar, Parámetros y Generar y resolver. Abajo del menú está el usuario con el que se entró y la opción Cerrar sesión. La sesión dura ocho horas. Después el sistema pide entrar de nuevo.'),
+  P('La primera pantalla pide usuario y contraseña. El sistema tiene dos perfiles. El administrador entra a la pantalla de carga y el docente entra directo a Mi horario. En una instalación nueva el usuario es admin y la contraseña es Horarios2026*, a menos que quien instaló el sistema la haya cambiado. Se escriben los datos y se presiona Ingresar. Si los datos no son correctos el sistema lo avisa y no deja pasar.'),
+  ...captura('01_login.png', 'Pantalla de inicio de sesión', 'La misma pantalla sirve para los perfiles administrador y docente.'),
+  P('Una vez dentro el administrador ve a la izquierda la sección Gestión con Docentes, Aulas, Materias y grupos y Usuarios, y la sección Horario con los tres pasos del trabajo. Cargar y validar, Parámetros y Generar y resolver. Abajo del menú está el usuario con el que se entró y la opción Cerrar sesión. La sesión dura ocho horas. Después el sistema pide entrar de nuevo.'),
 
   H1('Paso 2. Cargar los Datos'),
   P('En la pantalla Cargar inventarios y validar datos hay una fila por cada archivo. Se presiona el botón Elegir de cada fila y se selecciona el archivo correspondiente. Cuando los cuatro estén elegidos se presiona Cargar y validar. El sistema lee los cuatro archivos de una vez y muestra el resultado debajo.'),
@@ -62,12 +64,51 @@ const pasos = [
   ...captura('07_reubicar.png', 'Reubicación asistida de una sesión', 'La sesión seleccionada queda marcada en la grilla y las celdas resaltadas en verde son los destinos posibles.'),
   P('La opción Asignación manual permite escoger a mano la franja, el aula y el docente. El sistema revisa todas las restricciones antes de aceptar el cambio. Si la combinación viola alguna, la rechaza y muestra los códigos de las reglas que se violarían. En la Figura 9 se intentó poner un grupo de 40 estudiantes en un aula de 32 puestos.'),
   ...captura('09_ruptura_capacidad.png', 'Asignación manual bloqueada', 'El sistema rechaza el cambio con RD-06 porque el aula es pequeña y con RD-02 porque ya está ocupada en esa franja.'),
+  P('La forma más rápida de mover una sesión es arrastrarla. Se mantiene presionado el botón del ratón sobre la sesión y las celdas válidas se marcan con un borde verde punteado. Se suelta la sesión en una de esas celdas y el sistema la mueve. Si se suelta en una celda que no es válida el sistema no hace el cambio y muestra el código de la regla que se violaría. Las sesiones del panel Sesiones pendientes también se pueden arrastrar a la grilla.'),
+  ...capturaU('u05_horario_celdas_sugeridas.png', 'Celdas válidas resaltadas antes de arrastrar', 'Al tomar la sesión las celdas con borde verde son los lugares donde puede quedar sin violar ninguna regla.'),
+  ...capturaU('u06_horario_movido_arrastrando.png', 'Sesión movida arrastrándola a otra celda', 'El aviso verde confirma la reubicación y el horario sigue COMPLETO.'),
 
   H1('Paso 7. Exportar el Horario'),
   P('Cuando el horario está COMPLETO se presiona Exportar CSV. El navegador descarga el archivo con una fila por sesión y las columnas curso, grupo, sesión, docente, aula, día, hora de inicio y hora de fin. El archivo se puede abrir con cualquier hoja de cálculo. No incluye datos personales de estudiantes.'),
   ...captura('08_exportar.png', 'Exportación del horario', 'El aviso verde confirma la descarga del archivo horario_1.csv.'),
   P('Si el horario está PARCIAL el sistema no permite exportar y muestra el aviso HORARIO_PARCIAL. Un horario con sesiones sin asignar no cumple RD-08 y no debe publicarse. Primero se resuelven las sesiones pendientes como en el paso anterior.'),
   ...captura('10_exportar_bloqueado.png', 'Exportación bloqueada de un horario parcial', 'El botón de exportar aparece en rojo y el aviso explica qué falta.'),
+];
+
+const publicar = [
+  H1('Paso 8. Publicar el Horario'),
+  P('Cuando el horario está COMPLETO aparece el botón Publicar al lado de Generar horario. Al presionarlo los docentes pueden ver sus sesiones en su portal. Solo puede haber un horario publicado. Si se publica otro el anterior deja de estar publicado. Un horario PARCIAL no se puede publicar y el sistema muestra el aviso HORARIO_PARCIAL.'),
+  ...capturaU('u07_horario_publicado.png', 'Horario publicado', 'La etiqueta Publicado a los docentes reemplaza al botón y el historial marca la ejecución como publicada.'),
+];
+
+const gestion = [
+  H1('Gestión de Datos desde la Interfaz'),
+  P('Además de cargar los archivos CSV el administrador puede crear, editar y borrar los datos uno por uno en la sección Gestión del menú. Las pantallas usan las mismas reglas que la carga por archivo. Antes de guardar el sistema avisa que se borrarán los horarios generados, porque un horario hecho con datos viejos ya no sirve. Después del cambio hay que generar de nuevo.'),
+  H2('Docentes'),
+  P('La pantalla Docentes muestra la tabla de docentes con un buscador. El botón Nuevo docente abre un formulario a la derecha con el código, el nombre, la dedicación y el escalafón. Debajo está la grilla de disponibilidad. Cada casilla es una franja válida. Se hace clic en una casilla para marcarla o se arrastra el ratón con el botón presionado para pintar varias de una vez. Los botones Todas y Ninguna marcan o limpian toda la grilla. Las casillas rayadas no son franjas válidas.'),
+  ...capturaU('u01_docente_nuevo_disponibilidad.png', 'Nuevo docente con su disponibilidad pintada', 'Las casillas verdes son las franjas en que el docente puede dictar.'),
+  H2('Aulas'),
+  P('La pantalla Aulas funciona igual. Cada aula tiene su código, su capacidad y las casillas Computadores y Sillas móviles.'),
+  H2('Materias y Grupos'),
+  P('A la izquierda está la lista de materias. Al escoger una se ven su código, su nombre, sus sesiones por semana y los requisitos de aula. Los docentes habilitados se asignan arrastrando. La lista Docentes del catálogo tiene los docentes que todavía no pueden dictar la materia y la lista Habilitados tiene los que sí. Se arrastra una ficha de una lista a la otra y se presiona Guardar materia. Si la lista Habilitados queda vacía cualquier docente puede dictarla.'),
+  P('Debajo aparecen los grupos de la materia. Se puede cambiar el número de matriculados, borrar un grupo o agregar uno nuevo. Cada grupo tiene tantas sesiones como diga la materia.'),
+  ...capturaU('u03_materia_arrastrar_docente.png', 'Docente habilitado arrastrándolo a la lista de habilitados', 'D90 pasó de Docentes del catálogo a Habilitados para esta materia.'),
+  H2('Usuarios'),
+  P('La pantalla Usuarios muestra las cuentas con su perfil y su estado. Para crear una cuenta se escribe el usuario, se escoge el perfil y una contraseña inicial de al menos 8 caracteres. Si el perfil es DOCENTE se escoge el docente al que queda ligada. La lista solo muestra docentes que todavía no tienen cuenta. En cada fila se puede activar o desactivar la cuenta, restablecer la contraseña o borrarla. El sistema no deja borrar ni desactivar la propia cuenta ni al último administrador activo.'),
+  ...capturaU('u04_usuarios.png', 'Cuentas de usuario por perfil', 'La cuenta docente.d03 quedó ligada a la docente D03.'),
+];
+
+const portal = [
+  H1('Guía para el Docente'),
+  P('El docente entra con el usuario y la contraseña que le dio la coordinación. Su menú tiene tres opciones. Mi horario, Mi disponibilidad y Mi cuenta. El docente no puede generar horarios ni ver los datos de otros docentes.'),
+  H2('Mi Horario'),
+  P('Muestra solo las sesiones del docente en el horario que publicó la coordinación. Arriba está la grilla de la semana y abajo un listado con el día, la hora, la materia, el grupo y el aula. Si todavía no hay horario publicado aparece un aviso.'),
+  ...capturaU('u08_mi_horario.png', 'Horario publicado visto por la docente', 'La docente D03 ve sus seis sesiones con el aula y el número de estudiantes.'),
+  H2('Mi Disponibilidad'),
+  P('Es la misma grilla de casillas del administrador. El docente pinta las franjas en que puede dictar y presiona Guardar. El horario publicado no cambia. La coordinación usa la nueva disponibilidad la próxima vez que genere.'),
+  ...capturaU('u09_mi_disponibilidad.png', 'Disponibilidad marcada por el docente', 'Las casillas verdes se guardan y se aplican en la siguiente generación.'),
+  H2('Mi Cuenta'),
+  P('Muestra el usuario, el perfil y el docente ligado. Para cambiar la contraseña se escribe la actual y dos veces la nueva, que debe tener al menos 8 caracteres. Si la actual no coincide el sistema muestra CONTRASENA_INCORRECTA.'),
 ];
 
 const mensajes = [
@@ -80,6 +121,10 @@ const mensajes = [
     ['El sistema bloqueó la reubicación porque viola RD-xx', 'Elegir otra alternativa de la lista. El código dice qué regla se violaría'],
     ['El horario tiene sesiones sin asignar y no cumple RD-08', 'Resolver las sesiones pendientes antes de exportar'],
     ['La grilla de franjas cambió después de esta ejecución', 'Generar un horario nuevo con los parámetros vigentes'],
+    ['Todavía no hay un horario publicado', 'El docente debe esperar a que la coordinación publique el horario'],
+    ['El docente ya tiene la cuenta ...', 'Cada docente tiene una sola cuenta. Usar la que ya existe o borrarla primero'],
+    ['Debe quedar al menos un ADMIN activo', 'Crear o activar otro administrador antes de desactivar o borrar este'],
+    ['La contraseña debe tener al menos 8 caracteres', 'Escribir una contraseña más larga'],
   ]),
   H1('Significado de los Códigos'),
   ...table(3, 'Códigos de las reglas que muestra el sistema', [1400, 7960], [
@@ -98,4 +143,4 @@ const mensajes = [
   ], { note: 'Los textos son los del catálogo de restricciones del sistema.' }),
 ];
 
-K.guardar([...portada, ...intro, ...pasos, ...mensajes], 'Manual de Usuario', process.argv[2] || 'PN2_Grupo5_Doc4_ManualUsuario.docx');
+K.guardar([...portada, ...intro, ...pasos, ...publicar, ...gestion, ...portal, ...mensajes], 'Manual de Usuario', process.argv[2] || 'PN2_Grupo5_Doc4_ManualUsuario.docx');

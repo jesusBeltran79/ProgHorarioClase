@@ -1,6 +1,13 @@
 Resumen de pruebas automatizadas JUnit 5 (Surefire)
 Clase de prueba                               Pruebas  Fallas Errores  Segundos
-api.FlujoHorarioTest                               7       0       0      0.99
+api.CatalogosApiTest                                2       0       0      0.34
+    [OK] erroresDeValidacion
+    [OK] crearEditarBorrarYGenerarConDatosManuales
+api.CuentasApiTest                                  3       0       0      6.63
+    [OK] reglasDelUltimoAdminYDeLaSesionActual
+    [OK] noSePublicaUnHorarioParcial
+    [OK] docenteVeSoloSuHorarioPublicadoYCambiaSusDatos
+api.FlujoHorarioTest                                7       0       0      0.97
     [OK] flujoCompleto
     [OK] rupturaParcial
     [OK] rupturaCapacidad
@@ -8,40 +15,40 @@ api.FlujoHorarioTest                               7       0       0      0.99
     [OK] rupturaChoqueAula
     [OK] rupturaCarga
     [OK] reubicacionValida
-api.ParametrosApiTest                              3       0       0      5.75
+api.ParametrosApiTest                               3       0       0      0.62
     [OK] cierre20
     [OK] tope35
     [OK] invalido
-api.RestriccionesBaseDatosTest                     1       0       0      0.19
+api.RestriccionesBaseDatosTest                      1       0       0      0.12
     [OK] uniqueEnAsignacion
-api.SeguridadTest                                  4       0       0      0.31
+api.SeguridadTest                                   4       0       0      0.29
     [OK] tokenValido
     [OK] sinToken
     [OK] credencialesInvalidas
     [OK] tokenAlterado
-nucleo.CargadorInventariosCSVTest                  2       0       0      0.01
+nucleo.CargadorInventariosCSVTest                   2       0       0      0.02
     [OK] cargaConErrores
     [OK] demoSinRechazos
-nucleo.ConfiguracionParametrosTest                 4       0       0      0.00
+nucleo.ConfiguracionParametrosTest                  4       0       0      0.09
     [OK] umbralConTecho
     [OK] grillaPorDefecto
     [OK] sinCruzarBloqueo
     [OK] cambioDeCierre
-nucleo.EstresTest                                  3       0       0      1.81
+nucleo.EstresTest                                   3       0       0      1.57
     [OK] escala(int)[1]
     [OK] escala(int)[2]
     [OK] escala(int)[3]
-nucleo.ModificabilidadTest                         2       0       0      0.02
+nucleo.ModificabilidadTest                          2       0       0      0.12
     [OK] nuevaRestriccion
     [OK] cambioDeTope
-nucleo.MotorAsignacionTest                         3       0       0      0.03
+nucleo.MotorAsignacionTest                          3       0       0      0.03
     [OK] exportacion
     [OK] demoCompleta
     [OK] sobrerrestringido
-nucleo.ReglasValidacionTest                        2       0       0      0.00
+nucleo.ReglasValidacionTest                         2       0       0      0.00
     [OK] cierreMinimo
     [OK] topeMatriculados
-nucleo.RestriccionesDurasTest                      6       0       0      0.01
+nucleo.RestriccionesDurasTest                       6       0       0      0.02
     [OK] capacidad
     [OK] docenteUnico
     [OK] disponibilidad
@@ -49,5 +56,5 @@ nucleo.RestriccionesDurasTest                      6       0       0      0.01
     [OK] idoneidad
     [OK] choqueDocente
 --------------------------------------------------------------------------------
-TOTAL                                             37       0       0      9.13
+TOTAL                                              42       0       0     10.84
 Omitidas 0
