@@ -7,20 +7,22 @@ skinparam packageBackgroundColor #FAFAFA
 skinparam databaseBackgroundColor #FFFFFF
 
 actor "Coordinador académico\n(perfil ADMIN)" as coord
+actor "Docente\n(perfil DOCENTE)" as doc
 
 package "Presentación · Angular 18.2" {
-  [Páginas\nIngreso, Carga, Parametros, Horario] as pag
-  [ApiService y AutenticacionService\ninterceptor con el token JWT] as apis
+  [Páginas del ADMIN\nIngreso, Carga, Parametros, Horario\ncon arrastrar y soltar (Angular CDK)\nGestión de docentes, aulas,\nmaterias y usuarios] as pag
+  [Portal del DOCENTE\nMi horario, Mi disponibilidad,\nMi cuenta] as portal
+  [ApiService, GestionService, PortalService\nAutenticacionService e interceptor JWT\nguardiaRol por perfil] as apis
 }
 
 package "Aplicación · Spring Boot 3.3.5" {
-  [ControladorInventarios\nControladorParametros\nControladorHorarios] as ctrl
-  [ServicioInventarios\nServicioParametros\nServicioHorarios] as serv
+  [ControladorInventarios\nControladorParametros\nControladorHorarios\nControladorCatalogos\nControladorUsuarios\nControladorPortal] as ctrl
+  [ServicioInventarios\nServicioParametros\nServicioHorarios\nServicioCatalogos\nServicioCuentas\nServicioPortal] as serv
   [ConfiguracionMotor\ncatálogo de reglas] as ens
 }
 
 package "Seguridad" {
-  [FiltroJwt y ServicioJwt\nJJWT 0.12.6] as jwt
+  [FiltroJwt y ServicioJwt\nJJWT 0.12.6, rol en el token] as jwt
   [ControladorAutenticacion\nbcrypt] as aut
 }
 
@@ -34,13 +36,15 @@ package "Dominio · núcleo sin Spring" {
 package "Persistencia" {
   [CargadorInventariosCSV\nExportadorHorarioCSV] as csv
   [Repositorios JDBC\nJdbcTemplate] as repo
-  [Flyway\nV1 esquema, V2 datos base] as fly
+  [Flyway\nV1 esquema, V2 datos base,\nV3 usuarios y publicación] as fly
 }
 
 database "PostgreSQL 16\n19 tablas" as db
 folder "CSV de entrada\ny horario.csv" as arch
 
 coord --> pag
+doc --> portal
+portal --> apis
 pag --> apis
 apis --> jwt : HTTP JSON con Bearer
 jwt --> ctrl

@@ -1,0 +1,87 @@
+@startuml clases_usuarios
+!include estilo.iuml
+skinparam nodesep 22
+skinparam ranksep 40
+left to right direction
+
+title Módulo de usuarios por perfil. Subpaquetes catalogos y cuentas (RF-10 a RF-14)
+
+package "aplicacion.catalogos" {
+  class ControladorCatalogos <<RestController>> {
+    + docentes() : List<DocenteGestion>
+    + crearDocente(d) / editarDocente(id, d) / borrarDocente(id)
+    + aulas(), materias(), grupos() con crear, editar y borrar
+  }
+  class ServicioCatalogos <<Service>> {
+    + guardarDocente(d : DocenteGestion, idRuta : String) : DocenteGestion
+    + guardarAula(a : AulaGestion, idRuta : String) : AulaGestion
+    + guardarMateria(m : MateriaGestion, idRuta : String) : MateriaGestion
+    + guardarGrupo(g : GrupoGestion, idRuta : String) : GrupoGestion
+    + validarDisponibilidad(l : List<FranjaDisponible>) : List<Disponible>
+    - verificarExistencia(tabla, columna, id, nuevo, sujeto) : void
+  }
+  class DtoCatalogos <<DTO>> {
+    DocenteGestion, AulaGestion
+    MateriaGestion, GrupoGestion
+    FranjaDisponible
+  }
+}
+
+package "aplicacion.cuentas" {
+  class ControladorUsuarios <<RestController>> {
+    + listar() : List<UsuarioGestion>
+    + crear(u : UsuarioNuevo) : UsuarioGestion
+    + editar(id : int, c : UsuarioCambio, a : Authentication) : UsuarioGestion
+    + borrar(id : int, a : Authentication) : void
+  }
+  class ControladorPortal <<RestController>> {
+    + perfil(a) : Perfil
+    + horario(a) : MiHorario
+    + disponibilidad(a) : MiDisponibilidad
+    + guardarDisponibilidad(l, a) : MiDisponibilidad
+    + contrasena(c : CambioContrasena, a) : void
+  }
+  class ServicioCuentas <<Service>> {
+    + crear(u : UsuarioNuevo) : UsuarioGestion
+    + editar(id, c, actual : String) : UsuarioGestion
+    + borrar(id : int, actual : String) : void
+    + cambiarPropia(nombre, actual, nueva : String) : void
+    - docenteDe(rol, idDocente, idUsuario) : String
+  }
+  class ServicioPortal <<Service>> {
+    + perfil(nombre : String) : Perfil
+    + horario(nombre : String) : MiHorario
+    + disponibilidad(nombre : String) : MiDisponibilidad
+    + guardarDisponibilidad(nombre, l) : MiDisponibilidad
+  }
+}
+
+package "persistencia" {
+  class RepositorioCatalogos <<Repository>> {
+    + borrarEjecuciones() : void
+    + guardarDocente(d, nuevo) / borrarDocente(id)
+    + guardarMateria(m, nueva) : void
+    + guardarGrupo(g, nuevo) : void
+    + reemplazarDisponibilidad(idDocente, l) : void
+  }
+  class RepositorioUsuarios <<Repository>>
+}
+
+class ServicioHorarios <<Service>> {
+  + publicado() : Optional<Dto.Resultado>
+}
+class ServicioParametros <<Service>>
+
+ControladorCatalogos --> ServicioCatalogos
+ServicioCatalogos --> RepositorioCatalogos
+ServicioCatalogos ..> ServicioParametros : franjas válidas RD-03
+ServicioCatalogos ..> DtoCatalogos
+ControladorUsuarios --> ServicioCuentas
+ControladorPortal --> ServicioPortal
+ControladorPortal --> ServicioCuentas
+ServicioCuentas --> RepositorioUsuarios
+ServicioCuentas --> RepositorioCatalogos
+ServicioPortal --> RepositorioUsuarios
+ServicioPortal --> ServicioCatalogos : valida disponibilidad
+ServicioPortal --> ServicioHorarios : horario publicado
+@enduml

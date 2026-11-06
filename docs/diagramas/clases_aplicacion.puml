@@ -4,7 +4,7 @@ skinparam nodesep 22
 skinparam ranksep 45
 left to right direction
 
-title Capas de aplicación, seguridad y persistencia (Spring Boot)
+title Capas de aplicación, seguridad y persistencia (Spring Boot). Los subpaquetes catalogos y cuentas están en la Figura A4
 
 package "aplicacion" {
   class ControladorInventarios <<RestController>> {
@@ -23,6 +23,7 @@ package "aplicacion" {
     + alternativas(id : int, idSesion : String) : List<Dto.Alternativa>
     + reubicar(id : int, r : Dto.Reubicacion) : Dto.Resultado
     + exportar(id : int) : ResponseEntity<byte[]>
+    + publicar(id : int) : Dto.Resultado
   }
   class ServicioInventarios <<Service>> {
     + cargar(docentes, aulas, cursos, grupos : MultipartFile) : Dto.ResumenCarga
@@ -44,6 +45,8 @@ package "aplicacion" {
     + alternativas(id : int, idSesion : String) : List<Dto.Alternativa>
     + reubicar(id : int, r : Dto.Reubicacion) : Dto.Resultado
     + exportar(id : int) : String
+    + publicar(id : int) : Dto.Resultado
+    + publicado() : Optional<Dto.Resultado>
     - violaciones(c : Asignacion, e : EstadoHorario, cfg) : List<String>
   }
   class ConfiguracionMotor <<Configuration>> {
@@ -63,7 +66,7 @@ package "seguridad" {
     + login(l : Dto.Login) : Dto.Token
   }
   class ServicioJwt <<Service>> {
-    + emitir(usuario : String, rol : String) : String
+    + emitir(usuario : String, rol : String, idDocente : String) : String
     + validar(token : String) : Optional<Claims>
     + segundosDeVigencia() : long
   }
@@ -107,10 +110,14 @@ package "persistencia" {
     + conflictos(id : int) : List<FilaConflicto>
     + reubicar(id, idSesion, idDocente, idAula, ...) : void
     + actualizarEstado(id : int, completo : boolean) : void
+    + publicar(id : int) : void
+    + idPublicada() : Optional<Integer>
   }
   class RepositorioUsuarios <<Repository>> {
     + buscar(nombre : String) : Optional<Usuario>
-    + crear(nombre, hash, rol : String) : void
+    + crear(nombre, hash, rol, idDocente : String) : void
+    + actualizar(id, rol, idDocente, activo) : void
+    + adminsActivos() : int
   }
 }
 

@@ -77,7 +77,9 @@ entity "usuario" as usuario {
   --
   * nombre_usuario : VARCHAR(40)
   * hash_contrasena : VARCHAR(100)
-  * rol : VARCHAR(15) <<CHECK>>
+  * rol : VARCHAR(15) <<CHECK ADMIN o DOCENTE>>
+  id_docente : VARCHAR(10) <<FK>>
+  * activo : BOOLEAN
   <<UNIQUE(nombre_usuario)>>
 }
 entity "ejecucion_horario" as ejecucion_horario {
@@ -88,6 +90,7 @@ entity "ejecucion_horario" as ejecucion_horario {
   * estado : VARCHAR(10) <<CHECK>>
   * nodos_explorados : BIGINT
   * duracion_ms : INTEGER
+  * publicado : BOOLEAN
 }
 entity "asignacion" as asignacion {
   * id_ejecucion : INTEGER <<PK, FK>>
@@ -144,6 +147,7 @@ docente ||--o{ habilitacion_docente
 curso ||--o{ grupo
 grupo ||--o{ sesion
 usuario ||--o{ ejecucion_horario
+docente |o--o| usuario
 ejecucion_horario ||--o{ asignacion
 sesion ||--o{ asignacion
 docente ||--o{ asignacion

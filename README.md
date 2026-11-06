@@ -10,6 +10,11 @@ El sistema asigna a cada sesión semanal de cada grupo un docente, un aula y una
 sin violar las restricciones duras del caso. Usa backtracking con la sesión más restringida primero,
 restricciones con el patrón Strategy y explica por código cada sesión que no se pudo ubicar.
 
+Tiene dos perfiles. El **ADMIN** (coordinación) carga o gestiona en pantalla docentes, aulas, materias,
+grupos y cuentas, genera el horario, mueve sesiones arrastrándolas en la grilla y lo publica. El
+**DOCENTE** entra a un portal donde ve solo sus sesiones del horario publicado, marca su disponibilidad
+y cambia su contraseña.
+
 ## Arranque rápido con Docker (recomendado)
 
 Requisito único: Docker Desktop (Windows o macOS) o Docker Engine con Compose v2 (Linux).
@@ -34,6 +39,16 @@ Usuario administrador **`admin`** con clave **`Horarios2026*`**.
 Para probar, en la pantalla *Cargar y validar* elija los cuatro archivos de `datos/demo/`
 (`docentes.csv`, `aulas.csv`, `cursos.csv`, `grupos.csv`), pulse *Cargar y validar*, revise los
 parámetros y en *Generar y resolver* pulse *Generar horario*.
+
+Para probar el perfil docente
+
+1. En *Generar y resolver* pulse *Publicar (RF-12)*. Si vuelve a generar, hay que publicar otra vez.
+2. En *Usuarios* cree la cuenta `docente.d03` con perfil DOCENTE, docente `D03 · Laura Gómez Vargas`
+   y clave `Clave2026*` (mínimo 8 caracteres).
+3. Cierre sesión y entre con esa cuenta. En *Mi horario* aparecen sus 6 sesiones.
+
+Para mover una sesión mantenga presionado el botón sobre ella. Las celdas con borde verde son las
+ubicaciones válidas. Si la suelta en otra celda el servidor rechaza el cambio y muestra el código RD.
 
 Comandos útiles
 
@@ -76,12 +91,13 @@ perfil `h2` y defina `DB_URL`, `DB_USUARIO` y `DB_CLAVE`.
 
 ```bash
 cd backend
-mvn verify                                   # 37 pruebas JUnit 5 (núcleo, API, seguridad y base de datos)
+mvn verify                                   # 42 pruebas JUnit 5 (núcleo, API, seguridad, cuentas y base de datos)
 java -Xss64m -cp target/classes co.edu.unbosque.horarios.app.PruebaEstres target/estres 60000
 java -cp target/classes co.edu.unbosque.horarios.app.EjecutarConjuntoCSV ../datos/demo --csv
 ```
 
-El recorrido de punta a punta con capturas está en `e2e/` (`npm ci && node capturas.mjs`).
+Los recorridos de punta a punta con capturas están en `e2e/` (`npm ci && node capturas.mjs && node usuarios.mjs`).
+`usuarios.mjs` recorre la gestión, el arrastre de sesiones, la publicación y el portal del docente.
 La integración continua de GitHub Actions compila, ejecuta las pruebas, levanta el sistema con
 Docker Compose y repite las pruebas de ruptura contra PostgreSQL en cada cambio.
 
