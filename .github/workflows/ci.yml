@@ -11,7 +11,7 @@ permissions:
 jobs:
   backend:
     name: Backend (compilación, pruebas y estrés)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: backend
@@ -57,7 +57,7 @@ jobs:
 
   frontend:
     name: Frontend (compilación Angular)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: frontend
@@ -74,7 +74,7 @@ jobs:
   sistema:
     name: Sistema completo con Docker Compose y recorrido de punta a punta
     needs: [backend, frontend]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
