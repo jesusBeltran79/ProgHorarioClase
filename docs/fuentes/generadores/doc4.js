@@ -17,7 +17,7 @@ const portada = K.portada('Manual de Usuario del Motor de Asignación Automátic
 const intro = [
   H1('Introducción'),
   P('Este manual guía al coordinador académico con perfil administrador por todo el ciclo del sistema. Empieza en el inicio de sesión y termina en la exportación del horario. No hace falta saber programar para seguirlo. Al final hay una sección para el administrador sobre la gestión de datos y cuentas desde la interfaz y otra para los docentes, que entran con su propia cuenta. Para instalar el sistema se usa el ' + DOCS.doc3 + '. Las decisiones de diseño detrás de cada pantalla se explican en el ' + DOCS.doc1 + '.'),
-  P('El ciclo tiene siete pasos. Iniciar sesión, cargar los datos, revisar la validación, ajustar los parámetros, generar el horario, resolver los conflictos y exportar. Las capturas de este manual son pantallas reales del sistema tomadas con los datos de demostración de la carpeta datos/demo, que tienen 10 docentes, 5 aulas, 20 cursos y 21 grupos.'),
+  P('El ciclo tiene ocho pasos. Iniciar sesión, cargar los datos, revisar la validación, ajustar los parámetros, generar el horario, resolver los conflictos, exportar y publicar. Las capturas de este manual son pantallas reales del sistema tomadas con los datos de demostración de la carpeta datos/demo, que tienen 10 docentes, 5 aulas, 20 cursos y 21 grupos.'),
   H2('Antes de Empezar'),
   P('El sistema debe estar instalado y en marcha. Con la instalación por defecto se abre en el navegador la dirección http://localhost:4200. Además se necesitan los cuatro archivos de la Tabla 1 en formato CSV con codificación UTF-8. Se pueden preparar en una hoja de cálculo y guardar como CSV separado por comas.'),
   ...table(1, 'Archivos que necesita el administrador', [2000, 7360], [
