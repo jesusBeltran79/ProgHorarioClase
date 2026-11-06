@@ -91,8 +91,8 @@ export class GestionDocentesComponent implements OnInit {
 
   cargar() { this.gestion.docentes().subscribe(d => this.docentes.set(d)); }
 
-  nombreDedicacion(d: string) {
-    return ({ COMPLETO: 'Tiempo completo', MEDIO: 'Medio tiempo', CATEDRA: 'Cátedra' } as Record<string, string>)[d] ?? (d || '—');
+  nombreDedicacion(d: string | null) {
+    return ({ COMPLETO: 'Tiempo completo', MEDIO: 'Medio tiempo', CATEDRA: 'Cátedra' } as Record<string, string>)[d ?? ''] ?? (d || '—');
   }
 
   nuevo() {
