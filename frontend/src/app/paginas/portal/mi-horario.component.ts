@@ -4,14 +4,16 @@ import { PortalService } from '../../nucleo/portal.service';
 import { Asignacion, DIAS, ErrorApi, Franja } from '../../nucleo/modelos';
 import { MiHorario } from '../../nucleo/modelos-portal';
 
-/** RF-12. El docente ve solo sus sesiones del horario que publicó la coordinación. */
+/** El docente ve solo sus sesiones del horario que publicó la coordinación. */
 @Component({
   selector: 'app-mi-horario',
   standalone: true,
   template: `
     <div class="encabezado">
-      <div><h2>Mi horario</h2>
-        <div class="meta">@if (horario(); as h) { {{ h.docente }} · horario publicado #{{ h.idEjecucion }} del {{ h.fechaPublicacion }} · {{ h.asignaciones.length }} sesiones }</div>
+      <div>
+        <div class="paso">Mi portal</div>
+        <h2>Mi horario</h2>
+        <p class="intro">@if (horario(); as h) { {{ h.docente }} · {{ h.asignaciones.length }} sesiones en el horario N.º {{ h.idEjecucion }}, publicado el {{ h.fechaPublicacion }} } @else { Las clases que la coordinación le asignó esta semana }</p>
       </div>
     </div>
     @if (sinPublicar()) {
@@ -39,7 +41,7 @@ import { MiHorario } from '../../nucleo/modelos-portal';
         </div>
       </div>
       <div class="tarjeta">
-        <h3>Listado</h3>
+        <h3>Mis clases en lista</h3>
         <table class="compacta">
           <tr><th>Día</th><th>Hora</th><th>Materia</th><th>Grupo</th><th>Aula</th></tr>
           @for (a of ordenadas(); track a.idSesion) {

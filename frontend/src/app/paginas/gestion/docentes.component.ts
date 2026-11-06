@@ -8,14 +8,18 @@ import { SelectorFranjasComponent } from '../../componentes/selector-franjas.com
 import { ErrorApiComponent } from '../../componentes/error-api.component';
 import { AVISO_CATALOGO } from './aviso';
 
-/** RF-10. Gestión de docentes con su disponibilidad marcada en la grilla semanal. */
+/** Gestión de docentes con su disponibilidad marcada en la grilla semanal. */
 @Component({
   selector: 'app-gestion-docentes',
   standalone: true,
   imports: [FormsModule, SelectorFranjasComponent, ErrorApiComponent],
   template: `
     <div class="encabezado">
-      <div><h2>Docentes</h2><div class="meta">{{ docentes().length }} docentes registrados</div></div>
+      <div>
+        <div class="paso">Datos del semestre</div>
+        <h2>Docentes</h2>
+        <p class="intro">{{ docentes().length }} docentes registrados. Edite uno para cambiar sus datos o pintar las franjas en que puede dictar clase.</p>
+      </div>
       <div class="botones"><button class="btn" (click)="nuevo()">Nuevo docente</button></div>
     </div>
     <app-error-api [error]="error()" />
@@ -27,12 +31,12 @@ import { AVISO_CATALOGO } from './aviso';
           <tr><th>Código</th><th>Nombre</th><th>Dedicación</th><th>Franjas</th><th></th></tr>
           @for (d of visibles(); track d.id) {
             <tr [class.fila-sel]="editando()?.id === d.id && !esNuevo()">
-              <td class="codigo">{{ d.id }}</td><td>{{ d.nombre }}</td><td>{{ d.dedicacion || '—' }}</td>
+              <td class="codigo">{{ d.id }}</td><td>{{ d.nombre }}</td><td>{{ nombreDedicacion(d.dedicacion) }}</td>
               <td>{{ d.disponibilidad.length }}</td>
               <td class="derecha"><button class="enlace azul" (click)="editar(d)">Editar</button>
                 <button class="enlace rojo" (click)="borrar(d)">Borrar</button></td>
             </tr>
-          } @empty { <tr><td colspan="5" class="meta">No hay docentes. Créelos aquí o cárguelos por CSV</td></tr> }
+          } @empty { <tr><td colspan="5" class="meta">No hay docentes. Créelos con Nuevo docente o impórtelos en el paso 1</td></tr> }
         </table>
       </div>
       @if (editando(); as e) {
@@ -49,12 +53,18 @@ import { AVISO_CATALOGO } from './aviso';
             <label>Escalafón <input name="escalafon" [(ngModel)]="e.escalafon"></label>
           </div>
           <h4>Disponibilidad semanal</h4>
+          <p class="meta">Haga clic en una franja o arrastre sobre varias para marcarlas.</p>
           <app-selector-franjas [franjas]="franjas()" [(seleccion)]="e.disponibilidad" />
           <div class="acciones">
             <button class="btn" type="submit">Guardar</button>
             <button class="btn sec" type="button" (click)="editando.set(null)">Cancelar</button>
           </div>
         </form>
+      } @else {
+        <div class="tarjeta ayuda-panel">
+          <h3>Editar un docente</h3>
+          Presione <b>Editar</b> en la lista o <b>Nuevo docente</b> para abrir el formulario aquí.
+        </div>
       }
     </div>`
 })
@@ -80,6 +90,10 @@ export class GestionDocentesComponent implements OnInit {
   }
 
   cargar() { this.gestion.docentes().subscribe(d => this.docentes.set(d)); }
+
+  nombreDedicacion(d: string | null) {
+    return ({ COMPLETO: 'Tiempo completo', MEDIO: 'Medio tiempo', CATEDRA: 'Cátedra' } as Record<string, string>)[d ?? ''] ?? (d || '—');
+  }
 
   nuevo() {
     this.esNuevo.set(true);

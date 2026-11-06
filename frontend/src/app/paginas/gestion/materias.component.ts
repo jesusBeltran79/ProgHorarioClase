@@ -11,7 +11,7 @@ import { CARACTERISTICAS } from './aulas.component';
 import { AVISO_CATALOGO } from './aviso';
 
 /**
- * RF-10. Materias y grupos. Los docentes habilitados se asignan arrastrando entre la lista del catálogo y
+ * Materias y grupos. Los docentes habilitados se asignan arrastrando entre la lista del catálogo y
  * la lista de habilitados (Angular CDK). Cada grupo genera sus sesiones según las sesiones de la materia.
  */
 @Component({
@@ -20,7 +20,11 @@ import { AVISO_CATALOGO } from './aviso';
   imports: [FormsModule, CdkDropListGroup, CdkDropList, CdkDrag, ErrorApiComponent],
   template: `
     <div class="encabezado">
-      <div><h2>Materias y grupos</h2><div class="meta">{{ materias().length }} materias y {{ grupos().length }} grupos</div></div>
+      <div>
+        <div class="paso">Datos del semestre</div>
+        <h2>Materias y grupos</h2>
+        <p class="intro">{{ materias().length }} materias y {{ grupos().length }} grupos. Elija una materia para editar sus sesiones, los docentes que la pueden dictar y sus grupos.</p>
+      </div>
       <div class="botones"><button class="btn" (click)="nueva()">Nueva materia</button></div>
     </div>
     <app-error-api [error]="error()" />
@@ -50,7 +54,8 @@ import { AVISO_CATALOGO } from './aviso';
                 <label class="casilla-texto"><input type="checkbox" [checked]="e.requisitos.includes(c.codigo)" (change)="alternar(e, c.codigo)"> {{ c.nombre }}</label>
               }
             </div>
-            <h4>Docentes habilitados · arrastre entre las listas</h4>
+            <h4>Docentes que pueden dictarla</h4>
+            <p class="meta">Arrastre cada docente de la lista de la izquierda a la de la derecha para habilitarlo, o al revés para quitarlo.</p>
             <div class="arrastre" cdkDropListGroup>
               <div class="columna-arrastre">
                 <div class="titulo-arrastre">Docentes del catálogo <input class="buscar mini" placeholder="Filtrar" [ngModel]="filtroDocente()" (ngModelChange)="filtroDocente.set($event)" name="fd"></div>
@@ -98,7 +103,7 @@ import { AVISO_CATALOGO } from './aviso';
           }
         </div>
       } @else {
-        <div class="tarjeta meta">Elija una materia de la lista o cree una nueva</div>
+        <div class="tarjeta ayuda-panel"><h3>Editar una materia</h3>Elija una materia de la lista o presione <b>Nueva materia</b>.</div>
       }
     </div>`
 })

@@ -12,14 +12,18 @@ import { ErrorApiComponent } from '../../componentes/error-api.component';
   standalone: true,
   imports: [FormsModule, ErrorApiComponent],
   template: `
-    <div class="encabezado"><div><h2>Mi cuenta</h2><div class="meta">Datos de acceso al sistema</div></div></div>
+    <div class="encabezado"><div>
+      <div class="paso">Mi portal</div>
+      <h2>Mi cuenta</h2>
+      <p class="intro">Sus datos de acceso al sistema.</p>
+    </div></div>
     <div class="dos-columnas">
       <div class="tarjeta">
         <h3>Perfil</h3>
         @if (perfil(); as p) {
           <table class="compacta">
             <tr><td class="meta">Usuario</td><td><b>{{ p.usuario }}</b></td></tr>
-            <tr><td class="meta">Perfil</td><td><span class="etiqueta verde">{{ p.rol }}</span></td></tr>
+            <tr><td class="meta">Perfil</td><td><span class="etiqueta verde">{{ p.rol === 'DOCENTE' ? 'Docente' : 'Administrador' }}</span></td></tr>
             <tr><td class="meta">Docente</td><td>{{ p.idDocente }} · {{ p.nombreDocente }}</td></tr>
           </table>
         }
@@ -32,7 +36,7 @@ import { ErrorApiComponent } from '../../componentes/error-api.component';
         <label>Contraseña nueva <input type="password" name="n" [(ngModel)]="nueva" minlength="8" required></label>
         <label>Repita la contraseña nueva <input type="password" name="r" [(ngModel)]="repetida" required></label>
         <button class="btn ancho" type="submit" [disabled]="!actual || nueva.length < 8 || nueva !== repetida">Cambiar contraseña</button>
-        @if (nueva && nueva !== repetida) { <div class="meta">Las contraseñas nuevas no coinciden</div> }
+        @if (nueva && nueva !== repetida) { <div class="alerta aviso">Las contraseñas nuevas no coinciden</div> }
       </form>
     </div>`
 })

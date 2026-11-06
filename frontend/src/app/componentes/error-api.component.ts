@@ -7,8 +7,8 @@ import { ErrorApi } from '../nucleo/modelos';
   standalone: true,
   template: `
     @if (error(); as e) {
-      <div class="alerta error"><b>{{ e.codigo }}</b> {{ e.mensaje }}
-        @for (d of e.detalles; track $index) { <div>{{ d }}</div> }
+      <div class="alerta error"><span><b>No se pudo completar ({{ e.codigo }}).</b> {{ e.mensaje }}</span>
+        @for (d of e.detalles; track $index) { <div class="detalle">{{ d }}</div> }
       </div>
     }`
 })

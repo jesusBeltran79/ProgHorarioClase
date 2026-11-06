@@ -20,6 +20,8 @@ const foto = async nombre => { await pagina.waitForTimeout(500); await pagina.sc
 
 /** Arrastre con el ratón real para que Angular CDK lo reconozca. */
 async function arrastrar(origen, destino) {
+  await destino.scrollIntoViewIfNeeded();
+  await origen.scrollIntoViewIfNeeded();
   const a = await origen.boundingBox();
   const b = await destino.boundingBox();
   await pagina.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
@@ -101,7 +103,7 @@ try {
   await pagina.getByText('Sesión reubicada.').waitFor();
   await foto('u06_horario_movido_arrastrando');
   nota('sesión movida arrastrando a una celda sugerida');
-  await pagina.getByRole('button', { name: 'Publicar (RF-12)' }).click();
+  await pagina.getByRole('button', { name: 'Publicar' }).click();
   await pagina.getByText('Horario publicado.').waitFor();
   await foto('u07_horario_publicado');
 
